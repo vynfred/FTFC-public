@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap');
+
+body {
+  background-color: #f5f5f5; /* white grey background */
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Existing styles... */
+
+/* Bottom Navigation Styles */
+.bottom-nav {
+    background-color: #000;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 10px 0;
+    z-index: 1000; /* Added z-index to keep the nav on top */
+}
+
+.bottom-nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+.bottom-nav ul li {
+    color: #fff;
+}
+
+.bottom-nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+} 

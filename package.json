@@ -1,0 +1,65 @@
+{
+  "name": "ftfc",
+  "version": "1.0.0",
+  "description": "FTFC Website",
+  "main": "index.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "emulators": "firebase emulators:start",
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
+    "lint": "eslint src/**/*.{js,jsx}",
+    "format": "prettier --write src/**/*.{js,jsx,css}"
+  },
+  "dependencies": {
+    "@react-pdf/renderer": "^4.2.2",
+    "@sentry/react": "^9.2.0",
+    "@stripe/stripe-js": "^5.7.0",
+    "@tinymce/tinymce-react": "^4.0.0",
+    "@zoomus/websdk": "^2.18.3",
+    "assemblyai": "^4.9.0",
+    "axios": "^1.7.9",
+    "chart.js": "^4.4.8",
+    "date-fns": "^2.0.0",
+    "dotenv": "^16.0.3",
+    "file-saver": "^2.0.5",
+    "firebase": "^9.0.0",
+    "googleapis": "^144.0.0",
+    "papaparse": "^5.4.1",
+    "plaid": "^31.1.0",
+    "prop-types": "^15.8.0",
+    "react": "^18.0.0",
+    "react-beautiful-dnd": "^13.1.1",
+    "react-chartjs-2": "^5.3.0",
+    "react-csv": "^2.2.2",
+    "react-dom": "^18.0.0",
+    "react-helmet": "^6.1.0",
+    "react-icons": "^4.0.0",
+    "react-router-dom": "^6.0.0",
+    "react-scripts": "^5.0.1",
+    "react-tabs": "^6.1.0",
+    "stripe": "^17.7.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "firebase-tools": "^12.0.0",
+    "husky": "^7.0.0",
+    "prettier": "^2.0.0",
+    "source-map-explorer": "^2.5.3"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

@@ -1,0 +1,337 @@
+/* Brand Colors */
+:root {
+  --primary-color: #000000; /* Black */
+  --accent-color: #d4af37;  /* Gold */
+  --background-color: #f5f5dc; /* Cream */
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: var(--background-color);
+  color: var(--primary-color);
+}
+
+/* Navigation */
+nav {
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  padding: 1em;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1em;
+  margin: 0;
+  padding: 0;
+}
+
+nav ul li a {
+  color: var(--background-color);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* Header */
+header {
+  text-align: center;
+  padding: 2em;
+  background-color: var(--background-color);
+  color: var(--primary-color);
+}
+
+header h1 {
+  color: var(--primary-color);
+}
+
+.btn {
+  background-color: var(--accent-color);
+  color: var(--primary-color);
+  padding: 0.5em 1em;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+/* Form Styling */
+form {
+  max-width: 600px;
+  margin: 2em auto;
+  padding: 2em;
+  background-color: var(--background-color);
+  border: 2px solid var(--accent-color);
+  border-radius: 10px;
+}
+
+form fieldset {
+  border: none;
+  margin-bottom: 1em;
+  padding: 0;
+}
+
+form label {
+  display: block;
+  margin: 0.5em 0 0.2em;
+  font-weight: bold;
+}
+
+form input, form select, form textarea {
+  width: 100%;
+  padding: 0.5em;
+  border: 1px solid var(--primary-color);
+  border-radius: 5px;
+  margin-bottom: 1em;
+}
+
+form button {
+  background-color: var(--accent-color);
+  color: var(--primary-color);
+  border: none;
+  padding: 0.7em 1.5em;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 1em;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 1em;
+  background-color: var(--primary-color);
+  color: var(--background-color);
+}
+
+/* Modal styling */
+.modal {
+  display: none; 
+  position: fixed; 
+  z-index: 1000; 
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%; 
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background-color: var(--background-color);
+  margin: 10% auto;
+  padding: 20px;
+  border: 1px solid var(--accent-color);
+  width: 80%;
+  max-width: 600px;
+  border-radius: 10px;
+}
+
+.close {
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Add these new styles for better form steps and progress bar */
+.form-step {
+    display: none; /* Hide all steps by default */
+}
+
+.form-step.active {
+    display: block;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: var(--background-color);
+    border: 1px solid var(--accent-color);
+    border-radius: 10px;
+    margin: 20px 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.progress {
+    height: 100%;
+    background-color: var(--accent-color);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+/* Style for multiple select */
+select[multiple] {
+    height: 120px;
+}
+
+/* Dashboard specific styles */
+.dashboard-grid {
+    display: -ms-grid;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 20px;
+}
+
+@media (max-width: 768px) {
+    .nav-toggle {
+        display: block;
+        cursor: pointer;
+    }
+
+    nav ul {
+        display: none;
+        position: absolute;
+        background: var(--primary-color);
+        width: 100%;
+        left: 0;
+        padding: 1em;
+    }
+
+    nav ul.active {
+        display: block;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 5% auto;
+    }
+}
+
+/* Loading indicator */
+.loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loader::after {
+    content: "";
+    width: 50px;
+    height: 50px;
+    border: 5px solid var(--background-color);
+    border-top-color: var(--accent-color);
+    border-radius: 50%;
+    animation: loading 0.75s ease infinite;
+}
+
+@keyframes loading {
+    from { transform: rotate(0turn) }
+    to { transform: rotate(1turn) }
+}
+
+/* Form validation */
+.error {
+    border-color: #ff0000 !important;
+}
+
+.error-messages {
+    background-color: #fff0f0;
+    border: 1px solid #ff0000;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 1em;
+}
+
+.error-message {
+    color: #ff0000;
+    margin: 0;
+    padding: 5px 0;
+}
+
+/* Form step transitions */
+.form-step {
+    -webkit-transition: opacity 0.3s ease;
+    -moz-transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease;
+    opacity: 0;
+}
+
+.form-step.active {
+    opacity: 1;
+}
+
+/* Add support for older browsers */
+.dashboard-grid {
+    display: -ms-grid;
+    display: grid;
+}
+
+/* Fallback for browsers that don't support grid */
+@supports not (display: grid) {
+    .dashboard-grid {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .dashboard-grid > * {
+        flex: 1 1 300px;
+        margin: 10px;
+    }
+}
+
+/* Add these vendor prefixes for better cross-browser support */
+@-webkit-keyframes loading {
+    from { -webkit-transform: rotate(0turn); }
+    to { -webkit-transform: rotate(1turn); }
+}
+
+/* Add step indicators above progress bar */
+.step-indicators {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.step-indicator {
+    flex: 1;
+    text-align: center;
+    padding: 5px;
+    position: relative;
+    color: var(--primary-color);
+}
+
+.step-indicator.active {
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+/* Add connecting lines between steps */
+.step-indicator:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -50%;
+    width: 100%;
+    height: 2px;
+    background-color: var(--primary-color);
+    z-index: -1;
+}
+
+/* Add skeleton loading state */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--background-color) 25%,
+        var(--accent-color) 50%,
+        var(--background-color) 75%
+    );
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    from { background-position: 200% 0 }
+    to { background-position: -200% 0 }
+} 
