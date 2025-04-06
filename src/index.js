@@ -1,18 +1,37 @@
 import React from 'react';
-import { createRoot } from 'react-dom/client';
-import './styles/styles.css';
-import App from './App';
-import { validateEnv } from './utils/validateEnv';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 
-const container = document.getElementById('root');
-const root = createRoot(container);
+// Import our consolidated CSS
+import './styles/index.css';
 
-if (!validateEnv()) {
-  throw new Error('Missing required environment variables');
+// Import Chart.js configuration if it exists
+try {
+  require('./config/chartConfig');
+} catch(e) {
+  console.warn('Chart config not found:', e);
 }
 
+// Import app and providers
+import App from './App';
+import { AuthProvider } from './context/AuthContext';
+import { DateRangeProvider } from './context/DateRangeContext';
+import { StatsViewProvider } from './context/StatsViewContext';
+
+// Create root
+const root = ReactDOM.createRoot(document.getElementById('root'));
+
+// Render app
 root.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <AuthProvider>
+        <DateRangeProvider>
+          <StatsViewProvider>
+            <App />
+          </StatsViewProvider>
+        </DateRangeProvider>
+      </AuthProvider>
+    </BrowserRouter>
   </React.StrictMode>
-); 
+);

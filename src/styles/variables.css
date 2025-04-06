@@ -1,0 +1,64 @@
+/*
+ * variables.css
+ * This file contains CSS custom properties (variables) for consistent styling across the application
+ */
+
+:root {
+  /* Colors */
+  --color-primary: #f59e0b;
+  --color-primary-hover: #f5a623;
+  --color-secondary: #3b82f6;
+  --color-secondary-hover: #2563eb;
+  --color-background-dark: #0f172a;
+  --color-background-darker: #0c111a;
+  --color-background-light: #1e293b;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #94a3b8;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-dark: rgba(0, 0, 0, 0.1);
+  --color-positive: #ffd700;
+  --color-negative: #F44336;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* Sizes */
+  --sidebar-width: 250px;
+  --sidebar-collapsed-width: 60px;
+  --header-height: 60px;
+  --border-radius: 8px;
+  --border-radius-sm: 4px;
+  --section-spacing: 7px; /* Spacing between dashboard sections */
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-toggle: 0 4px 8px rgba(0, 0, 0, 0.5);
+
+  /* Transitions */
+  --transition-default: 0.2s ease;
+  --transition-sidebar: width 0.3s ease;
+  --transition-content: margin-left 0.3s ease, width 0.3s ease;
+
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Z-index layers */
+  --z-index-sidebar: 50;
+  --z-index-header: 100;
+  --z-index-toggle: 1000;
+}

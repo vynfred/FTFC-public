@@ -1,0 +1,27 @@
+.variable-styled-card {
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  margin-bottom: var(--spacing-md);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-default), box-shadow var(--transition-default);
+}
+
+.variable-styled-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.variable-styled-card-title {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.variable-styled-card-content {
+  padding: var(--spacing-md);
+}

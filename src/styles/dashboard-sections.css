@@ -1,0 +1,411 @@
+/*
+ * dashboard-sections.css
+ * This file contains styles for dashboard sections and components
+ */
+
+/* Variables are imported in index.css */
+
+/* ===== DASHBOARD PAGES ===== */
+.dashboard-page,
+.marketing-dashboard,
+.leads-dashboard,
+.clients-dashboard,
+.investor-dashboard,
+.partner-dashboard {
+  width: 100%;
+  padding: 0;
+  word-wrap: break-word;
+  overflow-y: visible;
+  box-sizing: border-box;
+  margin: 0;
+  transition: width var(--transition-default);
+  font-family: var(--font-family);
+  background-color: var(--color-background-dark);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ===== DASHBOARD SECTIONS ===== */
+.dashboard-section,
+.summary-section,
+.ai-summary,
+.goal-progress,
+.stats-section,
+.table-section,
+.shortcuts-section {
+  background-color: var(--color-background-dark);
+  border-radius: var(--border-radius);
+  margin-bottom: var(--section-spacing);
+  box-shadow: var(--shadow-md);
+  color: var(--color-text-primary);
+  overflow: visible;
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  border: 1px solid var(--color-border);
+  box-sizing: border-box;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: width var(--transition-default);
+}
+
+/* ===== SECTION HEADERS ===== */
+.section-title,
+.dashboard-section-header,
+.stats-header,
+.table-header {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: 0;
+  color: var(--color-text-primary);
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard-section-header h2,
+.stats-header h2,
+.table-header h2,
+.ai-summary h2 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== SECTION CONTENT ===== */
+.dashboard-section-content,
+.stats-section > div:not(.stats-header),
+.table-section > div:not(.table-header),
+.ai-summary > p,
+.goal-progress > div,
+.metrics-grid,
+.sales-goal-container,
+.lead-analytics-container,
+.shortcuts-grid,
+.meetings-container,
+.ai-summary-wrapper {
+  padding: var(--spacing-md) var(--spacing-lg);
+  width: 100%;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+/* Fix for nested content in dashboard sections */
+.dashboard-section-content .goal-progress-container,
+.dashboard-section-content .stats-grid,
+.dashboard-section-content .shortcuts-grid,
+.dashboard-section-content .summary-text {
+  padding: 0;
+}
+
+/* ===== METRICS GRID ===== */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.metric-card {
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius);
+  padding: 15px;
+  text-align: center;
+}
+
+.metric-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.metric-value {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: 5px;
+  color: var(--color-text-primary);
+}
+
+.metric-change {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.positive {
+  color: var(--color-positive);
+}
+
+.negative {
+  color: var(--color-negative);
+}
+
+/* ===== STATS GRID ===== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+  width: 100%;
+}
+
+.stat-card {
+  background-color: var(--color-background-light);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-card h3 {
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+}
+
+.stat-card .value {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+/* ===== SHORTCUTS GRID ===== */
+.shortcuts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--spacing-md);
+  width: 100%;
+}
+
+.shortcut-card {
+  background-color: var(--color-background-light);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--transition-default);
+}
+
+.shortcut-card:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.shortcut-icon {
+  font-size: var(--font-size-xl);
+  color: var(--color-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.shortcut-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+/* ===== MEETINGS SECTION ===== */
+.meetings-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-sm);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.meeting-card {
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  transition: all var(--transition-default);
+}
+
+.meeting-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.meeting-card:hover {
+  background-color: var(--color-background-light);
+  transform: translateY(-2px);
+}
+
+.meeting-info h3 {
+  font-size: var(--font-size-md);
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text-primary);
+}
+
+.meeting-time, .meeting-type {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+}
+
+/* ===== GOAL PROGRESS ===== */
+.goal-progress-container {
+  width: 100%;
+}
+
+.goal-details {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+}
+
+.goal-amount {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.goal-current {
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+}
+
+.goal-progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+}
+
+.goal-progress-fill {
+  height: 100%;
+  background-color: var(--color-secondary);
+  border-radius: var(--border-radius-sm);
+}
+
+/* ===== SALES GOAL ===== */
+.sales-goal-container {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.sales-goal-amount {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-primary);
+}
+
+.progress-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.progress-bar-container {
+  height: 10px;
+  background-color: var(--color-background-light);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-positive) 0%, #ffec80 100%);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* ===== LEAD ANALYTICS ===== */
+.lead-analytics-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-md);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.lead-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-md);
+  width: 100%;
+}
+
+.lead-stat {
+  text-align: center;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius);
+}
+
+.lead-stat-value {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text-primary);
+}
+
+.lead-stat-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.subsection-title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-primary);
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 767px) {
+  .dashboard-section-header,
+  .stats-header,
+  .table-header,
+  .section-title {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .dashboard-section-content,
+  .stats-section > div:not(.stats-header),
+  .table-section > div:not(.table-header),
+  .ai-summary > p,
+  .goal-progress > div,
+  .metrics-grid,
+  .sales-goal-container,
+  .lead-analytics-container,
+  .shortcuts-grid,
+  .meetings-container,
+  .ai-summary-wrapper {
+    padding: var(--spacing-md);
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: var(--spacing-sm);
+  }
+
+  .shortcuts-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: var(--spacing-sm);
+  }
+
+  .stat-card .value {
+    font-size: var(--font-size-lg);
+  }
+
+  .meetings-container,
+  .lead-stats {
+    grid-template-columns: 1fr;
+  }
+}

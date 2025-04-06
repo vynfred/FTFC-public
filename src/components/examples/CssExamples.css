@@ -1,0 +1,146 @@
+/* CSS Examples Styles */
+
+/* Variable Buttons */
+.variable-buttons-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.variable-button {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-default);
+}
+
+.variable-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.variable-button.primary {
+  background-color: var(--color-primary);
+  color: var(--color-background-dark);
+  border: none;
+}
+
+.variable-button.secondary {
+  background-color: var(--color-secondary);
+  color: white;
+  border: none;
+}
+
+.variable-button.outline {
+  background-color: transparent;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+}
+
+.variable-button.dark {
+  background-color: var(--color-background-dark);
+  color: white;
+  border: 1px solid var(--color-border);
+}
+
+/* Variable Cards */
+.variable-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.secondary-card {
+  background-color: var(--color-secondary);
+  color: white;
+}
+
+.secondary-card .variable-styled-card-title {
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+.primary-card {
+  background-color: var(--color-primary);
+  color: var(--color-background-dark);
+}
+
+.primary-card .variable-styled-card-title {
+  border-bottom-color: rgba(0, 0, 0, 0.1);
+  color: var(--color-background-dark);
+}
+
+/* Comparison Examples */
+.comparison-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+}
+
+.comparison-column {
+  flex: 1;
+}
+
+/* Before Example (with !important) */
+.before-example {
+  border: 1px solid #333333 !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.before-header {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  padding: 16px !important;
+  font-weight: 600 !important;
+  border-bottom: 1px solid #333333 !important;
+}
+
+.before-content {
+  padding: 16px !important;
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+}
+
+.before-footer {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  padding: 16px !important;
+  border-top: 1px solid #333333 !important;
+}
+
+/* After Example (with CSS Variables) */
+.after-example {
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.after-header {
+  background-color: var(--color-background-dark);
+  color: var(--color-text-primary);
+  padding: var(--spacing-md);
+  font-weight: 600;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.after-content {
+  padding: var(--spacing-md);
+  background-color: var(--color-background-light);
+  color: var(--color-text-primary);
+}
+
+.after-footer {
+  background-color: var(--color-background-dark);
+  color: var(--color-text-primary);
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .comparison-container {
+    grid-template-columns: 1fr;
+  }
+}
