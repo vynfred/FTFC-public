@@ -1,0 +1,149 @@
+/* Tabs.module.css */
+/* Styles for the Tabs component */
+
+.tabsContainer {
+  width: 100%;
+  overflow: hidden;
+}
+
+.tabsList {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid var(--color-border);
+  position: relative;
+}
+
+/* Scrollable tabs for mobile */
+.scrollable .tabsList {
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+  white-space: nowrap;
+}
+
+.scrollable .tabsList::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.tabItem {
+  margin: 0;
+  padding: 0;
+}
+
+.tabButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  color: var(--color-text-secondary);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-default);
+  white-space: nowrap;
+}
+
+.tabButton:hover {
+  color: var(--color-text-primary);
+}
+
+.tabButton.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.tabButton:focus {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Tab with icon */
+.tabIcon {
+  margin-right: var(--spacing-sm);
+  font-size: 1.25rem;
+}
+
+/* Tab content */
+.tabContent {
+  padding: var(--spacing-lg) 0;
+}
+
+.tabPanel {
+  display: none;
+}
+
+.tabPanel.active {
+  display: block;
+}
+
+/* Vertical tabs */
+.vertical {
+  display: flex;
+}
+
+.vertical .tabsList {
+  flex-direction: column;
+  border-bottom: none;
+  border-right: 1px solid var(--color-border);
+  min-width: 12.5rem; /* 200px */
+}
+
+.vertical .tabButton {
+  justify-content: flex-start;
+  width: 100%;
+  text-align: left;
+  padding: var(--spacing-md);
+  border-bottom: none;
+  border-left: 2px solid transparent;
+}
+
+.vertical .tabButton.active {
+  border-left-color: var(--color-primary);
+  border-bottom-color: transparent;
+  background-color: var(--color-primary-light);
+}
+
+.vertical .tabContent {
+  flex: 1;
+  padding: 0 var(--spacing-lg);
+}
+
+/* Responsive adjustments */
+@media (max-width: 48rem) { /* 768px */
+  .responsive.vertical {
+    flex-direction: column;
+  }
+  
+  .responsive.vertical .tabsList {
+    flex-direction: row;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .responsive.vertical .tabsList::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .responsive.vertical .tabButton {
+    border-left: none;
+    border-bottom: 2px solid transparent;
+  }
+  
+  .responsive.vertical .tabButton.active {
+    border-left-color: transparent;
+    border-bottom-color: var(--color-primary);
+  }
+  
+  .responsive.vertical .tabContent {
+    padding: var(--spacing-lg) 0;
+  }
+}

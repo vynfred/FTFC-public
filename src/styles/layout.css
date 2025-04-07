@@ -1,22 +1,28 @@
 /*
  * layout.css
  * This file contains styles for the main layout components: header, sidebar, and content area
+ * Updated to use CSS Grid and flexible units
  */
 
 /* Variables are imported in index.css */
 
 /* ===== LAYOUT CONTAINER ===== */
 .dashboard-layout-container {
-  display: flex;
+  display: grid;
+  grid-template-areas:
+    "header header"
+    "sidebar main";
+  grid-template-columns: auto 1fr;
+  grid-template-rows: var(--header-height) 1fr;
   min-height: 100vh;
   background-color: var(--color-background-darker);
-  flex-direction: column;
   position: relative;
   font-family: var(--font-family);
 }
 
 /* ===== TOP NAVIGATION ===== */
 .top-nav {
+  grid-area: header;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -24,10 +30,6 @@
   height: var(--header-height);
   background-color: var(--color-background-dark);
   border-bottom: 1px solid var(--color-border);
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
   z-index: var(--z-index-header);
 }
 
@@ -115,19 +117,15 @@
 
 /* ===== SIDEBAR ===== */
 .sidebar {
+  grid-area: sidebar;
   width: var(--sidebar-width);
   background-color: var(--color-background-dark);
   border-right: 1px solid var(--color-border);
-  position: fixed;
-  top: var(--header-height);
-  bottom: 0;
-  left: 0;
   z-index: var(--z-index-sidebar);
   display: flex;
   flex-direction: column;
   overflow-y: auto;
   overflow-x: hidden;
-  height: calc(100vh - var(--header-height));
   box-shadow: var(--shadow-sm);
   box-sizing: border-box;
   transition: var(--transition-sidebar);
@@ -282,79 +280,105 @@
 
 /* ===== DASHBOARD CONTENT ===== */
 .dashboard-content {
-  margin-left: var(--sidebar-width);
-  margin-top: var(--header-height);
-  width: calc(100% - var(--sidebar-width));
-  transition: var(--transition-content);
-  min-height: calc(100vh - var(--header-height));
+  grid-area: main;
   background-color: var(--color-background-darker);
   box-sizing: border-box;
-  padding-left: var(--spacing-md);
-  padding-right: var(--spacing-md);
+  padding: 0 var(--spacing-md);
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  overflow-y: auto;
 }
 
-.dashboard-content.sidebar-collapsed {
-  margin-left: var(--sidebar-collapsed-width);
-  width: calc(100% - var(--sidebar-collapsed-width));
-  padding-left: var(--spacing-md);
+/* When sidebar is collapsed, adjust grid template columns */
+.dashboard-layout-container.sidebar-collapsed {
+  grid-template-columns: var(--sidebar-collapsed-width) 1fr;
 }
 
 .dashboard-wrapper {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-gap: var(--spacing-md);
   padding: var(--spacing-md);
-  overflow-y: auto;
   width: 100%;
   box-sizing: border-box;
-  height: calc(100vh - var(--header-height));
-  max-width: 1200px;
+  max-width: var(--container-width);
   margin: 0 auto;
-  padding-right: var(--spacing-md); /* Ensure proper spacing on the right side */
+}
+
+/* Default dashboard sections span full width */
+.dashboard-section {
+  grid-column: span 12;
 }
 
 /* ===== RESPONSIVE ADJUSTMENTS ===== */
-@media (max-width: 1024px) {
+/* Use em units for media queries for better cross-browser consistency */
+
+/* Medium screens */
+@media (max-width: var(--breakpoint-lg)) {
   .dashboard-wrapper {
     padding: var(--spacing-md);
   }
+
+  /* Allow sections to be half-width on medium screens */
+  .dashboard-section.half {
+    grid-column: span 6;
+  }
 }
 
-@media (max-width: 768px) {
-  .dashboard-content {
-    margin-left: 0;
-    width: 100%;
+/* Small screens */
+@media (max-width: var(--breakpoint-md)) {
+  /* Switch to mobile layout */
+  .dashboard-layout-container {
+    grid-template-areas:
+      "header"
+      "main";
+    grid-template-columns: 1fr;
+    grid-template-rows: var(--header-height) 1fr;
   }
 
-  .dashboard-content.sidebar-collapsed {
-    margin-left: 0;
-    width: 100%;
-  }
-
+  /* Hide sidebar by default on mobile */
   .sidebar {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    height: calc(100vh - var(--header-height));
     transform: translateX(-100%);
+    transition: transform 0.3s ease;
   }
 
+  /* Show sidebar when mobile-open class is added */
   .sidebar.mobile-open {
     transform: translateX(0);
   }
 
+  /* Adjust toggle button position */
   .sidebar-toggle {
-    right: -40px;
+    right: -2.5rem; /* -40px */
+  }
+
+  /* All sections full width on small screens */
+  .dashboard-section,
+  .dashboard-section.half {
+    grid-column: span 12;
   }
 }
 
-@media (max-width: 480px) {
+/* Extra small screens */
+@media (max-width: var(--breakpoint-sm)) {
   .search-bar {
-    max-width: 200px;
+    max-width: 12.5rem; /* 200px */
   }
 
   .date-range-select,
   .stats-button {
-    padding: 4px 8px;
-    font-size: 12px;
+    padding: 0.25rem 0.5rem; /* 4px 8px */
+    font-size: var(--font-size-xs);
+  }
+
+  /* Simplify grid to single column */
+  .dashboard-wrapper {
+    grid-template-columns: 1fr;
+    padding: var(--spacing-sm);
   }
 }

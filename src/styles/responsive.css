@@ -1,0 +1,414 @@
+/* responsive.css */
+/* Responsive utility classes and mixins */
+
+/* 
+  Breakpoints:
+  - xs: 0px (default)
+  - sm: 576px
+  - md: 768px
+  - lg: 992px
+  - xl: 1200px
+  - xxl: 1400px
+*/
+
+:root {
+  /* Breakpoint values (for reference in JS) */
+  --breakpoint-xs: 0;
+  --breakpoint-sm: 36rem;  /* 576px */
+  --breakpoint-md: 48rem;  /* 768px */
+  --breakpoint-lg: 62rem;  /* 992px */
+  --breakpoint-xl: 75rem;  /* 1200px */
+  --breakpoint-xxl: 87.5rem; /* 1400px */
+  
+  /* Container max-widths */
+  --container-sm: 33.75rem; /* 540px */
+  --container-md: 45rem;    /* 720px */
+  --container-lg: 60rem;    /* 960px */
+  --container-xl: 71.25rem; /* 1140px */
+  --container-xxl: 82.5rem; /* 1320px */
+  
+  /* Responsive font sizes */
+  --font-size-responsive-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --font-size-responsive-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  --font-size-responsive-md: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+  --font-size-responsive-lg: clamp(1.125rem, 1rem + 0.625vw, 1.25rem);
+  --font-size-responsive-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  --font-size-responsive-xxl: clamp(1.5rem, 1.3rem + 1vw, 1.875rem);
+  --font-size-responsive-heading: clamp(1.875rem, 1.5rem + 1.875vw, 2.5rem);
+  
+  /* Responsive spacing */
+  --spacing-responsive-xs: clamp(0.25rem, 0.2rem + 0.25vw, 0.375rem);
+  --spacing-responsive-sm: clamp(0.5rem, 0.4rem + 0.5vw, 0.75rem);
+  --spacing-responsive-md: clamp(1rem, 0.8rem + 1vw, 1.5rem);
+  --spacing-responsive-lg: clamp(1.5rem, 1.2rem + 1.5vw, 2.25rem);
+  --spacing-responsive-xl: clamp(2.25rem, 1.8rem + 2.25vw, 3.375rem);
+}
+
+/* Utility classes for responsive display */
+.hide-xs {
+  display: none;
+}
+
+@media (min-width: 36rem) { /* 576px */
+  .hide-xs {
+    display: initial;
+  }
+  
+  .hide-sm {
+    display: none;
+  }
+}
+
+@media (min-width: 48rem) { /* 768px */
+  .hide-sm {
+    display: initial;
+  }
+  
+  .hide-md {
+    display: none;
+  }
+}
+
+@media (min-width: 62rem) { /* 992px */
+  .hide-md {
+    display: initial;
+  }
+  
+  .hide-lg {
+    display: none;
+  }
+}
+
+@media (min-width: 75rem) { /* 1200px */
+  .hide-lg {
+    display: initial;
+  }
+  
+  .hide-xl {
+    display: none;
+  }
+}
+
+@media (min-width: 87.5rem) { /* 1400px */
+  .hide-xl {
+    display: initial;
+  }
+  
+  .hide-xxl {
+    display: none;
+  }
+}
+
+/* Utility classes for responsive text alignment */
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+@media (min-width: 36rem) { /* 576px */
+  .text-sm-center {
+    text-align: center;
+  }
+  
+  .text-sm-left {
+    text-align: left;
+  }
+  
+  .text-sm-right {
+    text-align: right;
+  }
+}
+
+@media (min-width: 48rem) { /* 768px */
+  .text-md-center {
+    text-align: center;
+  }
+  
+  .text-md-left {
+    text-align: left;
+  }
+  
+  .text-md-right {
+    text-align: right;
+  }
+}
+
+@media (min-width: 62rem) { /* 992px */
+  .text-lg-center {
+    text-align: center;
+  }
+  
+  .text-lg-left {
+    text-align: left;
+  }
+  
+  .text-lg-right {
+    text-align: right;
+  }
+}
+
+/* Utility classes for responsive margins */
+.m-auto {
+  margin: auto;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.my-auto {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+@media (min-width: 36rem) { /* 576px */
+  .m-sm-auto {
+    margin: auto;
+  }
+  
+  .mx-sm-auto {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .my-sm-auto {
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+}
+
+@media (min-width: 48rem) { /* 768px */
+  .m-md-auto {
+    margin: auto;
+  }
+  
+  .mx-md-auto {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .my-md-auto {
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+}
+
+/* Utility classes for responsive widths */
+.w-100 {
+  width: 100%;
+}
+
+.w-75 {
+  width: 75%;
+}
+
+.w-50 {
+  width: 50%;
+}
+
+.w-25 {
+  width: 25%;
+}
+
+@media (min-width: 36rem) { /* 576px */
+  .w-sm-100 {
+    width: 100%;
+  }
+  
+  .w-sm-75 {
+    width: 75%;
+  }
+  
+  .w-sm-50 {
+    width: 50%;
+  }
+  
+  .w-sm-25 {
+    width: 25%;
+  }
+}
+
+@media (min-width: 48rem) { /* 768px */
+  .w-md-100 {
+    width: 100%;
+  }
+  
+  .w-md-75 {
+    width: 75%;
+  }
+  
+  .w-md-50 {
+    width: 50%;
+  }
+  
+  .w-md-25 {
+    width: 25%;
+  }
+}
+
+/* Responsive order classes for flexbox/grid */
+.order-first {
+  order: -1;
+}
+
+.order-last {
+  order: 999;
+}
+
+.order-0 {
+  order: 0;
+}
+
+.order-1 {
+  order: 1;
+}
+
+.order-2 {
+  order: 2;
+}
+
+@media (min-width: 36rem) { /* 576px */
+  .order-sm-first {
+    order: -1;
+  }
+  
+  .order-sm-last {
+    order: 999;
+  }
+  
+  .order-sm-0 {
+    order: 0;
+  }
+  
+  .order-sm-1 {
+    order: 1;
+  }
+  
+  .order-sm-2 {
+    order: 2;
+  }
+}
+
+@media (min-width: 48rem) { /* 768px */
+  .order-md-first {
+    order: -1;
+  }
+  
+  .order-md-last {
+    order: 999;
+  }
+  
+  .order-md-0 {
+    order: 0;
+  }
+  
+  .order-md-1 {
+    order: 1;
+  }
+  
+  .order-md-2 {
+    order: 2;
+  }
+}
+
+/* Responsive flex direction */
+.flex-row {
+  flex-direction: row;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+@media (min-width: 36rem) { /* 576px */
+  .flex-sm-row {
+    flex-direction: row;
+  }
+  
+  .flex-sm-column {
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 48rem) { /* 768px */
+  .flex-md-row {
+    flex-direction: row;
+  }
+  
+  .flex-md-column {
+    flex-direction: column;
+  }
+}
+
+/* Responsive gap classes for grid/flexbox */
+.gap-0 {
+  gap: 0;
+}
+
+.gap-1 {
+  gap: var(--spacing-xs);
+}
+
+.gap-2 {
+  gap: var(--spacing-sm);
+}
+
+.gap-3 {
+  gap: var(--spacing-md);
+}
+
+.gap-4 {
+  gap: var(--spacing-lg);
+}
+
+@media (min-width: 36rem) { /* 576px */
+  .gap-sm-0 {
+    gap: 0;
+  }
+  
+  .gap-sm-1 {
+    gap: var(--spacing-xs);
+  }
+  
+  .gap-sm-2 {
+    gap: var(--spacing-sm);
+  }
+  
+  .gap-sm-3 {
+    gap: var(--spacing-md);
+  }
+  
+  .gap-sm-4 {
+    gap: var(--spacing-lg);
+  }
+}
+
+@media (min-width: 48rem) { /* 768px */
+  .gap-md-0 {
+    gap: 0;
+  }
+  
+  .gap-md-1 {
+    gap: var(--spacing-xs);
+  }
+  
+  .gap-md-2 {
+    gap: var(--spacing-sm);
+  }
+  
+  .gap-md-3 {
+    gap: var(--spacing-md);
+  }
+  
+  .gap-md-4 {
+    gap: var(--spacing-lg);
+  }
+}

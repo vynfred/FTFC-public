@@ -1,13 +1,22 @@
 /* Main CSS entry point */
 
-/* Import variables first */
+/* Import reset first */
+@import './reset.css';
+
+/* Import variables */
 @import './variables.css';
+
+/* Import themes */
+@import './themes.css';
 
 /* Import base styles */
 @import './base.css';
 
 /* Import layout styles */
 @import './layout.css';
+
+/* Import responsive utilities */
+@import './responsive.css';
 
 /* Import component styles */
 @import './dashboard-sections.css';

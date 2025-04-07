@@ -1,0 +1,123 @@
+/* Theme.module.css */
+/* Styles for theme-related components */
+
+.themeToggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius);
+  background-color: var(--color-background-light);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: all var(--transition-default);
+}
+
+.themeToggle:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.themeIcon {
+  font-size: 1.25rem;
+  color: var(--color-text-secondary);
+}
+
+.themeLabel {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+/* Theme dropdown */
+.themeDropdown {
+  position: relative;
+}
+
+.themeMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: var(--spacing-xs);
+  background-color: var(--color-background-dark);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  z-index: 100;
+  min-width: 150px;
+  overflow: hidden;
+}
+
+.themeOption {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  cursor: pointer;
+  transition: background-color var(--transition-default);
+}
+
+.themeOption:hover {
+  background-color: var(--color-background-light);
+}
+
+.themeOption.active {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.themeOptionIcon {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+}
+
+.themeOptionLabel {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+/* Theme settings panel */
+.themeSettings {
+  padding: var(--spacing-md);
+  background-color: var(--color-background-dark);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+}
+
+.themeSettingsTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-primary);
+}
+
+.themeSettingsGroup {
+  margin-bottom: var(--spacing-md);
+}
+
+.themeSettingsLabel {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text-primary);
+}
+
+.themeOptions {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.themeColorOption {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all var(--transition-default);
+}
+
+.themeColorOption:hover {
+  transform: scale(1.1);
+}
+
+.themeColorOption.active {
+  border-color: var(--color-text-primary);
+}

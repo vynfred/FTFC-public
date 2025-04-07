@@ -3,7 +3,7 @@ import {
     FaChartBar, FaChartLine, FaChevronLeft, FaChevronRight, FaCog, FaHandshake, FaHistory, FaUserFriends, FaUsers
 } from 'react-icons/fa';
 import { NavLink, useLocation } from 'react-router-dom';
-// CSS is now imported globally
+import styles from './SidebarNav.module.css';
 
 const SidebarNav = ({ collapsed, toggleSidebar }) => {
   const location = useLocation();
@@ -62,10 +62,10 @@ const SidebarNav = ({ collapsed, toggleSidebar }) => {
   ];
 
   return (
-    <div className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+    <div className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}>
       {/* Sidebar Toggle Button */}
       <div
-        className="sidebar-toggle"
+        className={styles.toggle}
         onClick={toggleSidebar}
         role="button"
         aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
@@ -77,17 +77,19 @@ const SidebarNav = ({ collapsed, toggleSidebar }) => {
       </div>
 
       {/* Navigation Menu */}
-      <nav className="sidebar-nav">
-        <ul className="nav-links">
+      <nav className={styles.nav}>
+        <ul className={styles.navList}>
           {navItems.map((item) => (
-            <li key={item.path}>
+            <li key={item.path} className={styles.navItem}>
               <NavLink
                 to={item.path}
                 end={item.path === '/dashboard'}
-                className={({ isActive }) => isActive ? "active" : ""}
+                className={({ isActive }) =>
+                  `${styles.navLink} ${isActive ? styles.active : ''}`
+                }
               >
-                {item.icon}
-                <span>{item.name}</span>
+                <span className={styles.icon}>{item.icon}</span>
+                <span className={styles.text}>{item.name}</span>
               </NavLink>
             </li>
           ))}
@@ -95,20 +97,20 @@ const SidebarNav = ({ collapsed, toggleSidebar }) => {
       </nav>
 
       {/* User Profile */}
-      <div className="sidebar-footer">
-        <div className="sidebar-user">
-          <div className="user-avatar">{userInfo.initials}</div>
+      <div className={styles.footer}>
+        <div className={styles.user}>
+          <div className={styles.avatar}>{userInfo.initials}</div>
           {!collapsed && (
-            <div className="user-info">
-              <div className="user-name">{userInfo.name}</div>
-              <div className="user-role">{userInfo.role}</div>
+            <div className={styles.userInfo}>
+              <div className={styles.userName}>{userInfo.name}</div>
+              <div className={styles.userRole}>{userInfo.role}</div>
             </div>
           )}
         </div>
 
         {!collapsed && (
-          <div className="last-updated">
-            <FaHistory className="last-updated-icon" />
+          <div className={styles.lastUpdated}>
+            <FaHistory className={styles.lastUpdatedIcon} />
             <span>Last Updated: {formattedDate}</span>
           </div>
         )}

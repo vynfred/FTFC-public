@@ -1,0 +1,378 @@
+/* Feedback.module.css */
+/* Styles for feedback components (Alert, Spinner, Progress, Modal, Toast) */
+
+/* Alert */
+.alert {
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.alertIcon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.alertContent {
+  flex: 1;
+}
+
+.alertTitle {
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.alertMessage {
+  margin: 0;
+}
+
+.alertClose {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: inherit;
+  opacity: 0.7;
+  transition: opacity var(--transition-default);
+}
+
+.alertClose:hover {
+  opacity: 1;
+}
+
+/* Alert variants */
+.info {
+  background-color: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  color: #3B82F6;
+}
+
+.success {
+  background-color: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: #10B981;
+}
+
+.warning {
+  background-color: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  color: #F59E0B;
+}
+
+.error {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #EF4444;
+}
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinnerSm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 2px;
+}
+
+.spinnerMd {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-width: 2px;
+}
+
+.spinnerLg {
+  width: 2rem;
+  height: 2rem;
+  border-width: 3px;
+}
+
+.spinnerXl {
+  width: 3rem;
+  height: 3rem;
+  border-width: 4px;
+}
+
+/* Spinner colors */
+.spinnerPrimary {
+  color: var(--color-primary);
+}
+
+.spinnerSecondary {
+  color: var(--color-secondary);
+}
+
+.spinnerWhite {
+  color: white;
+}
+
+/* Progress */
+.progress {
+  width: 100%;
+  height: 0.5rem;
+  background-color: var(--color-background-light);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background-color: var(--color-primary);
+  transition: width 0.3s ease;
+}
+
+.progressInfo {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+.progressLabel {
+  font-weight: var(--font-weight-medium);
+}
+
+.progressValue {
+  font-weight: var(--font-weight-medium);
+}
+
+/* Progress variants */
+.progressPrimary .progressBar {
+  background-color: var(--color-primary);
+}
+
+.progressSecondary .progressBar {
+  background-color: var(--color-secondary);
+}
+
+.progressSuccess .progressBar {
+  background-color: #10B981;
+}
+
+.progressWarning .progressBar {
+  background-color: #F59E0B;
+}
+
+.progressError .progressBar {
+  background-color: #EF4444;
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--spacing-md);
+}
+
+.modal {
+  background-color: var(--color-background-dark);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 30rem;
+  max-height: calc(100vh - 2rem);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modalHeader {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modalTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin: 0;
+}
+
+.modalClose {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0;
+  transition: color var(--transition-default);
+}
+
+.modalClose:hover {
+  color: var(--color-text-primary);
+}
+
+.modalBody {
+  padding: var(--spacing-md);
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modalFooter {
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+}
+
+/* Modal sizes */
+.modalSm {
+  max-width: 20rem;
+}
+
+.modalMd {
+  max-width: 30rem;
+}
+
+.modalLg {
+  max-width: 50rem;
+}
+
+.modalXl {
+  max-width: 70rem;
+}
+
+.modalFullscreen {
+  max-width: none;
+  width: calc(100% - 2rem);
+  height: calc(100% - 2rem);
+  border-radius: 0;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: var(--spacing-md);
+  right: var(--spacing-md);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  max-width: 25rem;
+  z-index: 1000;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.toastIcon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.toastContent {
+  flex: 1;
+}
+
+.toastTitle {
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.toastMessage {
+  margin: 0;
+}
+
+.toastClose {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: inherit;
+  opacity: 0.7;
+  transition: opacity var(--transition-default);
+}
+
+.toastClose:hover {
+  opacity: 1;
+}
+
+/* Toast variants */
+.toastInfo {
+  background-color: var(--color-background-dark);
+  border-left: 4px solid #3B82F6;
+  color: var(--color-text-primary);
+}
+
+.toastSuccess {
+  background-color: var(--color-background-dark);
+  border-left: 4px solid #10B981;
+  color: var(--color-text-primary);
+}
+
+.toastWarning {
+  background-color: var(--color-background-dark);
+  border-left: 4px solid #F59E0B;
+  color: var(--color-text-primary);
+}
+
+.toastError {
+  background-color: var(--color-background-dark);
+  border-left: 4px solid #EF4444;
+  color: var(--color-text-primary);
+}
+
+/* Empty state */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-md);
+  opacity: 0.5;
+}
+
+.emptyTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text-primary);
+}
+
+.emptyText {
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-md);
+  max-width: 30rem;
+}
+
+.emptyAction {
+  margin-top: var(--spacing-sm);
+}

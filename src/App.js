@@ -3,11 +3,15 @@ import { Route, Routes } from 'react-router-dom';
 import ClientLogin from './components/auth/ClientLogin';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import TeamLogin from './components/auth/TeamLogin';
+import BlogCreate from './components/blog/BlogCreate';
+import BlogEdit from './components/blog/BlogEdit';
+import BlogManage from './components/blog/BlogManage';
 import DashboardWrapper from './components/common/DashboardWrapper';
 import Analytics from './components/Dashboard/Analytics';
 import ClientsDashboard from './components/Dashboard/ClientsDashboard';
 import CompanySettings from './components/Dashboard/CompanySettings';
 import Dashboard from './components/Dashboard/Dashboard';
+import DashboardWithModules from './components/Dashboard/DashboardWithModules';
 import InvestorDashboard from './components/Dashboard/InvestorDashboard';
 import LeadsDashboard from './components/Dashboard/LeadsDashboard';
 import MarketingDashboard from './components/Dashboard/MarketingDashboard';
@@ -45,6 +49,7 @@ function App() {
       {/* Protected Dashboard Routes */}
       <Route element={<ProtectedRoute><DashboardWrapper /></ProtectedRoute>}>
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard-modules" element={<DashboardWithModules />} />
         <Route path="/dashboard/analytics" element={<Analytics />} />
         <Route path="/dashboard/leads" element={<LeadsDashboard />} />
         <Route path="/dashboard/clients" element={<ClientsDashboard />} />
@@ -53,6 +58,11 @@ function App() {
         <Route path="/dashboard/partners" element={<PartnerDashboard />} />
         <Route path="/dashboard/company-settings" element={<CompanySettings />} />
         <Route path="/dashboard/css-examples" element={<CssExamples />} />
+
+        {/* Blog Management Routes */}
+        <Route path="/admin/blog" element={<BlogManage />} />
+        <Route path="/admin/blog/create" element={<BlogCreate />} />
+        <Route path="/admin/blog/edit/:id" element={<BlogEdit />} />
       </Route>
 
       {/* 404 Route */}

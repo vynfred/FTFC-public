@@ -1,0 +1,98 @@
+/* DashboardSection.module.css */
+/* CSS Module for the DashboardSection component */
+
+.section {
+  background-color: var(--color-background-dark);
+  border-radius: var(--border-radius);
+  margin-bottom: var(--section-spacing);
+  box-shadow: var(--shadow-md);
+  color: var(--color-text-primary);
+  overflow: visible;
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  border: 1px solid var(--color-border);
+  box-sizing: border-box;
+  padding: 0;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  position: relative;
+  transition: all var(--transition-default);
+}
+
+/* Section header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+/* Section content */
+.content {
+  padding: var(--spacing-md);
+  width: 100%;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+/* Section width variants */
+.full {
+  grid-column: span 12;
+}
+
+.half {
+  grid-column: span 6;
+}
+
+.third {
+  grid-column: span 4;
+}
+
+.twoThirds {
+  grid-column: span 8;
+}
+
+/* Section with hover effect */
+.hoverable:hover {
+  transform: translateY(-0.25rem);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Responsive adjustments */
+@media (max-width: var(--breakpoint-md)) {
+  .half, .third, .twoThirds {
+    grid-column: span 12;
+  }
+  
+  .header {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .content {
+    padding: var(--spacing-md);
+  }
+}
+
+@media (max-width: var(--breakpoint-sm)) {
+  .content {
+    padding: var(--spacing-sm);
+  }
+}

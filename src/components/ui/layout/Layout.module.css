@@ -1,0 +1,194 @@
+/* Layout.module.css */
+/* Styles for layout components (Container, Grid, Section) */
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: var(--container-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
+  box-sizing: border-box;
+}
+
+.container.fluid {
+  max-width: 100%;
+}
+
+.container.narrow {
+  max-width: 48rem; /* 768px */
+}
+
+.container.wide {
+  max-width: 90rem; /* 1440px */
+}
+
+/* Container padding variations */
+.paddingNone {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.paddingSm {
+  padding-left: var(--spacing-sm);
+  padding-right: var(--spacing-sm);
+}
+
+.paddingMd {
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
+}
+
+.paddingLg {
+  padding-left: var(--spacing-lg);
+  padding-right: var(--spacing-lg);
+}
+
+/* Center content */
+.centerContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Grid */
+.grid {
+  display: grid;
+  gap: var(--spacing-md);
+  width: 100%;
+}
+
+/* Grid columns */
+.cols1 { grid-template-columns: repeat(1, 1fr); }
+.cols2 { grid-template-columns: repeat(2, 1fr); }
+.cols3 { grid-template-columns: repeat(3, 1fr); }
+.cols4 { grid-template-columns: repeat(4, 1fr); }
+.cols5 { grid-template-columns: repeat(5, 1fr); }
+.cols6 { grid-template-columns: repeat(6, 1fr); }
+.cols12 { grid-template-columns: repeat(12, 1fr); }
+
+/* Auto-fit grid */
+.autoFit {
+  grid-template-columns: repeat(auto-fit, minmax(var(--min-column-width, 250px), 1fr));
+}
+
+/* Auto-fill grid */
+.autoFill {
+  grid-template-columns: repeat(auto-fill, minmax(var(--min-column-width, 250px), 1fr));
+}
+
+/* Grid gaps */
+.gapXs { gap: var(--spacing-xs); }
+.gapSm { gap: var(--spacing-sm); }
+.gapMd { gap: var(--spacing-md); }
+.gapLg { gap: var(--spacing-lg); }
+.gapXl { gap: var(--spacing-xl); }
+
+/* Row gaps */
+.rowGapXs { row-gap: var(--spacing-xs); }
+.rowGapSm { row-gap: var(--spacing-sm); }
+.rowGapMd { row-gap: var(--spacing-md); }
+.rowGapLg { row-gap: var(--spacing-lg); }
+.rowGapXl { row-gap: var(--spacing-xl); }
+
+/* Column gaps */
+.columnGapXs { column-gap: var(--spacing-xs); }
+.columnGapSm { column-gap: var(--spacing-sm); }
+.columnGapMd { column-gap: var(--spacing-md); }
+.columnGapLg { column-gap: var(--spacing-lg); }
+.columnGapXl { column-gap: var(--spacing-xl); }
+
+/* Alignment */
+.alignItemsStart { align-items: start; }
+.alignItemsCenter { align-items: center; }
+.alignItemsEnd { align-items: end; }
+.alignItemsStretch { align-items: stretch; }
+
+.justifyItemsStart { justify-items: start; }
+.justifyItemsCenter { justify-items: center; }
+.justifyItemsEnd { justify-items: end; }
+.justifyItemsStretch { justify-items: stretch; }
+
+/* Section */
+.section {
+  padding-top: var(--spacing-lg);
+  padding-bottom: var(--spacing-lg);
+  width: 100%;
+}
+
+.section.sm {
+  padding-top: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
+}
+
+.section.lg {
+  padding-top: var(--spacing-xl);
+  padding-bottom: var(--spacing-xl);
+}
+
+.section.noPaddingTop {
+  padding-top: 0;
+}
+
+.section.noPaddingBottom {
+  padding-bottom: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: var(--breakpoint-lg)) {
+  .container {
+    padding-left: var(--spacing-md);
+    padding-right: var(--spacing-md);
+  }
+
+  .section {
+    padding-top: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+  }
+
+  .section.lg {
+    padding-top: var(--spacing-lg);
+    padding-bottom: var(--spacing-lg);
+  }
+
+  /* Responsive grid columns */
+  .lgCols1 { grid-template-columns: repeat(1, 1fr); }
+  .lgCols2 { grid-template-columns: repeat(2, 1fr); }
+  .lgCols3 { grid-template-columns: repeat(3, 1fr); }
+  .lgCols4 { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: var(--breakpoint-md)) {
+  .container {
+    padding-left: var(--spacing-sm);
+    padding-right: var(--spacing-sm);
+  }
+
+  /* Responsive grid columns */
+  .mdCols1 { grid-template-columns: repeat(1, 1fr); }
+  .mdCols2 { grid-template-columns: repeat(2, 1fr); }
+  .mdCols3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: var(--breakpoint-sm)) {
+  .container {
+    padding-left: var(--spacing-sm);
+    padding-right: var(--spacing-sm);
+  }
+
+  .section {
+    padding-top: var(--spacing-sm);
+    padding-bottom: var(--spacing-sm);
+  }
+
+  .section.lg {
+    padding-top: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+  }
+
+  /* Responsive grid columns */
+  .smCols1 { grid-template-columns: repeat(1, 1fr); }
+  .smCols2 { grid-template-columns: repeat(2, 1fr); }
+}

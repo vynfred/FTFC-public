@@ -61,7 +61,7 @@ const DashboardWrapper = () => {
   }, [sidebarCollapsed]);
 
   return (
-    <div className="dashboard-layout-container">
+    <div className={`dashboard-layout-container ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       {/* Top Navigation */}
       <PrivateTopNav
         toggleMobileMenu={toggleMobileMenu}

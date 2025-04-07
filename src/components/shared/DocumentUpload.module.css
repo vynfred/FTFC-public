@@ -1,0 +1,186 @@
+/* DocumentUpload.module.css */
+/* Styles for the document upload component */
+
+.container {
+  width: 100%;
+}
+
+/* Upload area */
+.uploadArea {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-default);
+}
+
+.uploadArea:hover {
+  border-color: var(--color-primary);
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.uploadArea.dragActive {
+  border-color: var(--color-primary);
+  background-color: rgba(245, 158, 11, 0.05);
+}
+
+.uploadIcon {
+  font-size: 2rem;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.uploadText {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.uploadHint {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.fileInput {
+  display: none;
+}
+
+/* Document list */
+.documentList {
+  margin-top: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.documentItem {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius);
+  background-color: var(--color-background-light);
+  transition: background-color var(--transition-default);
+}
+
+.documentItem:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.documentIcon {
+  margin-right: var(--spacing-sm);
+  color: var(--color-text-secondary);
+  font-size: 1.25rem;
+}
+
+.documentInfo {
+  flex: 1;
+}
+
+.documentName {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin-bottom: 2px;
+  word-break: break-word;
+}
+
+.documentMeta {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.documentSize {
+  white-space: nowrap;
+}
+
+.documentDate {
+  white-space: nowrap;
+}
+
+.documentActions {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.documentAction {
+  color: var(--color-text-secondary);
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+  transition: all var(--transition-default);
+  cursor: pointer;
+}
+
+.documentAction:hover {
+  color: var(--color-text-primary);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.deleteAction:hover {
+  color: #EF4444; /* Red */
+}
+
+.downloadAction:hover {
+  color: #10B981; /* Green */
+}
+
+/* Upload progress */
+.uploadProgress {
+  width: 100%;
+  margin-top: var(--spacing-sm);
+}
+
+.progressBar {
+  height: 4px;
+  background-color: var(--color-background-light);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: var(--color-primary);
+  transition: width 0.3s ease;
+}
+
+.progressInfo {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+.cancelUpload {
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: var(--font-size-xs);
+}
+
+.cancelUpload:hover {
+  color: #EF4444; /* Red */
+}
+
+/* Empty state */
+.emptyState {
+  padding: var(--spacing-md);
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.emptyIcon {
+  font-size: 2rem;
+  margin-bottom: var(--spacing-sm);
+  opacity: 0.5;
+}
+
+.emptyText {
+  font-size: var(--font-size-sm);
+}

@@ -1,9 +1,13 @@
 /*
  * variables.css
  * This file contains CSS custom properties (variables) for consistent styling across the application
+ * Updated to use flexible units (rem, em, vh, vw) instead of fixed pixel values
  */
 
 :root {
+  /* Base font size (16px is browser default) */
+  font-size: 16px;
+
   /* Colors */
   --color-primary: #f59e0b;
   --color-primary-hover: #f5a623;
@@ -19,39 +23,49 @@
   --color-positive: #ffd700;
   --color-negative: #F44336;
 
-  /* Spacing */
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
+  /* Spacing in rem */
+  --spacing-xs: 0.25rem;  /* 4px */
+  --spacing-sm: 0.5rem;   /* 8px */
+  --spacing-md: 1rem;     /* 16px */
+  --spacing-lg: 1.5rem;   /* 24px */
+  --spacing-xl: 2rem;     /* 32px */
 
-  /* Sizes */
-  --sidebar-width: 250px;
-  --sidebar-collapsed-width: 60px;
-  --header-height: 60px;
-  --border-radius: 8px;
-  --border-radius-sm: 4px;
-  --section-spacing: 7px; /* Spacing between dashboard sections */
+  /* Sizes in rem/vh */
+  --sidebar-width: 15.625rem;         /* 250px */
+  --sidebar-collapsed-width: 3.75rem; /* 60px */
+  --header-height: 3.75rem;           /* 60px */
+  --border-radius: 0.5rem;            /* 8px */
+  --border-radius-sm: 0.25rem;        /* 4px */
+  --section-spacing: 0.4375rem;       /* 7px - Spacing between dashboard sections */
+
+  /* Responsive sizes using clamp() */
+  --container-width: clamp(20rem, 90vw, 75rem); /* 320px to 1200px */
+  --sidebar-width-responsive: clamp(15rem, 20vw, 15.625rem); /* 240px to 250px */
 
   /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-  --shadow-toggle: 0 4px 8px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.1);  /* 0 1px 3px */
+  --shadow-md: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.1);      /* 0 2px 8px */
+  --shadow-lg: 0 0.625rem 0.9375rem rgba(0, 0, 0, 0.1);   /* 0 10px 15px */
+  --shadow-toggle: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.5);   /* 0 4px 8px */
 
   /* Transitions */
   --transition-default: 0.2s ease;
   --transition-sidebar: width 0.3s ease;
   --transition-content: margin-left 0.3s ease, width 0.3s ease;
 
-  /* Typography */
+  /* Typography in rem */
   --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-size-xs: 12px;
-  --font-size-sm: 14px;
-  --font-size-md: 16px;
-  --font-size-lg: 18px;
-  --font-size-xl: 24px;
+  --font-size-xs: 0.75rem;   /* 12px */
+  --font-size-sm: 0.875rem;  /* 14px */
+  --font-size-md: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;  /* 18px */
+  --font-size-xl: 1.5rem;    /* 24px */
+
+  /* Responsive typography using clamp() */
+  --font-size-heading: clamp(1.5rem, 5vw, 2.5rem);  /* 24px to 40px */
+  --font-size-subheading: clamp(1.125rem, 3vw, 1.5rem); /* 18px to 24px */
+  --font-size-body: clamp(0.875rem, 2vw, 1rem);    /* 14px to 16px */
+
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
@@ -61,4 +75,10 @@
   --z-index-sidebar: 50;
   --z-index-header: 100;
   --z-index-toggle: 1000;
+
+  /* Breakpoints in em (more consistent across browsers) */
+  --breakpoint-sm: 36em;  /* 576px */
+  --breakpoint-md: 48em;  /* 768px */
+  --breakpoint-lg: 62em;  /* 992px */
+  --breakpoint-xl: 75em;  /* 1200px */
 }

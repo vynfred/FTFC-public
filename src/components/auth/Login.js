@@ -2,7 +2,6 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase-config';
-import '../../styles/Layout.css';
 import { ErrorState } from '../shared/ErrorState';
 
 const Login = ({ portalType = 'Team', redirectPath = '/dashboard' }) => {
@@ -16,7 +15,7 @@ const Login = ({ portalType = 'Team', redirectPath = '/dashboard' }) => {
   useEffect(() => {
     // Immediate scroll to top
     window.scrollTo(0, 0);
-    
+
     // Additional scroll to ensure it works after rendering
     const scrollTimer = setTimeout(() => {
       window.scrollTo({
@@ -24,7 +23,7 @@ const Login = ({ portalType = 'Team', redirectPath = '/dashboard' }) => {
         behavior: 'auto'
       });
     }, 50);
-    
+
     return () => clearTimeout(scrollTimer);
   }, []);
 
@@ -83,4 +82,4 @@ const Login = ({ portalType = 'Team', redirectPath = '/dashboard' }) => {
   );
 };
 
-export default Login; 
+export default Login;

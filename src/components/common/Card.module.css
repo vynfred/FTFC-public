@@ -1,0 +1,124 @@
+/* Card.module.css */
+/* CSS Module for the Card component */
+
+.card {
+  background-color: var(--color-background-dark);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  transition: transform var(--transition-default), box-shadow var(--transition-default);
+}
+
+.card:hover {
+  transform: translateY(-0.25rem);
+  box-shadow: var(--shadow-md);
+}
+
+/* Card variants */
+.default {
+  background-color: var(--color-background-dark);
+}
+
+.light {
+  background-color: var(--color-background-light);
+}
+
+.primary {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.secondary {
+  background-color: var(--color-secondary);
+  color: white;
+}
+
+/* Card header */
+.header {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Card body */
+.body {
+  padding: var(--spacing-md);
+}
+
+/* Card footer */
+.footer {
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+}
+
+/* Card with hover effect */
+.hoverable {
+  cursor: pointer;
+}
+
+/* Card sizes */
+.small {
+  max-width: 20rem; /* 320px */
+}
+
+.medium {
+  max-width: 30rem; /* 480px */
+}
+
+.large {
+  max-width: 40rem; /* 640px */
+}
+
+.full {
+  width: 100%;
+}
+
+/* Card with image */
+.withImage .image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* Card with horizontal layout */
+.horizontal {
+  grid-template-rows: none;
+  grid-template-columns: auto 1fr;
+}
+
+.horizontal .image {
+  height: 100%;
+  width: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: var(--breakpoint-sm)) {
+  .horizontal {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+  
+  .horizontal .image {
+    width: 100%;
+    height: auto;
+  }
+}

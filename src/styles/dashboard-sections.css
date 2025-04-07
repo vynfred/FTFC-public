@@ -21,9 +21,9 @@
   transition: width var(--transition-default);
   font-family: var(--font-family);
   background-color: var(--color-background-dark);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
 }
 
 /* ===== DASHBOARD SECTIONS ===== */
@@ -47,10 +47,10 @@
   border: 1px solid var(--color-border);
   box-sizing: border-box;
   padding: 0;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto 1fr;
   position: relative;
-  transition: width var(--transition-default);
+  transition: all var(--transition-default);
 }
 
 /* ===== SECTION HEADERS ===== */
@@ -111,8 +111,8 @@
 /* ===== METRICS GRID ===== */
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(9.375rem, 1fr)); /* 150px */
+  gap: var(--spacing-md);
   width: 100%;
   box-sizing: border-box;
 }
@@ -120,8 +120,16 @@
 .metric-card {
   background-color: var(--color-background-light);
   border-radius: var(--border-radius);
-  padding: 15px;
+  padding: var(--spacing-md);
   text-align: center;
+  display: grid;
+  grid-template-rows: auto auto auto;
+  align-items: center;
+  transition: transform var(--transition-default);
+}
+
+.metric-card:hover {
+  transform: translateY(-0.25rem);
 }
 
 .metric-label {
@@ -153,7 +161,7 @@
 /* ===== STATS GRID ===== */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(12.5rem, 1fr)); /* 200px */
   gap: var(--spacing-md);
   width: 100%;
 }
@@ -164,6 +172,14 @@
   border-radius: var(--border-radius);
   padding: var(--spacing-md);
   box-shadow: var(--shadow-sm);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  transition: transform var(--transition-default), box-shadow var(--transition-default);
+}
+
+.stat-card:hover {
+  transform: translateY(-0.25rem);
+  box-shadow: var(--shadow-md);
 }
 
 .stat-card h3 {
@@ -183,7 +199,7 @@
 /* ===== SHORTCUTS GRID ===== */
 .shortcuts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(9.375rem, 1fr)); /* 150px */
   gap: var(--spacing-md);
   width: 100%;
 }
@@ -193,12 +209,13 @@
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius);
   padding: var(--spacing-md);
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto auto;
+  justify-items: center;
   align-items: center;
-  justify-content: center;
   cursor: pointer;
-  transition: background-color var(--transition-default);
+  transition: all var(--transition-default);
+  aspect-ratio: 1 / 1;
 }
 
 .shortcut-card:hover {
@@ -221,7 +238,7 @@
 /* ===== MEETINGS SECTION ===== */
 .meetings-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(18.75rem, 1fr)); /* 300px */
   gap: var(--spacing-sm);
   width: 100%;
   box-sizing: border-box;
@@ -368,7 +385,23 @@
 }
 
 /* ===== RESPONSIVE ADJUSTMENTS ===== */
-@media (max-width: 767px) {
+/* Use em units for media queries for better cross-browser consistency */
+
+/* Medium screens */
+@media (max-width: var(--breakpoint-lg)) {
+  /* Adjust grid layouts for medium screens */
+  .metrics-grid {
+    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); /* 128px */
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); /* 160px */
+  }
+}
+
+/* Small screens */
+@media (max-width: var(--breakpoint-md)) {
+  /* Reduce padding on section headers */
   .dashboard-section-header,
   .stats-header,
   .table-header,
@@ -376,6 +409,7 @@
     padding: var(--spacing-sm) var(--spacing-md);
   }
 
+  /* Consistent padding for all section content */
   .dashboard-section-content,
   .stats-section > div:not(.stats-header),
   .table-section > div:not(.table-header),
@@ -390,22 +424,51 @@
     padding: var(--spacing-md);
   }
 
+  /* Adjust grid layouts for small screens */
   .stats-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(8.75rem, 1fr)); /* 140px */
     gap: var(--spacing-sm);
   }
 
   .shortcuts-grid {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr)); /* 120px */
     gap: var(--spacing-sm);
   }
 
+  /* Reduce font sizes */
   .stat-card .value {
     font-size: var(--font-size-lg);
   }
 
+  /* Single column layouts for certain components */
   .meetings-container,
   .lead-stats {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: var(--breakpoint-sm)) {
+  /* Further reduce padding */
+  .dashboard-section-content,
+  .stats-section > div:not(.stats-header),
+  .table-section > div:not(.table-header),
+  .metrics-grid,
+  .shortcuts-grid {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
+  }
+
+  /* Single column for all grids */
+  .metrics-grid,
+  .stats-grid,
+  .shortcuts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Use clamp for responsive text */
+  .section-title,
+  .dashboard-section-header h2 {
+    font-size: clamp(1rem, 5vw, 1.125rem);
   }
 }

@@ -3,7 +3,8 @@ import { FaCalendarAlt, FaFileContract, FaLightbulb, FaPencilAlt, FaUserPlus } f
 import { Link } from 'react-router-dom';
 import { useDateRange } from '../../context/DateRangeContext';
 import { useStatsView } from '../../context/StatsViewContext';
-// CSS is now imported globally
+import Container from '../ui/layout/Container';
+import Grid from '../ui/layout/Grid';
 
 const Dashboard = () => {
   const { dateRange } = useDateRange();
@@ -192,20 +193,20 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="dashboard-page">
+    <Container fluid className="dashboard-page">
       {/* AI Summary Section */}
-      <div className="summary-section">
+      <Container className="summary-section">
         <div className="ai-summary-wrapper">
           <p className="ai-summary">
           Welcome back! Today you have 3 client meetings scheduled. TechStart Inc is ready to sign their contract, and Capital Partners is considering increasing their investment by $250K. Your lead volume has increased by 12% this week, with website conversions showing the highest growth. The sales team is at 72% of this month's target with 10 days remaining.
           </p>
         </div>
-      </div>
+      </Container>
 
       {/* Upcoming Meetings Section */}
-      <div className="dashboard-section">
+      <Container className="dashboard-section">
         <h2 className="section-title">Upcoming Meetings</h2>
-        <div className="meetings-container">
+        <Grid columns={1} gap="md" className="meetings-container">
           {meetings.map((meeting) => (
             <Link to={`/dashboard/meetings/${meeting.id}`} key={meeting.id} className="meeting-link">
               <div className="meeting-card">
@@ -220,13 +221,13 @@ const Dashboard = () => {
               </div>
             </Link>
           ))}
-        </div>
-      </div>
+        </Grid>
+      </Container>
 
       {/* Company Vitals Section */}
-      <div className="dashboard-section">
+      <Container className="dashboard-section">
         <h2 className="section-title">Company Vitals</h2>
-        <div className="metrics-grid">
+        <Grid columns={2} mdColumns={2} smColumns={1} gap="md" className="metrics-grid">
           {metrics.map((metric, index) => (
             <div className="metric-card" key={index}>
               <div className="metric-label">{metric.label}</div>
@@ -236,11 +237,11 @@ const Dashboard = () => {
               </div>
             </div>
           ))}
-        </div>
-      </div>
+        </Grid>
+      </Container>
 
       {/* Sales Goal Section */}
-      <div className="dashboard-section">
+      <Container className="dashboard-section">
         <h2 className="section-title">Sales Goal</h2>
         <div className="sales-goal-container">
           <div className="sales-goal-amount">${salesGoal.current.toLocaleString()} / ${salesGoal.target.toLocaleString()}</div>
@@ -249,21 +250,21 @@ const Dashboard = () => {
             <div className="progress-bar" style={{ width: `${salesGoal.progress}%` }}></div>
           </div>
         </div>
-      </div>
+      </Container>
 
       {/* Lead Analytics Section */}
-      <div className="dashboard-section">
+      <Container className="dashboard-section">
         <h2 className="section-title">Lead Analytics</h2>
         <div className="lead-analytics-container">
           {/* Top-Level KPIs */}
-          <div className="lead-stats">
+          <Grid columns={3} mdColumns={3} smColumns={1} gap="md" className="lead-stats">
             {leadStats.map((stat, index) => (
               <div className="lead-stat" key={index}>
                 <div className="lead-stat-value">{stat.value}</div>
                 <div className="lead-stat-label">{stat.label}</div>
               </div>
             ))}
-          </div>
+          </Grid>
 
           {/* Stage Timing Analysis */}
           <div className="stage-timing-section">
@@ -330,21 +331,21 @@ const Dashboard = () => {
             ))}
           </div>
         </div>
-      </div>
+      </Container>
 
       {/* Shortcut Links Section */}
-      <div className="dashboard-section">
+      <Container className="dashboard-section">
         <h2 className="section-title">Quick Actions</h2>
-        <div className="shortcuts-grid">
+        <Grid columns={4} mdColumns={2} smColumns={1} gap="md" className="shortcuts-grid">
           {shortcuts.map((shortcut, index) => (
             <Link to={shortcut.link} key={index} className="shortcut-card">
               <div className="shortcut-icon">{shortcut.icon}</div>
               <h3 className="shortcut-title">{shortcut.title}</h3>
             </Link>
           ))}
-        </div>
-      </div>
-    </div>
+        </Grid>
+      </Container>
+    </Container>
   );
 };
 

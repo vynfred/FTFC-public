@@ -1,0 +1,337 @@
+/* Dashboard.module.css */
+/* Styles for the main dashboard */
+
+.dashboardPage {
+  width: 100%;
+  padding: var(--spacing-md);
+}
+
+/* AI Summary Section */
+.summarySection {
+  margin-bottom: var(--spacing-lg);
+  background-color: var(--color-background-dark);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.aiSummaryWrapper {
+  padding: var(--spacing-md);
+}
+
+.aiSummary {
+  font-size: var(--font-size-md);
+  line-height: 1.6;
+  color: var(--color-text-primary);
+}
+
+/* Dashboard Section */
+.dashboardSection {
+  margin-bottom: var(--spacing-lg);
+  background-color: var(--color-background-dark);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.sectionTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-md) 0;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.subsectionTitle {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+/* Meetings */
+.meetingsContainer {
+  padding: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
+}
+
+.meetingLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.meetingCard {
+  padding: var(--spacing-md);
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--spacing-sm);
+  transition: all var(--transition-default);
+}
+
+.meetingCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.meetingInfo h3 {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.meetingTime {
+  display: flex;
+  align-items: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.meetingType {
+  font-size: var(--font-size-xs);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Metrics */
+.metricsGrid {
+  padding: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
+}
+
+.metricCard {
+  padding: var(--spacing-md);
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.metricLabel {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.metricValue {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.metricChange {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.metricChange.positive {
+  color: var(--color-positive);
+}
+
+.metricChange.negative {
+  color: var(--color-negative);
+}
+
+/* Sales Goal */
+.salesGoalContainer {
+  padding: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
+}
+
+.salesGoalAmount {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.progressText {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.progressBarContainer {
+  height: 8px;
+  background-color: var(--color-background-light);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background-color: var(--color-primary);
+  border-radius: 4px;
+}
+
+/* Lead Analytics */
+.leadAnalyticsContainer {
+  padding: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
+}
+
+.leadStats {
+  margin-bottom: var(--spacing-md);
+}
+
+.leadStat {
+  padding: var(--spacing-md);
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-sm);
+  text-align: center;
+}
+
+.leadStatValue {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.leadStatLabel {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Lead Sources */
+.leadSourceSection,
+.lossAnalysisSection,
+.actionRequiredSection {
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.leadSourceItem,
+.lossAnalysisItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-xs);
+}
+
+.leadSourceName,
+.lossReason {
+  width: 120px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.leadSourceBarContainer,
+.lossBarContainer {
+  flex: 1;
+  height: 8px;
+  background-color: var(--color-background-light);
+  border-radius: 4px;
+  margin: 0 var(--spacing-sm);
+  overflow: hidden;
+}
+
+.leadSourceBar,
+.lossBar {
+  height: 100%;
+  background-color: var(--color-primary);
+  border-radius: 4px;
+}
+
+.leadSourcePercent,
+.lossPercentage {
+  width: 40px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  text-align: right;
+}
+
+/* Action Table */
+.actionTable {
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+}
+
+.actionHeader {
+  display: flex;
+  background-color: var(--color-background-light);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.actionRow {
+  display: flex;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.actionRow:last-child {
+  border-bottom: none;
+}
+
+.actionCell {
+  flex: 1;
+  padding: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+}
+
+.actionHeader .actionCell {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.actionRow .actionCell {
+  color: var(--color-text-secondary);
+}
+
+/* Quick Actions */
+.shortcutsGrid {
+  padding: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
+}
+
+.shortcutCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-sm);
+  text-decoration: none;
+  text-align: center;
+  transition: all var(--transition-default);
+}
+
+.shortcutCard:hover {
+  transform: translateY(-2px);
+  background-color: var(--color-surface-hover);
+}
+
+.shortcutIcon {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.shortcutTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 48rem) { /* 768px */
+  .dashboardPage {
+    padding: var(--spacing-sm);
+  }
+  
+  .sectionTitle {
+    font-size: var(--font-size-md);
+    padding: var(--spacing-sm);
+  }
+  
+  .metricValue,
+  .leadStatValue,
+  .salesGoalAmount {
+    font-size: var(--font-size-lg);
+  }
+  
+  .leadSourceName,
+  .lossReason {
+    width: 80px;
+  }
+}
