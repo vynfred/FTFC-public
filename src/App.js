@@ -32,7 +32,8 @@ import Services from './components/public/Services';
 import Team from './components/public/Team';
 function App() {
   return (
-    <Routes>
+    <ToastProvider position="bottomRight">
+      <Routes>
       {/* Public Routes */}
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
@@ -62,6 +63,7 @@ function App() {
         <Route path="/dashboard/company-settings" element={<CompanySettings />} />
         <Route path="/dashboard/css-examples" element={<CssExamples />} />
         <Route path="/dashboard/form-examples" element={<FormExamples />} />
+        <Route path="/dashboard/components-examples" element={<ComponentsExamples />} />
 
         {/* Blog Management Routes */}
         <Route path="/admin/blog" element={<BlogManage />} />
@@ -72,6 +74,7 @@ function App() {
       {/* 404 Route */}
       <Route path="*" element={<NotFound />} />
     </Routes>
+    </ToastProvider>
   );
 }
 

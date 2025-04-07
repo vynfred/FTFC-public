@@ -1,0 +1,215 @@
+/* Toast.module.css */
+/* Styles for the Toast component */
+
+.toastContainer {
+  position: fixed;
+  bottom: var(--spacing-lg);
+  right: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  z-index: var(--z-index-toast);
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  background-color: var(--color-background-dark);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  padding: var(--spacing-md);
+  min-width: 18rem;
+  max-width: 24rem;
+  pointer-events: auto;
+  transform: translateX(100%);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  border-left: 4px solid var(--color-primary);
+}
+
+.toast.visible {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.toast.exiting {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+/* Toast variants */
+.info {
+  border-left-color: var(--color-info);
+}
+
+.success {
+  border-left-color: var(--color-success);
+}
+
+.warning {
+  border-left-color: var(--color-warning);
+}
+
+.error {
+  border-left-color: var(--color-error);
+}
+
+/* Toast content */
+.icon {
+  margin-right: var(--spacing-sm);
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.info .icon {
+  color: var(--color-info);
+}
+
+.success .icon {
+  color: var(--color-success);
+}
+
+.warning .icon {
+  color: var(--color-warning);
+}
+
+.error .icon {
+  color: var(--color-error);
+}
+
+.content {
+  flex: 1;
+}
+
+.title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.message {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-default);
+  margin-left: var(--spacing-sm);
+}
+
+.closeButton:hover {
+  color: var(--color-text-primary);
+}
+
+/* Progress bar */
+.progressBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.info .progressBar {
+  background-color: var(--color-info);
+}
+
+.success .progressBar {
+  background-color: var(--color-success);
+}
+
+.warning .progressBar {
+  background-color: var(--color-warning);
+}
+
+.error .progressBar {
+  background-color: var(--color-error);
+}
+
+/* Toast positions */
+.topRight {
+  top: var(--spacing-lg);
+  right: var(--spacing-lg);
+  bottom: auto;
+  left: auto;
+}
+
+.topLeft {
+  top: var(--spacing-lg);
+  left: var(--spacing-lg);
+  bottom: auto;
+  right: auto;
+}
+
+.bottomLeft {
+  bottom: var(--spacing-lg);
+  left: var(--spacing-lg);
+  top: auto;
+  right: auto;
+}
+
+.bottomRight {
+  bottom: var(--spacing-lg);
+  right: var(--spacing-lg);
+  top: auto;
+  left: auto;
+}
+
+.topCenter {
+  top: var(--spacing-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: auto;
+  right: auto;
+}
+
+.bottomCenter {
+  bottom: var(--spacing-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  top: auto;
+  right: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 48rem) { /* 768px */
+  .toastContainer {
+    bottom: 0;
+    right: 0;
+    left: 0;
+    padding: var(--spacing-sm);
+  }
+  
+  .toast {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .topRight,
+  .topLeft,
+  .bottomLeft,
+  .bottomRight,
+  .topCenter,
+  .bottomCenter {
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: none;
+  }
+}

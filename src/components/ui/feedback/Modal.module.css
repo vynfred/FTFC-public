@@ -1,0 +1,191 @@
+/* Modal.module.css */
+/* Styles for the Modal component */
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-index-modal);
+  padding: var(--spacing-md);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-default), visibility var(--transition-default);
+}
+
+.modalOverlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modalContainer {
+  background-color: var(--color-background-dark);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 30rem;
+  max-height: calc(100vh - 2rem);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: transform var(--transition-default), opacity var(--transition-default);
+  overflow: hidden;
+}
+
+.modalOverlay.open .modalContainer {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Modal sizes */
+.sm {
+  max-width: 20rem;
+}
+
+.md {
+  max-width: 30rem;
+}
+
+.lg {
+  max-width: 50rem;
+}
+
+.xl {
+  max-width: 70rem;
+}
+
+.full {
+  max-width: 95vw;
+  max-height: 95vh;
+}
+
+/* Modal header */
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modalTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-default);
+}
+
+.closeButton:hover {
+  color: var(--color-text-primary);
+}
+
+/* Modal body */
+.modalBody {
+  padding: var(--spacing-lg);
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Modal footer */
+.modalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+}
+
+/* Modal buttons */
+.modalButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-default);
+}
+
+.primaryButton {
+  background-color: var(--color-primary);
+  color: var(--color-background-dark);
+  border: 1px solid var(--color-primary);
+}
+
+.primaryButton:hover {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.secondaryButton {
+  background-color: transparent;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.secondaryButton:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.dangerButton {
+  background-color: var(--color-error);
+  color: white;
+  border: 1px solid var(--color-error);
+}
+
+.dangerButton:hover {
+  background-color: #dc2626;
+  border-color: #dc2626;
+}
+
+/* Responsive adjustments */
+@media (max-width: 48rem) { /* 768px */
+  .modalContainer {
+    max-width: 100%;
+    max-height: calc(100vh - 1rem);
+  }
+  
+  .modalHeader {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .modalBody {
+    padding: var(--spacing-md);
+  }
+  
+  .modalFooter {
+    padding: var(--spacing-sm) var(--spacing-md);
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+  
+  .modalButton {
+    width: 100%;
+  }
+  
+  .sm, .md, .lg, .xl {
+    max-width: 100%;
+  }
+}
