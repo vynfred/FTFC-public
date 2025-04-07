@@ -13,10 +13,12 @@ import CompanySettings from './components/Dashboard/CompanySettings';
 import Dashboard from './components/Dashboard/Dashboard';
 import DashboardWithModules from './components/Dashboard/DashboardWithModules';
 import InvestorDashboard from './components/Dashboard/InvestorDashboard';
+import InvestorDashboardWithModules from './components/Dashboard/InvestorDashboardWithModules';
 import LeadsDashboard from './components/Dashboard/LeadsDashboard';
 import MarketingDashboard from './components/Dashboard/MarketingDashboard';
 import PartnerDashboard from './components/Dashboard/PartnerDashboard';
 import CssExamples from './components/examples/CssExamples';
+import FormExamples from './components/examples/FormExamples';
 import Layout from './components/layout/Layout';
 import NotFound from './components/NotFound';
 import About from './components/public/About';
@@ -55,9 +57,11 @@ function App() {
         <Route path="/dashboard/clients" element={<ClientsDashboard />} />
         <Route path="/dashboard/marketing" element={<MarketingDashboard />} />
         <Route path="/dashboard/investors" element={<InvestorDashboard />} />
+        <Route path="/dashboard/investors-modules" element={<InvestorDashboardWithModules />} />
         <Route path="/dashboard/partners" element={<PartnerDashboard />} />
         <Route path="/dashboard/company-settings" element={<CompanySettings />} />
         <Route path="/dashboard/css-examples" element={<CssExamples />} />
+        <Route path="/dashboard/form-examples" element={<FormExamples />} />
 
         {/* Blog Management Routes */}
         <Route path="/admin/blog" element={<BlogManage />} />

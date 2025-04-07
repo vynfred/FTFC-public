@@ -1,0 +1,164 @@
+/* Examples.module.css */
+/* Styles for example pages */
+
+.examplesContainer {
+  padding: var(--spacing-lg) 0;
+}
+
+.examplesTitle {
+  font-size: var(--font-size-xxl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.examplesSection {
+  background-color: var(--color-background-dark);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+}
+
+.examplesSectionTitle {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.examplesSubtitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin: var(--spacing-lg) 0 var(--spacing-md) 0;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.examplesDescription {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.exampleForm {
+  max-width: 100%;
+}
+
+.formActions {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+.codeBlock {
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-md);
+  margin: var(--spacing-md) 0;
+  overflow-x: auto;
+}
+
+.codeBlock pre {
+  margin: 0;
+  font-family: monospace;
+  color: var(--color-text-primary);
+}
+
+.colorPalette {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--spacing-md);
+  margin: var(--spacing-md) 0;
+}
+
+.colorSwatch {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+}
+
+.colorBox {
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: var(--font-weight-bold);
+}
+
+.colorInfo {
+  padding: var(--spacing-sm);
+  background-color: var(--color-background-light);
+}
+
+.colorName {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.colorValue {
+  font-family: monospace;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.typographyExample {
+  margin: var(--spacing-md) 0;
+}
+
+.typographyItem {
+  margin-bottom: var(--spacing-md);
+}
+
+.typographyLabel {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-xs);
+  font-family: monospace;
+}
+
+.spacingExample {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin: var(--spacing-md) 0;
+}
+
+.spacingItem {
+  display: flex;
+  align-items: center;
+}
+
+.spacingBox {
+  background-color: var(--color-primary);
+  height: 20px;
+}
+
+.spacingLabel {
+  width: 100px;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-family: monospace;
+}
+
+/* Responsive adjustments */
+@media (max-width: 48rem) { /* 768px */
+  .formActions {
+    flex-direction: column;
+  }
+  
+  .examplesTitle {
+    font-size: var(--font-size-xl);
+  }
+  
+  .examplesSectionTitle {
+    font-size: var(--font-size-lg);
+  }
+  
+  .examplesSubtitle {
+    font-size: var(--font-size-md);
+  }
+}

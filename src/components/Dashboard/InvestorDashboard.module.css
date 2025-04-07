@@ -1,0 +1,298 @@
+/* InvestorDashboard.module.css */
+/* Styles for the investor dashboard */
+
+.summaryText {
+  font-size: var(--font-size-md);
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+/* Stats Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.statCard {
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  text-align: center;
+  transition: transform var(--transition-default);
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+}
+
+.statCard h3 {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-sm) 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.value {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+/* Meetings */
+.meetingsContainer {
+  margin-bottom: var(--spacing-md);
+}
+
+.noDataMessage {
+  padding: var(--spacing-md);
+  text-align: center;
+  color: var(--color-text-secondary);
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius);
+}
+
+/* Data Table */
+.tableContainer {
+  overflow-x: auto;
+  margin-bottom: var(--spacing-md);
+}
+
+.dataTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.dataTable th {
+  background-color: var(--color-background-light);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+  text-align: left;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dataTable td {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.dataTable tbody tr {
+  cursor: pointer;
+  transition: background-color var(--transition-default);
+}
+
+.dataTable tbody tr:hover {
+  background-color: var(--color-background-light);
+}
+
+/* Status Badge */
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 1rem;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+}
+
+.statusActive {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.statusProspective {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.statusInactive {
+  background-color: rgba(156, 163, 175, 0.1);
+  color: #9ca3af;
+}
+
+.statusNew {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+/* Chart */
+.chartContainer {
+  height: 300px;
+  margin-bottom: var(--spacing-md);
+}
+
+.barGraph {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.barItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+  height: 30px;
+}
+
+.barLabel {
+  width: 100px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  flex-shrink: 0;
+}
+
+.barContainer {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.bar {
+  height: 20px;
+  min-width: 30px;
+  border-radius: var(--border-radius-sm);
+}
+
+.barValue {
+  margin-left: var(--spacing-sm);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}
+
+/* Pairing Tool */
+.pairingContainer {
+  margin-bottom: var(--spacing-md);
+}
+
+.pairingContainer p {
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-secondary);
+}
+
+/* Search and Filter */
+.searchFilterContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.statusFilter {
+  padding: 0.5rem;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-background-light);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.actionButtonContainer {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.createButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius-sm);
+  border: none;
+  background-color: var(--color-primary);
+  color: var(--color-background-dark);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-default);
+}
+
+.createButton:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.uploadButton {
+  background-color: var(--color-secondary);
+}
+
+.uploadButton:hover {
+  background-color: var(--color-secondary-hover);
+}
+
+/* Shortcuts */
+.shortcutsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.shortcutCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: transform var(--transition-default), background-color var(--transition-default);
+}
+
+.shortcutCard:hover {
+  transform: translateY(-2px);
+  background-color: var(--color-surface-hover);
+}
+
+.shortcutIcon {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.shortcutTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 48rem) { /* 768px */
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .shortcutsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .dataTable {
+    font-size: var(--font-size-xs);
+  }
+  
+  .dataTable th,
+  .dataTable td {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .actionButtonContainer {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 36rem) { /* 576px */
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .shortcutsGrid {
+    grid-template-columns: 1fr;
+  }
+}
