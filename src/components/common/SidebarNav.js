@@ -71,8 +71,8 @@ const SidebarNav = ({ collapsed, toggleSidebar }) => {
         aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       >
         {collapsed ?
-          <FaChevronRight size={16} /> :
-          <FaChevronLeft size={16} />
+          <FaChevronRight size={14} /> :
+          <FaChevronLeft size={14} />
         }
       </div>
 

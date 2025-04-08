@@ -27,9 +27,9 @@
 .toggle {
   position: absolute;
   top: 20px;
-  right: -24px;
-  width: 48px;
-  height: 48px;
+  right: -20px;
+  width: 40px;
+  height: 40px;
   background-color: var(--color-primary);
   border-radius: 50%;
   display: flex;
@@ -41,7 +41,7 @@
   box-shadow: var(--shadow-toggle);
   transition: background-color var(--transition-default);
   overflow: visible;
-  border: 3px solid var(--color-background-dark);
+  border: 2px solid var(--color-background-dark);
 }
 
 .toggle:hover {
@@ -178,6 +178,6 @@
   }
 
   .toggle {
-    right: -24px;
+    right: -20px;
   }
 }
