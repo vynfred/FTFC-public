@@ -30,6 +30,7 @@ import Home from './components/public/Home';
 import Privacy from './components/public/Privacy';
 import Services from './components/public/Services';
 import Team from './components/public/Team';
+import { ToastProvider } from './context/ToastContext';
 function App() {
   return (
     <ToastProvider position="bottomRight">
