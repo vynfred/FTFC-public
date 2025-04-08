@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { FaChartLine, FaFileAlt } from 'react-icons/fa';
 import { Navigate } from 'react-router-dom';
-import { FaFileAlt, FaChartLine, FaCalendarAlt } from 'react-icons/fa';
-import styles from './Portal.module.css';
-import TeamMemberCard from '../common/TeamMemberCard';
+import { useAuth } from '../../context/AuthContext';
+import GoalSection from '../common/GoalSection';
+import MeetingSection from '../common/MeetingSection';
 import MilestoneList from '../common/MilestoneList';
 import ReferralLink from '../common/ReferralLink';
-import MeetingSection from '../common/MeetingSection';
+import TeamMemberCard from '../common/TeamMemberCard';
+import styles from './Portal.module.css';
 
 const ClientPortal = () => {
   const { user, hasRole, USER_ROLES } = useAuth();
@@ -44,6 +45,24 @@ const ClientPortal = () => {
       time: '10:00 AM EST',
       type: 'video'
     },
+    // Client goals from detail page
+    goals: [
+      {
+        title: 'Secure Series A Funding',
+        description: 'Raise $2.5M in Series A funding to accelerate product development and market expansion.',
+        targetDate: 'Q3 2023'
+      },
+      {
+        title: 'Refine Investor Pitch Deck',
+        description: 'Create a compelling investor presentation that clearly communicates our value proposition and growth potential.',
+        targetDate: 'July 2023'
+      },
+      {
+        title: 'Develop Financial Projections',
+        description: 'Create detailed 3-year financial projections with clear assumptions and growth metrics.',
+        targetDate: 'August 2023'
+      }
+    ],
     // Milestones with completion status
     milestones: [
       {
@@ -142,6 +161,12 @@ const ClientPortal = () => {
               </div>
             </div>
           </div>
+        </div>
+        
+        {/* Goals Section */}
+        <div className={styles.portalSection}>
+          <h2 className={styles.sectionTitle}>Your Goals</h2>
+          <GoalSection goals={clientData.goals} />
         </div>
         
         {/* Milestones Section */}

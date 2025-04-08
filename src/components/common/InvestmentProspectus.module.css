@@ -1,0 +1,181 @@
+.prospectusSection {
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: var(--color-primary);
+}
+
+.prospectusContent {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.preferencesSection {
+  margin-bottom: 24px;
+}
+
+.subsectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: var(--color-text-primary);
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.preferenceGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.preferenceItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.preferenceLabel {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+}
+
+.preferenceValue {
+  font-size: 14px;
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.notesSection {
+  margin-top: 16px;
+}
+
+.notesTitleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.editButton {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.editButton:hover {
+  background-color: rgba(245, 158, 11, 0.1);
+}
+
+.notesContent {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  padding: 16px;
+  min-height: 100px;
+}
+
+.notesContent p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+}
+
+.emptyNotes {
+  color: var(--color-text-secondary) !important;
+  font-style: italic;
+}
+
+.notesEditContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.notesTextarea {
+  width: 100%;
+  padding: 12px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: var(--color-text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+  margin-bottom: 12px;
+}
+
+.notesTextarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.notesActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancelButton,
+.saveButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelButton {
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cancelButton:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.saveButton {
+  background-color: var(--color-primary);
+  color: var(--color-background-dark);
+  border: none;
+}
+
+.saveButton:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.emptyState {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 32px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.emptyIcon {
+  font-size: 32px;
+  color: var(--color-text-secondary);
+  margin-bottom: 16px;
+}
+
+.emptyState p {
+  color: var(--color-text-secondary);
+  margin: 0;
+}
