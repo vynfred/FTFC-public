@@ -5,24 +5,12 @@ import Header from './Header';
 
 const Layout = () => {
   return (
-    <div className="layout">
+    <div className={styles.layout}>
       <Header />
-      <main className="main-content">
+      <main className={styles.mainContent}>
         <Outlet />
       </main>
       <Footer />
-      
-      <style jsx>{`
-        .layout {
-          display: flex;
-          flex-direction: column;
-          min-height: 100vh;
-        }
-        
-        .main-content {
-          flex: 1;
-        }
-      `}</style>
     </div>
   );
 };
