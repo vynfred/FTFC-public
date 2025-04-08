@@ -1,0 +1,148 @@
+/* PrivateTopNav.module.css */
+/* CSS Module for the PrivateTopNav component */
+
+.topNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-md);
+  height: var(--header-height);
+  background-color: var(--color-background-dark);
+  border-bottom: 1px solid var(--color-border);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-index-header);
+}
+
+.logo a {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  margin: 0 var(--spacing-md);
+  flex: 1;
+  max-width: 400px;
+}
+
+.searchIcon {
+  color: var(--color-text-secondary);
+  margin-right: var(--spacing-xs);
+}
+
+.searchBar input {
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  outline: none;
+  width: 100%;
+}
+
+.searchBar input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.navControls {
+  display: flex;
+  align-items: center;
+}
+
+.dateRangeSelector {
+  margin-right: var(--spacing-md);
+}
+
+.dateRangeSelect {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-primary);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  outline: none;
+  cursor: pointer;
+}
+
+.statsToggle {
+  margin-right: var(--spacing-md);
+}
+
+.statsButton {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-primary);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: background-color var(--transition-default);
+}
+
+.statsButton.active {
+  background-color: var(--color-primary);
+  color: var(--color-background-dark);
+}
+
+.statsButton:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.statsButton.active:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.mobileMenuButton {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  cursor: pointer;
+  padding: var(--spacing-xs);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .searchBar {
+    display: none;
+  }
+  
+  .navControls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  
+  .dateRangeSelector,
+  .statsToggle {
+    margin: 0 var(--spacing-xs);
+  }
+  
+  .mobileMenuButton {
+    display: block;
+    margin-right: var(--spacing-sm);
+  }
+}
+
+@media (max-width: 576px) {
+  .topNav {
+    padding: 0 var(--spacing-sm);
+  }
+  
+  .logo a {
+    font-size: var(--font-size-lg);
+  }
+  
+  .dateRangeSelect,
+  .statsButton {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+}

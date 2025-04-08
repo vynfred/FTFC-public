@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import styles from './DashboardWrapper.module.css';
 import PrivateTopNav from './PrivateTopNav';
 import SidebarNav from './SidebarNav';
 

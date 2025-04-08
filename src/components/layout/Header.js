@@ -47,23 +47,18 @@ const Header = () => {
         <nav className={`${styles.mainNav} ${isMenuOpen ? styles.open : ''}`}>
           <ul className={styles.navList}>
             <li className={styles.navItem}>
-              <Link to="/" className={location.pathname === '/' ? styles.active : ''}>
-                Home
-              </Link>
-            </li>
-            <li className={styles.navItem}>
               <Link to="/about" className={location.pathname === '/about' ? styles.active : ''}>
                 About
               </Link>
             </li>
             <li className={styles.navItem}>
-              <Link to="/services" className={location.pathname === '/services' ? styles.active : ''}>
-                Services
+              <Link to="/team" className={location.pathname === '/team' ? styles.active : ''}>
+                Team
               </Link>
             </li>
             <li className={styles.navItem}>
-              <Link to="/blog" className={location.pathname === '/blog' ? styles.active : ''}>
-                Blog
+              <Link to="/services" className={location.pathname === '/services' ? styles.active : ''}>
+                Services
               </Link>
             </li>
             <li className={styles.navItem}>

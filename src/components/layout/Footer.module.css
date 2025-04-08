@@ -136,6 +136,29 @@
   background-color: var(--color-primary-hover);
 }
 
+.loginButtons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.loginButton {
+  display: inline-block;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-primary);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-default);
+  text-align: center;
+}
+
+.loginButton:hover {
+  background-color: var(--color-primary);
+  color: var(--color-background-dark);
+}
+
 .footerBottom {
   padding: var(--spacing-md) 0;
 }

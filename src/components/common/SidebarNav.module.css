@@ -27,9 +27,9 @@
 .toggle {
   position: absolute;
   top: 20px;
-  right: -20px;
-  width: 40px;
-  height: 40px;
+  right: -24px;
+  width: 48px;
+  height: 48px;
   background-color: var(--color-primary);
   border-radius: 50%;
   display: flex;
@@ -172,12 +172,12 @@
   .sidebar {
     transform: translateX(-100%);
   }
-  
+
   .sidebar.mobileOpen {
     transform: translateX(0);
   }
-  
+
   .toggle {
-    right: -40px;
+    right: -24px;
   }
 }

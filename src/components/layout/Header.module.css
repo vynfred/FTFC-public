@@ -24,7 +24,7 @@
 }
 
 .logo a {
-  font-size: var(--font-size-xl);
+  font-size: calc(var(--font-size-xl) * 1.25);
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
   text-decoration: none;
@@ -49,6 +49,7 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  justify-content: flex-end;
 }
 
 .navItem {
@@ -60,14 +61,17 @@
   color: var(--color-text-primary);
   text-decoration: none;
   font-size: var(--font-size-md);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-bold);
   padding: var(--spacing-md) var(--spacing-sm);
   display: block;
 }
 
-.navItem a:hover, .navItem a.active {
+.navItem a:hover {
   color: var(--color-primary);
-  background-color: var(--color-primary-light);
+}
+
+.navItem a.active {
+  color: var(--color-primary);
 }
 
 .headerButtons {

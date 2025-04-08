@@ -1,5 +1,6 @@
 import React from 'react';
-import { FaEnvelope, FaFacebook, FaInstagram, FaLinkedin, FaMapMarkerAlt, FaPhone, FaTwitter } from 'react-icons/fa';
+import { FaEnvelope, FaFacebook, FaInstagram, FaLinkedin, FaPhone } from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
 import { Link } from 'react-router-dom';
 import styles from './Footer.module.css';
 
@@ -20,8 +21,8 @@ const Footer = () => {
                 <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
                   <FaFacebook />
                 </a>
-                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
-                  <FaTwitter />
+                <a href="https://x.com" target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
+                  <FaXTwitter />
                 </a>
                 <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
                   <FaLinkedin />
@@ -36,31 +37,16 @@ const Footer = () => {
               <h3 className={styles.footerHeading}>Quick Links</h3>
               <ul className={styles.footerLinks}>
                 <li><Link to="/">Home</Link></li>
-                <li><Link to="/about">About Us</Link></li>
+                <li><Link to="/about">About</Link></li>
+                <li><Link to="/team">Team</Link></li>
                 <li><Link to="/services">Services</Link></li>
-                <li><Link to="/blog">Blog</Link></li>
                 <li><Link to="/contact">Contact</Link></li>
-              </ul>
-            </div>
-
-            <div className={styles.footerColumn}>
-              <h3 className={styles.footerHeading}>Services</h3>
-              <ul className={styles.footerLinks}>
-                <li><Link to="/services#startup-funding">Startup Funding</Link></li>
-                <li><Link to="/services#business-loans">Business Loans</Link></li>
-                <li><Link to="/services#venture-capital">Venture Capital</Link></li>
-                <li><Link to="/services#financial-consulting">Financial Consulting</Link></li>
-                <li><Link to="/services#investment-strategies">Investment Strategies</Link></li>
               </ul>
             </div>
 
             <div className={styles.footerColumn}>
               <h3 className={styles.footerHeading}>Contact Us</h3>
               <ul className={styles.contactInfo}>
-                <li>
-                  <FaMapMarkerAlt className={styles.contactIcon} />
-                  <span>123 Finance Street, San Francisco, CA 94105</span>
-                </li>
                 <li>
                   <FaPhone className={styles.contactIcon} />
                   <span>+1 (555) 123-4567</span>
@@ -73,6 +59,21 @@ const Footer = () => {
               <Link to="/consultation" className={styles.consultationButton}>
                 Free Consultation
               </Link>
+            </div>
+
+            <div className={styles.footerColumn}>
+              <h3 className={styles.footerHeading}>Login</h3>
+              <div className={styles.loginButtons}>
+                <Link to="/client-login" className={styles.loginButton}>
+                  Client Login
+                </Link>
+                <Link to="/investor-login" className={styles.loginButton}>
+                  Investor Login
+                </Link>
+                <Link to="/partner-login" className={styles.loginButton}>
+                  Partner Login
+                </Link>
+              </div>
             </div>
           </div>
         </div>
