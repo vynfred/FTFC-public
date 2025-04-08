@@ -60,6 +60,14 @@ const CompanySettings = () => {
               <FaUsers className="tab-icon" />
               <span>Team</span>
             </button>
+
+            <button
+              className={`tab-button ${activeTab === 'public-pages' ? 'active' : ''}`}
+              onClick={() => setActiveTab('public-pages')}
+            >
+              <FaFileAlt className="tab-icon" />
+              <span>Public Pages</span>
+            </button>
           </div>
 
           <div className="settings-content">
@@ -171,6 +179,10 @@ const CompanySettings = () => {
                   Add Team Member
                 </button>
               </div>
+            )}
+
+            {activeTab === 'public-pages' && (
+              <PublicPagesManager />
             )}
           </div>
         </div>

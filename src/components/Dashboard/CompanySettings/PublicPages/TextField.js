@@ -1,0 +1,80 @@
+import React from 'react';
+
+/**
+ * TextField component for text input in the public pages editor
+ */
+const TextField = ({ name, label, value, onChange, multiline = false, placeholder = '', required = false }) => {
+  return (
+    <div className="text-field">
+      <label htmlFor={name} className="field-label">
+        {label}
+        {required && <span className="required-mark">*</span>}
+      </label>
+      
+      {multiline ? (
+        <textarea
+          id={name}
+          name={name}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          rows={4}
+          className="text-input multiline"
+          required={required}
+        />
+      ) : (
+        <input
+          type="text"
+          id={name}
+          name={name}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          className="text-input"
+          required={required}
+        />
+      )}
+      
+      <style jsx>{`
+        .text-field {
+          width: 100%;
+        }
+        
+        .field-label {
+          display: block;
+          margin-bottom: 8px;
+          font-size: 14px;
+          color: #94a3b8;
+        }
+        
+        .required-mark {
+          color: #ef4444;
+          margin-left: 4px;
+        }
+        
+        .text-input {
+          width: 100%;
+          padding: 10px 12px;
+          background-color: rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 4px;
+          color: #ffffff;
+          font-size: 14px;
+          transition: border-color 0.2s ease;
+        }
+        
+        .text-input:focus {
+          outline: none;
+          border-color: #f59e0b;
+        }
+        
+        .multiline {
+          min-height: 100px;
+          resize: vertical;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default TextField;
