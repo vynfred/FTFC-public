@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaGlobe, FaHome, FaInfoCircle, FaHandshake, FaEnvelope, FaUsers, FaFileAlt, FaShieldAlt } from 'react-icons/fa';
+import { FaEnvelope, FaFileAlt, FaGlobe, FaHandshake, FaHome, FaInfoCircle, FaShieldAlt, FaUsers } from 'react-icons/fa';
 
 /**
  * PublicPagesManager component for managing public page content
@@ -12,7 +12,7 @@ const PublicPagesManager = () => {
       <div className="manager-header">
         <h3>Public Pages Content Management</h3>
       </div>
-      
+
       <div className="manager-content">
         <div className="page-tabs">
           <button
@@ -22,7 +22,7 @@ const PublicPagesManager = () => {
             <FaHome className="tab-icon" />
             <span>Home</span>
           </button>
-          
+
           <button
             className={`tab-button ${activeTab === 'about' ? 'active' : ''}`}
             onClick={() => setActiveTab('about')}
@@ -30,7 +30,7 @@ const PublicPagesManager = () => {
             <FaInfoCircle className="tab-icon" />
             <span>About</span>
           </button>
-          
+
           <button
             className={`tab-button ${activeTab === 'services' ? 'active' : ''}`}
             onClick={() => setActiveTab('services')}
@@ -38,7 +38,7 @@ const PublicPagesManager = () => {
             <FaHandshake className="tab-icon" />
             <span>Services</span>
           </button>
-          
+
           <button
             className={`tab-button ${activeTab === 'contact' ? 'active' : ''}`}
             onClick={() => setActiveTab('contact')}
@@ -46,7 +46,7 @@ const PublicPagesManager = () => {
             <FaEnvelope className="tab-icon" />
             <span>Contact</span>
           </button>
-          
+
           <button
             className={`tab-button ${activeTab === 'consultation' ? 'active' : ''}`}
             onClick={() => setActiveTab('consultation')}
@@ -54,7 +54,7 @@ const PublicPagesManager = () => {
             <FaGlobe className="tab-icon" />
             <span>Consultation</span>
           </button>
-          
+
           <button
             className={`tab-button ${activeTab === 'team' ? 'active' : ''}`}
             onClick={() => setActiveTab('team')}
@@ -62,7 +62,15 @@ const PublicPagesManager = () => {
             <FaUsers className="tab-icon" />
             <span>Team</span>
           </button>
-          
+
+          <button
+            className={`tab-button ${activeTab === 'careers' ? 'active' : ''}`}
+            onClick={() => setActiveTab('careers')}
+          >
+            <FaBriefcase className="tab-icon" />
+            <span>Careers</span>
+          </button>
+
           <button
             className={`tab-button ${activeTab === 'terms' ? 'active' : ''}`}
             onClick={() => setActiveTab('terms')}
@@ -70,7 +78,7 @@ const PublicPagesManager = () => {
             <FaFileAlt className="tab-icon" />
             <span>Terms</span>
           </button>
-          
+
           <button
             className={`tab-button ${activeTab === 'privacy' ? 'active' : ''}`}
             onClick={() => setActiveTab('privacy')}
@@ -79,7 +87,7 @@ const PublicPagesManager = () => {
             <span>Privacy</span>
           </button>
         </div>
-        
+
         <div className="page-content">
           <div className="content-placeholder">
             <h3>Content Management Coming Soon</h3>
@@ -92,7 +100,7 @@ const PublicPagesManager = () => {
         .public-pages-manager {
           width: 100%;
         }
-        
+
         .manager-header {
           display: flex;
           justify-content: space-between;
@@ -101,26 +109,26 @@ const PublicPagesManager = () => {
           padding-bottom: 16px;
           border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .manager-header h3 {
           font-size: 18px;
           font-weight: 600;
           color: #ffffff;
           margin: 0;
         }
-        
+
         .manager-content {
           display: flex;
           gap: 24px;
         }
-        
+
         .page-tabs {
           width: 200px;
           display: flex;
           flex-direction: column;
           gap: 8px;
         }
-        
+
         .tab-button {
           display: flex;
           align-items: center;
@@ -135,22 +143,22 @@ const PublicPagesManager = () => {
           cursor: pointer;
           transition: all 0.2s ease;
         }
-        
+
         .tab-button:hover {
           background-color: rgba(255, 255, 255, 0.05);
           color: #ffffff;
         }
-        
+
         .tab-button.active {
           background-color: rgba(245, 158, 11, 0.1);
           color: #f59e0b;
         }
-        
+
         .tab-icon {
           margin-right: 12px;
           font-size: 16px;
         }
-        
+
         .page-content {
           flex: 1;
           background-color: rgba(255, 255, 255, 0.05);
@@ -159,7 +167,7 @@ const PublicPagesManager = () => {
           max-height: 700px;
           overflow-y: auto;
         }
-        
+
         .content-placeholder {
           display: flex;
           flex-direction: column;
@@ -168,14 +176,14 @@ const PublicPagesManager = () => {
           padding: 48px;
           text-align: center;
         }
-        
+
         .content-placeholder h3 {
           font-size: 18px;
           font-weight: 600;
           color: #f59e0b;
           margin-bottom: 16px;
         }
-        
+
         .content-placeholder p {
           color: #94a3b8;
           font-size: 14px;
