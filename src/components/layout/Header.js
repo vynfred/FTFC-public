@@ -33,8 +33,8 @@ const Header = () => {
   }, [location]);
 
   return (
-    <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''}`}>
-      <div className={styles.container}>
+    <header className={`${styles.siteHeader} ${isScrolled ? styles.scrolled : ''}`}>
+      <div className={styles.headerContainer}>
         <div className={styles.logo}>
           <Link to="/">FTFC</Link>
         </div>

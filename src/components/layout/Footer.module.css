@@ -1,87 +1,82 @@
 /* Footer.module.css */
-/* Styles for the site footer */
-
 .footer {
   background-color: var(--color-background-dark);
-  color: var(--color-text-primary);
+  color: var(--color-text-light);
+  padding: 3rem 2rem 1.5rem;
 }
 
-.footerTop {
-  padding: var(--spacing-xl) 0 var(--spacing-lg);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.container {
+.footerContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 2rem;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 var(--spacing-md);
+  padding-bottom: 2rem;
 }
 
-.footerGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--spacing-lg);
+/* Company Info Section */
+.companyInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-.footerColumn {
-  /* Column styles */
-}
-
-.footerLogo {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
+.companyName {
   color: var(--color-primary);
-  margin-bottom: var(--spacing-md);
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
 }
 
-.footerDescription {
-  color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-md);
-  line-height: 1.6;
+.companyTagline {
+  color: var(--color-primary);
+  margin: 0.25rem 0 1.5rem;
+  font-size: 1rem;
 }
 
-.socialLinks {
+.socialIcons {
   display: flex;
-  gap: var(--spacing-md);
+  gap: 1rem;
+  margin-top: 0.5rem;
 }
 
-.socialLink {
+.socialIcon {
+  color: var(--color-text-light);
+  font-size: 1.25rem;
+  transition: color 0.2s ease;
+}
+
+.socialIcon:hover {
+  color: var(--color-primary);
+}
+
+/* Footer Sections */
+.footerSection {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  color: var(--color-text-primary);
-  font-size: var(--font-size-md);
-  transition: all var(--transition-default);
+  flex-direction: column;
 }
 
-.socialLink:hover {
-  background-color: var(--color-primary);
-  color: var(--color-background-dark);
-}
-
-.footerHeading {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin-bottom: var(--spacing-md);
+.sectionTitle {
+  color: var(--color-primary);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
   position: relative;
-  padding-bottom: var(--spacing-sm);
+  padding-bottom: 0.5rem;
 }
 
-.footerHeading::after {
+.sectionTitle::after {
   content: '';
   position: absolute;
-  bottom: 0;
   left: 0;
-  width: 40px;
+  bottom: 0;
+  width: 2rem;
   height: 2px;
   background-color: var(--color-primary);
 }
 
+/* Footer Links */
 .footerLinks {
   list-style: none;
   padding: 0;
@@ -89,111 +84,103 @@
 }
 
 .footerLinks li {
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: 0.75rem;
 }
 
 .footerLinks a {
-  color: var(--color-text-secondary);
+  color: var(--color-text-light);
   text-decoration: none;
-  transition: color var(--transition-default);
+  transition: color 0.2s ease;
 }
 
 .footerLinks a:hover {
   color: var(--color-primary);
 }
 
-.contactInfo {
+/* Contact List */
+.contactList {
   list-style: none;
   padding: 0;
-  margin: 0 0 var(--spacing-md) 0;
+  margin: 0;
 }
 
-.contactInfo li {
+.contactItem {
   display: flex;
-  align-items: flex-start;
-  margin-bottom: var(--spacing-md);
-  color: var(--color-text-secondary);
+  align-items: center;
+  margin-bottom: 0.75rem;
 }
 
 .contactIcon {
-  margin-right: var(--spacing-sm);
-  margin-top: 4px;
+  margin-right: 0.5rem;
   color: var(--color-primary);
 }
 
-.consultationButton {
-  display: inline-block;
-  background-color: var(--color-primary);
-  color: var(--color-background-dark);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--border-radius-sm);
+.contactItem a {
+  color: var(--color-text-light);
   text-decoration: none;
-  font-weight: var(--font-weight-semibold);
-  transition: background-color var(--transition-default);
+  transition: color 0.2s ease;
 }
 
-.consultationButton:hover {
-  background-color: var(--color-primary-hover);
+.contactItem a:hover {
+  color: var(--color-primary);
 }
 
-.loginButtons {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-}
-
-.loginButton {
-  display: inline-block;
-  background-color: rgba(255, 255, 255, 0.1);
-  color: var(--color-text-primary);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--border-radius-sm);
-  text-decoration: none;
-  font-weight: var(--font-weight-medium);
-  transition: all var(--transition-default);
-  text-align: center;
-}
-
-.loginButton:hover {
-  background-color: var(--color-primary);
-  color: var(--color-background-dark);
-}
-
+/* Footer Bottom */
 .footerBottom {
-  padding: var(--spacing-md) 0;
-}
-
-.footerBottom .container {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .copyright {
-  color: var(--color-text-secondary);
   margin: 0;
+  font-size: 0.875rem;
 }
 
 .legalLinks {
   display: flex;
-  gap: var(--spacing-md);
+  align-items: center;
 }
 
 .legalLinks a {
-  color: var(--color-text-secondary);
+  color: var(--color-text-light);
   text-decoration: none;
-  transition: color var(--transition-default);
+  font-size: 0.875rem;
+  transition: color 0.2s ease;
 }
 
 .legalLinks a:hover {
   color: var(--color-primary);
 }
 
-/* Responsive styles */
-@media (max-width: 48rem) { /* 768px */
-  .footerBottom .container {
+.divider {
+  margin: 0 0.5rem;
+  color: var(--color-text-light);
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .footerContent {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem 3rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .footerContent {
+    grid-template-columns: 1fr;
+  }
+  
+  .footerBottom {
     flex-direction: column;
-    gap: var(--spacing-md);
     text-align: center;
+  }
+  
+  .copyright {
+    margin-bottom: 1rem;
   }
 }
