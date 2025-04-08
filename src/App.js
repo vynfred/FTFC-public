@@ -17,6 +17,7 @@ import InvestorDashboardWithModules from './components/Dashboard/InvestorDashboa
 import LeadsDashboard from './components/Dashboard/LeadsDashboard';
 import MarketingDashboard from './components/Dashboard/MarketingDashboard';
 import PartnerDashboard from './components/Dashboard/PartnerDashboard';
+import ComponentsExamples from './components/examples/ComponentsExamples';
 import CssExamples from './components/examples/CssExamples';
 import FormExamples from './components/examples/FormExamples';
 import Layout from './components/layout/Layout';
