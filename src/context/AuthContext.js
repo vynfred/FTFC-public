@@ -50,20 +50,30 @@ export const AuthProvider = ({ children }) => {
     // For demo purposes, we'll simulate different users based on role or email
     let userData;
 
-    // For testing purposes, allow specific email addresses to map to roles
-    if (credentials.email === 'team@ftfc.com' || credentials.email.includes('admin') || credentials.email.includes('john')) {
-      role = USER_ROLES.TEAM;
-    } else if (credentials.email === 'client@ftfc.com' || credentials.email.includes('client')) {
-      role = USER_ROLES.CLIENT;
-    } else if (credentials.email === 'investor@ftfc.com' || credentials.email.includes('investor')) {
-      role = USER_ROLES.INVESTOR;
-    } else if (credentials.email === 'partner@ftfc.com' || credentials.email.includes('partner')) {
-      role = USER_ROLES.PARTNER;
-    }
+    // Special case for the test credentials
+    const isTestCredentials = credentials.email === 'hellovynfred@gmail.com' && credentials.password === 'Test123';
 
-    // If no role is specified or detected, default to TEAM for testing
-    if (!role) {
-      role = USER_ROLES.TEAM;
+    // If using test credentials, use the provided role or default to TEAM
+    if (isTestCredentials) {
+      console.log('Using test credentials with role:', role || USER_ROLES.TEAM);
+      // Continue with the provided role or default to TEAM
+      role = role || USER_ROLES.TEAM;
+    } else {
+      // For testing purposes, allow specific email addresses to map to roles
+      if (credentials.email === 'team@ftfc.com' || credentials.email.includes('admin') || credentials.email.includes('john')) {
+        role = USER_ROLES.TEAM;
+      } else if (credentials.email === 'client@ftfc.com' || credentials.email.includes('client')) {
+        role = USER_ROLES.CLIENT;
+      } else if (credentials.email === 'investor@ftfc.com' || credentials.email.includes('investor')) {
+        role = USER_ROLES.INVESTOR;
+      } else if (credentials.email === 'partner@ftfc.com' || credentials.email.includes('partner')) {
+        role = USER_ROLES.PARTNER;
+      }
+
+      // If no role is specified or detected, default to TEAM for testing
+      if (!role) {
+        role = USER_ROLES.TEAM;
+      }
     }
 
     switch (role) {
