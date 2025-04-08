@@ -136,12 +136,24 @@
   height: 36px;
   background-color: var(--color-primary);
   color: var(--color-background-dark);
-  border-radius: 50%;
+  border-radius: 4px; /* Square with slightly rounded corners */
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: var(--font-weight-bold);
   margin-right: 12px;
+  overflow: hidden; /* For the profile image */
+}
+
+.profileImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.initials {
+  font-size: 18px;
+  font-weight: var(--font-weight-bold);
 }
 
 .collapsed .avatar {

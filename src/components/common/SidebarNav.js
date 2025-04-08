@@ -13,7 +13,8 @@ const SidebarNav = ({ collapsed, toggleSidebar }) => {
   const userInfo = {
     name: 'John Doe',
     role: 'Admin',
-    initials: 'JD'
+    initials: 'J', // Just the first letter of the first name
+    profileImage: null // In a real app, this would be the URL to the user's profile image
   };
 
   // Format the current date for "Last Updated"
@@ -99,7 +100,17 @@ const SidebarNav = ({ collapsed, toggleSidebar }) => {
       {/* User Profile */}
       <div className={styles.footer}>
         <Link to="/dashboard/profile" className={styles.user}>
-          <div className={styles.avatar}>{userInfo.initials}</div>
+          <div className={styles.avatar}>
+            {userInfo.profileImage ? (
+              <img
+                src={userInfo.profileImage}
+                alt={userInfo.name}
+                className={styles.profileImage}
+              />
+            ) : (
+              <span className={styles.initials}>{userInfo.initials}</span>
+            )}
+          </div>
           {!collapsed && (
             <div className={styles.userInfo}>
               <div className={styles.userName}>{userInfo.name}</div>
