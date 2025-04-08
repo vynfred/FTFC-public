@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { FaGlobe, FaHome, FaInfoCircle, FaHandshake, FaEnvelope, FaUsers, FaFileAlt, FaShieldAlt, FaEye, FaSave } from 'react-icons/fa';
-import HomeContent from './HomeContent';
+import React, { useEffect, useState } from 'react';
+import { FaEnvelope, FaEye, FaFileAlt, FaGlobe, FaHandshake, FaHome, FaInfoCircle, FaSave, FaShieldAlt, FaUsers } from 'react-icons/fa';
 import AboutContent from './AboutContent';
-import ServicesContent from './ServicesContent';
-import ContactContent from './ContactContent';
 import ConsultationContent from './ConsultationContent';
+import ContactContent from './ContactContent';
+import HomeContent from './HomeContent';
+import PrivacyContent from './PrivacyContent';
+import './PublicPagesManager.css';
+import ServicesContent from './ServicesContent';
 import TeamContent from './TeamContent';
 import TermsContent from './TermsContent';
-import PrivacyContent from './PrivacyContent';
 
 /**
  * PublicPagesManager component for managing public page content
@@ -27,13 +28,13 @@ const PublicPagesManager = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [previewUrl, setPreviewUrl] = useState('');
-  
+
   // Load page data
   useEffect(() => {
     const loadPageData = async () => {
       try {
         setIsLoading(true);
-        
+
         // In a real app, this would fetch from an API
         // For now, we'll use mock data
         const mockData = {
@@ -88,18 +89,18 @@ const PublicPagesManager = () => {
               {
                 title: 'Funding Solutions',
                 services: [
-                  { 
-                    title: 'Startup Funding', 
+                  {
+                    title: 'Startup Funding',
                     description: 'Seed capital and early-stage funding to get your business off the ground.',
                     icon: null
                   },
-                  { 
-                    title: 'Growth Capital', 
+                  {
+                    title: 'Growth Capital',
                     description: 'Funding to scale your operations and expand your market reach.',
                     icon: null
                   },
-                  { 
-                    title: 'Acquisition Financing', 
+                  {
+                    title: 'Acquisition Financing',
                     description: 'Capital to support strategic acquisitions and business expansion.',
                     icon: null
                   }
@@ -108,18 +109,18 @@ const PublicPagesManager = () => {
               {
                 title: 'Financial Advisory',
                 services: [
-                  { 
-                    title: 'Financial Planning', 
+                  {
+                    title: 'Financial Planning',
                     description: 'Strategic planning to optimize your financial resources and operations.',
                     icon: null
                   },
-                  { 
-                    title: 'Investment Strategy', 
+                  {
+                    title: 'Investment Strategy',
                     description: 'Expert guidance on investment opportunities and portfolio management.',
                     icon: null
                   },
-                  { 
-                    title: 'Risk Management', 
+                  {
+                    title: 'Risk Management',
                     description: 'Strategies to identify, assess, and mitigate financial risks.',
                     icon: null
                   }
@@ -234,7 +235,7 @@ const PublicPagesManager = () => {
             ]
           }
         };
-        
+
         setPageData(mockData);
         setIsLoading(false);
       } catch (error) {
@@ -242,10 +243,10 @@ const PublicPagesManager = () => {
         setIsLoading(false);
       }
     };
-    
+
     loadPageData();
   }, []);
-  
+
   // Handle field change
   const handleFieldChange = (page, field, value) => {
     setPageData(prevData => ({
@@ -256,12 +257,12 @@ const PublicPagesManager = () => {
       }
     }));
   };
-  
+
   // Handle array field change
   const handleArrayFieldChange = (page, field, index, subfield, value) => {
     setPageData(prevData => {
       const newArray = [...prevData[page][field]];
-      
+
       if (subfield) {
         newArray[index] = {
           ...newArray[index],
@@ -270,7 +271,7 @@ const PublicPagesManager = () => {
       } else {
         newArray[index] = value;
       }
-      
+
       return {
         ...prevData,
         [page]: {
@@ -280,7 +281,7 @@ const PublicPagesManager = () => {
       };
     });
   };
-  
+
   // Handle adding array item
   const handleAddArrayItem = (page, field, template = {}) => {
     setPageData(prevData => ({
@@ -291,13 +292,13 @@ const PublicPagesManager = () => {
       }
     }));
   };
-  
+
   // Handle removing array item
   const handleRemoveArrayItem = (page, field, index) => {
     setPageData(prevData => {
       const newArray = [...prevData[page][field]];
       newArray.splice(index, 1);
-      
+
       return {
         ...prevData,
         [page]: {
@@ -307,18 +308,18 @@ const PublicPagesManager = () => {
       };
     });
   };
-  
+
   // Handle save
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      
+
       // In a real app, this would save to an API
       console.log('Saving page data:', pageData);
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       alert('Page content saved successfully!');
       setIsSaving(false);
     } catch (error) {
@@ -327,7 +328,7 @@ const PublicPagesManager = () => {
       setIsSaving(false);
     }
   };
-  
+
   // Handle preview
   const handlePreview = () => {
     const pageUrls = {
@@ -340,12 +341,12 @@ const PublicPagesManager = () => {
       terms: '/terms',
       privacy: '/privacy'
     };
-    
+
     const url = pageUrls[activeTab] || '/';
     setPreviewUrl(url);
     window.open(url, '_blank');
   };
-  
+
   // Render active tab content
   const renderTabContent = () => {
     if (isLoading) {
@@ -356,16 +357,16 @@ const PublicPagesManager = () => {
         </div>
       );
     }
-    
+
     const commonProps = {
       data: pageData[activeTab],
       onFieldChange: (field, value) => handleFieldChange(activeTab, field, value),
-      onArrayFieldChange: (field, index, subfield, value) => 
+      onArrayFieldChange: (field, index, subfield, value) =>
         handleArrayFieldChange(activeTab, field, index, subfield, value),
       onAddArrayItem: (field, template) => handleAddArrayItem(activeTab, field, template),
       onRemoveArrayItem: (field, index) => handleRemoveArrayItem(activeTab, field, index)
     };
-    
+
     switch (activeTab) {
       case 'home':
         return <HomeContent {...commonProps} />;
@@ -387,14 +388,14 @@ const PublicPagesManager = () => {
         return <div>Select a page to edit</div>;
     }
   };
-  
+
   return (
     <div className="public-pages-manager">
       <div className="manager-header">
         <h3>Public Pages Content Management</h3>
         <div className="header-actions">
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="preview-button"
             onClick={handlePreview}
             disabled={isLoading}
@@ -402,8 +403,8 @@ const PublicPagesManager = () => {
             <FaEye className="button-icon" />
             Preview
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="save-button"
             onClick={handleSave}
             disabled={isLoading || isSaving}
@@ -413,7 +414,7 @@ const PublicPagesManager = () => {
           </button>
         </div>
       </div>
-      
+
       <div className="manager-content">
         <div className="page-tabs">
           <button
@@ -423,7 +424,7 @@ const PublicPagesManager = () => {
             <FaHome className="tab-icon" />
             <span>Home</span>
           </button>
-          
+
           <button
             className={`tab-button ${activeTab === 'about' ? 'active' : ''}`}
             onClick={() => setActiveTab('about')}
@@ -431,7 +432,7 @@ const PublicPagesManager = () => {
             <FaInfoCircle className="tab-icon" />
             <span>About</span>
           </button>
-          
+
           <button
             className={`tab-button ${activeTab === 'services' ? 'active' : ''}`}
             onClick={() => setActiveTab('services')}
@@ -439,7 +440,7 @@ const PublicPagesManager = () => {
             <FaHandshake className="tab-icon" />
             <span>Services</span>
           </button>
-          
+
           <button
             className={`tab-button ${activeTab === 'contact' ? 'active' : ''}`}
             onClick={() => setActiveTab('contact')}
@@ -447,7 +448,7 @@ const PublicPagesManager = () => {
             <FaEnvelope className="tab-icon" />
             <span>Contact</span>
           </button>
-          
+
           <button
             className={`tab-button ${activeTab === 'consultation' ? 'active' : ''}`}
             onClick={() => setActiveTab('consultation')}
@@ -455,7 +456,7 @@ const PublicPagesManager = () => {
             <FaGlobe className="tab-icon" />
             <span>Consultation</span>
           </button>
-          
+
           <button
             className={`tab-button ${activeTab === 'team' ? 'active' : ''}`}
             onClick={() => setActiveTab('team')}
@@ -463,7 +464,7 @@ const PublicPagesManager = () => {
             <FaUsers className="tab-icon" />
             <span>Team</span>
           </button>
-          
+
           <button
             className={`tab-button ${activeTab === 'terms' ? 'active' : ''}`}
             onClick={() => setActiveTab('terms')}
@@ -471,7 +472,7 @@ const PublicPagesManager = () => {
             <FaFileAlt className="tab-icon" />
             <span>Terms</span>
           </button>
-          
+
           <button
             className={`tab-button ${activeTab === 'privacy' ? 'active' : ''}`}
             onClick={() => setActiveTab('privacy')}
@@ -480,147 +481,13 @@ const PublicPagesManager = () => {
             <span>Privacy</span>
           </button>
         </div>
-        
+
         <div className="page-content">
           {renderTabContent()}
         </div>
       </div>
-      
-      <style jsx>{`
-        .public-pages-manager {
-          width: 100%;
-        }
-        
-        .manager-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 24px;
-          padding-bottom: 16px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .manager-header h3 {
-          font-size: 18px;
-          font-weight: 600;
-          color: #ffffff;
-          margin: 0;
-        }
-        
-        .header-actions {
-          display: flex;
-          gap: 12px;
-        }
-        
-        .preview-button, .save-button {
-          display: flex;
-          align-items: center;
-          padding: 8px 16px;
-          border-radius: 4px;
-          font-size: 14px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-        
-        .preview-button {
-          background-color: rgba(255, 255, 255, 0.1);
-          color: #ffffff;
-          border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .preview-button:hover {
-          background-color: rgba(255, 255, 255, 0.2);
-        }
-        
-        .save-button {
-          background-color: #f59e0b;
-          color: #0f172a;
-          border: none;
-        }
-        
-        .save-button:hover {
-          background-color: #d97706;
-        }
-        
-        .button-icon {
-          margin-right: 8px;
-        }
-        
-        .manager-content {
-          display: flex;
-          gap: 24px;
-        }
-        
-        .page-tabs {
-          width: 200px;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-        
-        .tab-button {
-          display: flex;
-          align-items: center;
-          width: 100%;
-          padding: 12px 16px;
-          background: none;
-          border: none;
-          border-radius: 4px;
-          color: #94a3b8;
-          font-size: 14px;
-          text-align: left;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-        
-        .tab-button:hover {
-          background-color: rgba(255, 255, 255, 0.05);
-          color: #ffffff;
-        }
-        
-        .tab-button.active {
-          background-color: rgba(245, 158, 11, 0.1);
-          color: #f59e0b;
-        }
-        
-        .tab-icon {
-          margin-right: 12px;
-          font-size: 16px;
-        }
-        
-        .page-content {
-          flex: 1;
-          background-color: rgba(255, 255, 255, 0.05);
-          border-radius: 8px;
-          padding: 24px;
-          max-height: 700px;
-          overflow-y: auto;
-        }
-        
-        .loading-state {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 48px;
-        }
-        
-        .spinner {
-          width: 40px;
-          height: 40px;
-          border: 4px solid rgba(245, 158, 11, 0.1);
-          border-radius: 50%;
-          border-top: 4px solid #f59e0b;
-          animation: spin 1s linear infinite;
-          margin-bottom: 16px;
-        }
-        
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
+
+
     </div>
   );
 };

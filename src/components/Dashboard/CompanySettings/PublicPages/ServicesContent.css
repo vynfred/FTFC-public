@@ -1,0 +1,58 @@
+.services-list {
+  margin-top: 16px;
+  padding: 16px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+}
+
+.services-list h5 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.service-item {
+  margin-bottom: 16px;
+  padding: 16px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.add-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border: 1px dashed #f59e0b;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.add-button:hover {
+  background-color: rgba(245, 158, 11, 0.2);
+}
+
+.remove-button {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+
+.remove-button:hover {
+  background-color: rgba(239, 68, 68, 0.2);
+}
