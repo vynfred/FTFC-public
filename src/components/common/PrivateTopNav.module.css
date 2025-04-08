@@ -74,23 +74,33 @@
   margin-right: var(--spacing-md);
 }
 
+.toggleButtons {
+  display: flex;
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .statsButton {
   background-color: rgba(255, 255, 255, 0.1);
   color: var(--color-text-primary);
   border: none;
-  border-radius: var(--border-radius-sm);
   padding: var(--spacing-xs) var(--spacing-sm);
   font-size: var(--font-size-sm);
   cursor: pointer;
-  transition: background-color var(--transition-default);
+  transition: all var(--transition-default);
+  border-radius: 0;
+  min-width: 80px;
+  text-align: center;
 }
 
 .statsButton.active {
   background-color: var(--color-primary);
   color: var(--color-background-dark);
+  font-weight: var(--font-weight-bold);
 }
 
-.statsButton:hover {
+.statsButton:hover:not(.active) {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
@@ -113,18 +123,18 @@
   .searchBar {
     display: none;
   }
-  
+
   .navControls {
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
   }
-  
+
   .dateRangeSelector,
   .statsToggle {
     margin: 0 var(--spacing-xs);
   }
-  
+
   .mobileMenuButton {
     display: block;
     margin-right: var(--spacing-sm);
@@ -135,14 +145,19 @@
   .topNav {
     padding: 0 var(--spacing-sm);
   }
-  
+
   .logo a {
     font-size: var(--font-size-lg);
   }
-  
-  .dateRangeSelect,
-  .statsButton {
+
+  .dateRangeSelect {
     font-size: var(--font-size-xs);
     padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .statsButton {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-xs) var(--spacing-xs);
+    min-width: 60px;
   }
 }

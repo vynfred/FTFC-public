@@ -24,7 +24,7 @@ const LeadsDashboard = ({ dateRange = '7d' }) => {
   const [filteredLeads, setFilteredLeads] = useState([]);
   const [showUploader, setShowUploader] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
-  const { showMyStats } = useStatsView();
+  const { viewCompanyStats } = useStatsView();
 
   // Example leads data
   const [allLeads, setAllLeads] = useState([
@@ -57,7 +57,7 @@ const LeadsDashboard = ({ dateRange = '7d' }) => {
 
   // Get leads for stats based on filter
   const getLeadsForStats = () => {
-    return showMyStats
+    return !viewCompanyStats
       ? allLeads.filter(lead => lead.assignedTo === 'John Doe')
       : allLeads;
   };
@@ -222,7 +222,7 @@ const LeadsDashboard = ({ dateRange = '7d' }) => {
     let filtered = [...allLeads];
 
     // Filter by assignment
-    if (showMyStats) {
+    if (!viewCompanyStats) {
       filtered = filtered.filter(lead => lead.assignedTo === 'John Doe');
     }
 
@@ -276,7 +276,7 @@ const LeadsDashboard = ({ dateRange = '7d' }) => {
     }
 
     setFilteredLeads(filtered);
-  }, [allLeads, showMyStats, filterStatus, searchTerm, sortConfig]);
+  }, [allLeads, viewCompanyStats, filterStatus, searchTerm, sortConfig]);
 
   const handleCreateLead = () => {
     navigate('/dashboard/leads/create');
@@ -391,7 +391,7 @@ const LeadsDashboard = ({ dateRange = '7d' }) => {
 
   // Get view type text
   const getViewTypeText = () => {
-    return showMyStats ? 'My Leads' : 'All Leads';
+    return !viewCompanyStats ? 'My Leads' : 'All Leads';
   };
 
   return (

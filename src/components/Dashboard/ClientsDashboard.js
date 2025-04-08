@@ -44,7 +44,7 @@ const ClientsDashboard = () => {
   const [filteredClients, setFilteredClients] = useState([]);
   const [showUploader, setShowUploader] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
-  const { showMyStats } = useStatsView();
+  const { viewCompanyStats } = useStatsView();
   const [showAllMilestones, setShowAllMilestones] = useState(false);
   const [showAllClients, setShowAllClients] = useState(false);
 
@@ -91,7 +91,7 @@ const ClientsDashboard = () => {
 
   // Get clients for stats based on filter
   const getClientsForStats = () => {
-    return showMyStats
+    return !viewCompanyStats
       ? allClients.filter(client => client.accountManager === 'John Doe')
       : allClients;
   };
@@ -285,7 +285,7 @@ const ClientsDashboard = () => {
     let filtered = [...allClients];
 
     // Filter by assignment
-    if (showMyStats) {
+    if (!viewCompanyStats) {
       filtered = filtered.filter(client => client.accountManager === 'John Doe');
     }
 
@@ -339,7 +339,7 @@ const ClientsDashboard = () => {
     }
 
     setFilteredClients(filtered);
-  }, [allClients, showMyStats, filterStatus, searchTerm, sortConfig]);
+  }, [allClients, viewCompanyStats, filterStatus, searchTerm, sortConfig]);
 
   // Initial data fetch
   useEffect(() => {

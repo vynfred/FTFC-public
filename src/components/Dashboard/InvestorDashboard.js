@@ -15,7 +15,7 @@ const InvestorDashboard = () => {
   const [showUploader, setShowUploader] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [investorTimeframe, setInvestorTimeframe] = useState('monthly');
-  const { showMyStats } = useStatsView();
+  const { viewCompanyStats } = useStatsView();
 
   // Example investors data
   const [allInvestors, setAllInvestors] = useState([
@@ -47,7 +47,7 @@ const InvestorDashboard = () => {
 
   // Get investors for stats based on filter
   const getInvestorsForStats = () => {
-    return showMyStats
+    return !viewCompanyStats
       ? allInvestors.filter(investor => investor.assignedTo === 'John Doe')
       : allInvestors;
   };
@@ -113,7 +113,7 @@ const InvestorDashboard = () => {
     let filtered = [...allInvestors];
 
     // Filter by assignment
-    if (showMyStats) {
+    if (!viewCompanyStats) {
       filtered = filtered.filter(investor => investor.assignedTo === 'John Doe');
     }
 
@@ -167,7 +167,7 @@ const InvestorDashboard = () => {
     }
 
     setFilteredInvestors(filtered);
-  }, [allInvestors, showMyStats, filterStatus, searchTerm, sortConfig]);
+  }, [allInvestors, viewCompanyStats, filterStatus, searchTerm, sortConfig]);
 
   // Initial data fetch
   useEffect(() => {

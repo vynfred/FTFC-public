@@ -17,7 +17,7 @@ const InvestorDashboardWithModules = ({ dateRange = '7d' }) => {
   const [showUploader, setShowUploader] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [investorTimeframe, setInvestorTimeframe] = useState('monthly');
-  const { showMyStats } = useStatsView();
+  const { viewCompanyStats } = useStatsView();
 
   // Example investors data
   const [allInvestors, setAllInvestors] = useState([
@@ -49,7 +49,7 @@ const InvestorDashboardWithModules = ({ dateRange = '7d' }) => {
 
   // Get investors for stats based on filter
   const getInvestorsForStats = () => {
-    return showMyStats
+    return !viewCompanyStats
       ? allInvestors.filter(investor => investor.assignedTo === 'John Doe')
       : allInvestors;
   };
@@ -115,7 +115,7 @@ const InvestorDashboardWithModules = ({ dateRange = '7d' }) => {
     let filtered = [...allInvestors];
 
     // Filter by assignment
-    if (showMyStats) {
+    if (!viewCompanyStats) {
       filtered = filtered.filter(investor => investor.assignedTo === 'John Doe');
     }
 
@@ -169,7 +169,7 @@ const InvestorDashboardWithModules = ({ dateRange = '7d' }) => {
     }
 
     setFilteredInvestors(filtered);
-  }, [allInvestors, showMyStats, filterStatus, searchTerm, sortConfig]);
+  }, [allInvestors, viewCompanyStats, filterStatus, searchTerm, sortConfig]);
 
   // Filter data based on dateRange
   useEffect(() => {

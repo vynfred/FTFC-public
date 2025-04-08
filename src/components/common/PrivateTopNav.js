@@ -38,12 +38,20 @@ const PrivateTopNav = ({ toggleMobileMenu }) => {
         </div>
 
         <div className={styles.statsToggle}>
-          <button
-            className={`${styles.statsButton} ${viewCompanyStats ? styles.active : ''}`}
-            onClick={() => setViewCompanyStats(!viewCompanyStats)}
-          >
-            Company Stats
-          </button>
+          <div className={styles.toggleButtons}>
+            <button
+              className={`${styles.statsButton} ${viewCompanyStats ? styles.active : ''}`}
+              onClick={() => setViewCompanyStats(true)}
+            >
+              Company
+            </button>
+            <button
+              className={`${styles.statsButton} ${!viewCompanyStats ? styles.active : ''}`}
+              onClick={() => setViewCompanyStats(false)}
+            >
+              My Stats
+            </button>
+          </div>
         </div>
       </div>
 

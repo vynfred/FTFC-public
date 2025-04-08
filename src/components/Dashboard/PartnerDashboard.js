@@ -15,7 +15,7 @@ const PartnerDashboard = () => {
   const [filteredPartners, setFilteredPartners] = useState([]);
   const [filteredReferrals, setFilteredReferrals] = useState([]);
   const [showUploader, setShowUploader] = useState(false);
-  const { showMyStats } = useStatsView();
+  const { viewCompanyStats } = useStatsView();
 
   // Example partners data
   const [allPartners, setAllPartners] = useState([
@@ -54,7 +54,7 @@ const PartnerDashboard = () => {
 
   // Get partners for stats based on filter
   const getPartnersForStats = () => {
-    return showMyStats
+    return !viewCompanyStats
       ? allPartners.filter(partner => partner.assignedTo === 'John Doe')
       : allPartners;
   };
@@ -76,7 +76,7 @@ const PartnerDashboard = () => {
 
   // Get referrals for stats based on filter
   const getReferralsForStats = () => {
-    return showMyStats
+    return !viewCompanyStats
       ? allReferrals.filter(referral => referral.assignedTo === 'John Doe')
       : allReferrals;
   };
@@ -120,7 +120,7 @@ const PartnerDashboard = () => {
     let filtered = [...allPartners];
 
     // Filter by assignment
-    if (showMyStats) {
+    if (!viewCompanyStats) {
       filtered = filtered.filter(partner => partner.assignedTo === 'John Doe');
     }
 
@@ -179,7 +179,7 @@ const PartnerDashboard = () => {
     let filteredReferralsList = [...allReferrals];
 
     // Filter by assignment
-    if (showMyStats) {
+    if (!viewCompanyStats) {
       filteredReferralsList = filteredReferralsList.filter(referral => referral.assignedTo === 'John Doe');
     }
 
@@ -228,7 +228,7 @@ const PartnerDashboard = () => {
     }
 
     setFilteredReferrals(filteredReferralsList);
-  }, [allPartners, allReferrals, showMyStats, filterStatus, searchTerm, sortConfig]);
+  }, [allPartners, allReferrals, viewCompanyStats, filterStatus, searchTerm, sortConfig]);
 
   // Handle partner click
   const handlePartnerClick = (partnerId) => {
