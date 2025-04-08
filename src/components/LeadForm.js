@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { db, storage } from '../firebase-config';
-import { collection, addDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import React, { useState } from 'react';
 import { FaCheck } from 'react-icons/fa';
+import { storage } from '../firebase-config';
 
 const initialFormState = {
   firstName: '',
@@ -32,7 +31,7 @@ const initialFormState = {
   referrerName: ''
 };
 
-const LeadForm = () => {
+const LeadForm = ({ referralType = '', referrerId = '' }) => {
   const [formData, setFormData] = useState({
     // Personal Info
     firstName: '',
@@ -46,14 +45,14 @@ const LeadForm = () => {
       state: '',
       zip: ''
     },
-    
+
     // Company Info
     companyName: '',
     industry: '',
     teamSize: '',
     revenueStatus: '',
     currentARR: '',
-    
+
     // Fundraising Info
     capitalRaised: '',
     targetRaise: '',
@@ -62,14 +61,17 @@ const LeadForm = () => {
       file: null,
       link: ''
     },
-    
+
     // Referral Info
-    referralSource: '',
+    referralSource: referralType || '',
+    referrerId: referrerId || '',
     referrerName: ''
   });
 
   const [validation, setValidation] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const timelineOptions = [
     'Immediately',
@@ -118,30 +120,31 @@ const LeadForm = () => {
 
   const formatUrl = (url) => {
     if (!url) return url;
-    
+
     let formattedUrl = url.trim();
-    
+
     // Don't modify if it's already a complete URL
     if (formattedUrl.match(/^https?:\/\/www\./)) {
       return formattedUrl;
     }
-    
+
     // Add https:// if not present
     if (!formattedUrl.match(/^https?:\/\//)) {
       formattedUrl = 'https://' + formattedUrl;
     }
-    
+
     // Add www. if not present
     if (!formattedUrl.match(/^https?:\/\/www\./)) {
       formattedUrl = formattedUrl.replace(/^(https?:\/\/)/, '$1www.');
     }
-    
+
     return formattedUrl;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError('');
 
     try {
       let pitchDeckUrl = formData.pitchDeck.link;
@@ -153,23 +156,39 @@ const LeadForm = () => {
         pitchDeckUrl = await getDownloadURL(fileRef);
       }
 
-      // Add to Firestore
-      await addDoc(collection(db, 'leads'), {
+      // Prepare the lead data
+      const leadData = {
         ...formData,
         pitchDeck: {
           url: pitchDeckUrl,
           link: formData.pitchDeck.link
-        },
-        status: 'Applied',
-        submittedAt: new Date()
-      });
+        }
+      };
 
-      // Reset form
+      // Process the lead based on the source
+      let result;
+
+      if (referralType && referrerId) {
+        // Process as a referral lead
+        result = await LeadProcessingService.processReferralLead(leadData, referralType, referrerId);
+      } else if (formData.referralSource && formData.referrerId) {
+        // Process as a referral lead from form data
+        result = await LeadProcessingService.processReferralLead(
+          leadData,
+          formData.referralSource,
+          formData.referrerId
+        );
+      } else {
+        // Process as a website form lead
+        result = await LeadProcessingService.processWebsiteFormLead(leadData);
+      }
+
+      // Reset form and show success message
       setFormData({...initialFormState});
-      alert('Thank you for your submission!');
+      setSubmitSuccess(true);
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert('There was an error submitting your form. Please try again.');
+      setSubmitError('There was an error submitting your form. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -177,7 +196,20 @@ const LeadForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="consultation-form">
-      {/* Personal Information */}
+      {submitSuccess ? (
+        <div className="success-message">
+          <h2>Thank you for your submission!</h2>
+          <p>We have received your information and will contact you shortly.</p>
+        </div>
+      ) : (
+        <>
+          {submitError && (
+            <div className="error-message">
+              <p>{submitError}</p>
+            </div>
+          )}
+
+          {/* Personal Information */}
       <section>
         <h2>Personal Information</h2>
         <div className="form-group">
@@ -301,15 +333,52 @@ const LeadForm = () => {
         />
       </div>
 
-      <button 
-        type="submit" 
-        className="submit-button" 
+      {/* Referral Information (if not provided via props) */}
+      {!referralType && !referrerId && (
+        <section>
+          <h2>Referral Information</h2>
+          <div className="form-group">
+            <label>How did you hear about us?</label>
+            <select
+              name="referralSource"
+              value={formData.referralSource}
+              onChange={handleChange}
+            >
+              <option value="">Select Source</option>
+              <option value="search">Search Engine</option>
+              <option value="social">Social Media</option>
+              <option value="event">Event</option>
+              <option value="referral">Personal Referral</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          {formData.referralSource === 'referral' && (
+            <div className="form-group">
+              <label>Referrer's Name</label>
+              <input
+                type="text"
+                name="referrerName"
+                value={formData.referrerName}
+                onChange={handleChange}
+                placeholder="Who referred you to us?"
+              />
+            </div>
+          )}
+        </section>
+      )}
+
+      <button
+        type="submit"
+        className="submit-button"
         disabled={isSubmitting}
       >
         {isSubmitting ? 'Submitting...' : 'Submit Consultation Request'}
       </button>
+        </>
+      )}
     </form>
   );
 };
 
-export default LeadForm; 
+export default LeadForm;
