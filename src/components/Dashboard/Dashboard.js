@@ -6,7 +6,7 @@ import { useStatsView } from '../../context/StatsViewContext';
 import Container from '../ui/layout/Container';
 import Grid from '../ui/layout/Grid';
 
-const Dashboard = () => {
+const SalesDashboard = () => {
   const { dateRange } = useDateRange();
   const { viewCompanyStats } = useStatsView();
 
@@ -223,6 +223,28 @@ const Dashboard = () => {
         </Grid>
       </DashboardSection>
 
+      {/* Action Required Section */}
+      <DashboardSection title="Action Required">
+        <div className={styles.actionTable}>
+          <div className={styles.actionHeader}>
+            <div className={styles.actionCell}>Lead</div>
+            <div className={styles.actionCell}>Stage</div>
+            <div className={styles.actionCell}>Value</div>
+            <div className={styles.actionCell}>Days Idle</div>
+            <div className={styles.actionCell}>Next Step</div>
+          </div>
+          {actionRequired.map((item, index) => (
+            <div className={styles.actionRow} key={index}>
+              <div className={styles.actionCell}>{item.lead}</div>
+              <div className={styles.actionCell}>{item.stage}</div>
+              <div className={styles.actionCell}>{item.value}</div>
+              <div className={styles.actionCell}>{item.days}</div>
+              <div className={styles.actionCell}>{item.action}</div>
+            </div>
+          ))}
+        </div>
+      </DashboardSection>
+
       {/* Company Vitals Section */}
       <DashboardSection title="Company Vitals">
         <Grid columns={2} mdColumns={2} smColumns={1} gap="md" className={styles.metricsGrid}>
@@ -290,29 +312,6 @@ const Dashboard = () => {
             ))}
           </div>
 
-          {/* Action Required */}
-          <div className={styles.actionRequiredSection}>
-            <h3 className={styles.subsectionTitle}>Action Required</h3>
-            <div className={styles.actionTable}>
-              <div className={styles.actionHeader}>
-                <div className={styles.actionCell}>Lead</div>
-                <div className={styles.actionCell}>Stage</div>
-                <div className={styles.actionCell}>Value</div>
-                <div className={styles.actionCell}>Days Idle</div>
-                <div className={styles.actionCell}>Next Step</div>
-              </div>
-              {actionRequired.map((item, index) => (
-                <div className={styles.actionRow} key={index}>
-                  <div className={styles.actionCell}>{item.lead}</div>
-                  <div className={styles.actionCell}>{item.stage}</div>
-                  <div className={styles.actionCell}>{item.value}</div>
-                  <div className={styles.actionCell}>{item.days}</div>
-                  <div className={styles.actionCell}>{item.action}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* Lead Sources */}
           <div className={styles.leadSourceSection}>
             <h3 className={styles.subsectionTitle}>Lead Sources</h3>
@@ -344,4 +343,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default SalesDashboard;
