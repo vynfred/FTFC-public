@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { FaEnvelope, FaLock } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import styles from './Auth.module.css';
 
@@ -22,41 +22,41 @@ const PartnerLogin = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     // Clear error when user types
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
-  
+
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.email) {
       newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (!formData.email.includes('@')) {
       newErrors.email = 'Invalid email format';
     }
-    
+
     if (!formData.password) {
       newErrors.password = 'Password is required';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setIsLoading(true);
-    
+
     try {
       // Call login function from AuthContext with PARTNER role
       login(formData, 'partner');
-      
+
       // Redirect to partner portal
       navigate('/partner-portal');
     } catch (error) {
@@ -65,7 +65,7 @@ const PartnerLogin = () => {
       setIsLoading(false);
     }
   };
-  
+
   return (
     <div className={styles.container}>
       <div className={styles.card}>
@@ -73,13 +73,13 @@ const PartnerLogin = () => {
           <h1 className={styles.title}>Partner Portal</h1>
           <p className={styles.subtitle}>Access your FTFC partner dashboard</p>
         </div>
-        
+
         {errors.general && (
           <div className={styles.errorMessage}>
             {errors.general}
           </div>
         )}
-        
+
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
             <label htmlFor="email" className={styles.label}>Email Address</label>
@@ -97,7 +97,7 @@ const PartnerLogin = () => {
             </div>
             {errors.email && <div className={styles.errorText}>{errors.email}</div>}
           </div>
-          
+
           <div className={styles.formGroup}>
             <label htmlFor="password" className={styles.label}>Password</label>
             <div className={styles.inputWrapper}>
@@ -114,7 +114,7 @@ const PartnerLogin = () => {
             </div>
             {errors.password && <div className={styles.errorText}>{errors.password}</div>}
           </div>
-          
+
           <div className={styles.formActions}>
             <div className={styles.rememberMe}>
               <input type="checkbox" id="remember" />
@@ -122,16 +122,16 @@ const PartnerLogin = () => {
             </div>
             <a href="/forgot-password" className={styles.forgotPassword}>Forgot password?</a>
           </div>
-          
-          <button 
-            type="submit" 
+
+          <button
+            type="submit"
             className={styles.submitButton}
             disabled={isLoading}
           >
             {isLoading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
-        
+
         <div className={styles.footer}>
           <p>Don't have an account? <a href="/contact" className={styles.link}>Contact us</a> to get access.</p>
         </div>
