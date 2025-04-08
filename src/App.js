@@ -121,6 +121,7 @@ function App() {
           <Route path="/dashboard/investors-modules" element={<InvestorDashboardWithModules />} />
           <Route path="/dashboard/partners" element={<PartnerDashboard />} />
           <Route path="/dashboard/company-settings" element={<CompanySettings />} />
+          <Route path="/dashboard/profile" element={<UserProfile />} />
           <Route path="/dashboard/css-examples" element={<CssExamples />} />
           <Route path="/dashboard/form-examples" element={<FormExamples />} />
           <Route path="/dashboard/components-examples" element={<ComponentsExamples />} />

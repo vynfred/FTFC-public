@@ -2,7 +2,7 @@ import React from 'react';
 import {
     FaChartBar, FaChartLine, FaChevronLeft, FaChevronRight, FaCog, FaHandshake, FaHistory, FaUserFriends, FaUsers
 } from 'react-icons/fa';
-import { NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import styles from './SidebarNav.module.css';
 
 const SidebarNav = ({ collapsed, toggleSidebar }) => {
@@ -98,7 +98,7 @@ const SidebarNav = ({ collapsed, toggleSidebar }) => {
 
       {/* User Profile */}
       <div className={styles.footer}>
-        <div className={styles.user}>
+        <Link to="/dashboard/profile" className={styles.user}>
           <div className={styles.avatar}>{userInfo.initials}</div>
           {!collapsed && (
             <div className={styles.userInfo}>
@@ -106,7 +106,7 @@ const SidebarNav = ({ collapsed, toggleSidebar }) => {
               <div className={styles.userRole}>{userInfo.role}</div>
             </div>
           )}
-        </div>
+        </Link>
 
         {!collapsed && (
           <div className={styles.lastUpdated}>

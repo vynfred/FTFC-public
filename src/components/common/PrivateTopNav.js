@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaBars, FaSearch } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useDateRange } from '../../context/DateRangeContext';
 import { useStatsView } from '../../context/StatsViewContext';
 import styles from './PrivateTopNav.module.css';
@@ -8,6 +8,26 @@ import styles from './PrivateTopNav.module.css';
 const PrivateTopNav = ({ toggleMobileMenu }) => {
   const { dateRange, setDateRange, dateRanges } = useDateRange();
   const { viewCompanyStats, setViewCompanyStats } = useStatsView();
+  const location = useLocation();
+  const pathname = location.pathname;
+
+  // Define which pages should show date range selector and stats toggle
+  const showDateRange = [
+    '/dashboard',
+    '/dashboard/marketing',
+    '/dashboard/leads',
+    '/dashboard/clients',
+    '/dashboard/investors'
+  ].some(path => pathname === path || pathname.startsWith(`${path}/`));
+
+  // Define which pages should show stats toggle
+  const showStatsToggle = [
+    '/dashboard',
+    '/dashboard/marketing',
+    '/dashboard/leads',
+    '/dashboard/clients',
+    '/dashboard/investors'
+  ].some(path => pathname === path || pathname.startsWith(`${path}/`));
 
   return (
     <div className={styles.topNav}>
@@ -25,37 +45,39 @@ const PrivateTopNav = ({ toggleMobileMenu }) => {
       </div>
 
       <div className={styles.navControls}>
-        <div className={styles.dateRangeSelector}>
-          <select
-            value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
-            className={styles.dateRangeSelect}
-          >
-            {dateRanges.map(range => (
-              <option key={range} value={range}>{range}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className={styles.statsToggle}>
-          <div className={styles.toggleButtons}>
-            <button
-              className={`${styles.statsButton} ${viewCompanyStats ? styles.active : ''}`}
-              onClick={() => setViewCompanyStats(true)}
+        {showDateRange && (
+          <div className={styles.dateRangeSelector}>
+            <select
+              value={dateRange}
+              onChange={(e) => setDateRange(e.target.value)}
+              className={styles.dateRangeSelect}
             >
-              Company
-            </button>
-            <button
-              className={`${styles.statsButton} ${!viewCompanyStats ? styles.active : ''}`}
-              onClick={() => setViewCompanyStats(false)}
-            >
-              My Stats
-            </button>
+              {dateRanges.map(range => (
+                <option key={range} value={range}>{range}</option>
+              ))}
+            </select>
           </div>
-        </div>
+        )}
+
+        {showStatsToggle && (
+          <div className={styles.statsToggle}>
+            <div className={styles.toggleButtons}>
+              <button
+                className={`${styles.statsButton} ${viewCompanyStats ? styles.active : ''}`}
+                onClick={() => setViewCompanyStats(true)}
+              >
+                Company
+              </button>
+              <button
+                className={`${styles.statsButton} ${!viewCompanyStats ? styles.active : ''}`}
+                onClick={() => setViewCompanyStats(false)}
+              >
+                My Stats
+              </button>
+            </div>
+          </div>
+        )}
       </div>
-
-
     </div>
   );
 };
