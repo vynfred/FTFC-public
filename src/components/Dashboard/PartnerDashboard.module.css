@@ -1,0 +1,220 @@
+/* PartnerDashboard.module.css */
+
+.partnerDashboard {
+  width: 100%;
+}
+
+/* Stats Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.statCard {
+  background-color: var(--color-background-light, #1e293b);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.statIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  font-size: 20px;
+  margin-right: 16px;
+}
+
+.statContent {
+  flex: 1;
+}
+
+.statContent h3 {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-secondary, #94a3b8);
+  margin: 0 0 4px 0;
+}
+
+.statValue {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text-primary, #ffffff);
+  margin: 0;
+}
+
+/* Search and Filter */
+.searchFilterContainer {
+  display: flex;
+  gap: 12px;
+}
+
+.searchInput {
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
+  background-color: var(--color-background-light, #1e293b);
+  color: var(--color-text-primary, #ffffff);
+  font-size: 14px;
+  width: 240px;
+  transition: all 0.2s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--color-primary, #f59e0b);
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+.statusFilter {
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
+  background-color: var(--color-background-light, #1e293b);
+  color: var(--color-text-primary, #ffffff);
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.statusFilter:focus {
+  outline: none;
+  border-color: var(--color-primary, #f59e0b);
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+/* Action Buttons */
+.actionButtonContainer {
+  display: flex;
+  gap: 12px;
+}
+
+.createButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+  background-color: var(--color-primary, #f59e0b);
+  color: var(--color-text-dark, #0f172a);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.createButton:hover {
+  background-color: var(--color-primary-dark, #d97706);
+}
+
+/* Table Styles */
+.tableContainer {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dataTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.dataTable th,
+.dataTable td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
+}
+
+.dataTable th {
+  background-color: var(--color-background-dark, #0f172a);
+  font-weight: 600;
+  color: var(--color-text-primary, #ffffff);
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  white-space: nowrap;
+}
+
+.dataTable th:hover {
+  background-color: var(--color-background-hover, #334155);
+}
+
+.sortIcon {
+  margin-left: 8px;
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+.dataTable tbody tr {
+  background-color: var(--color-background-light, #1e293b);
+  transition: background-color 0.2s ease;
+}
+
+.dataTable tbody tr:hover {
+  background-color: var(--color-background-hover, #334155);
+  cursor: pointer;
+}
+
+/* Status Badge */
+.statusBadge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.statusActive {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.statusInactive {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.statusNeutral {
+  background-color: rgba(107, 114, 128, 0.2);
+  color: #9ca3af;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .searchFilterContainer {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .searchInput {
+    width: 100%;
+  }
+  
+  .actionButtonContainer {
+    margin-top: 12px;
+  }
+}

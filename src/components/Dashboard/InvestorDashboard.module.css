@@ -1,23 +1,19 @@
 /* InvestorDashboard.module.css */
-/* Styles for the investor dashboard */
 
-.summaryText {
-  font-size: var(--font-size-md);
-  line-height: 1.6;
-  color: var(--color-text-primary);
-  margin: 0;
+.investorDashboard {
+  width: 100%;
 }
 
 /* Stats Grid */
 .statsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-md);
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .statCard {
-  background-color: var(--color-background-light);
+  background-color: var(--color-background-light, #1e293b);
   border-radius: var(--border-radius);
   padding: var(--spacing-md);
   text-align: center;
@@ -268,20 +264,20 @@
   .statsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .shortcutsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .dataTable {
     font-size: var(--font-size-xs);
   }
-  
+
   .dataTable th,
   .dataTable td {
     padding: var(--spacing-xs) var(--spacing-sm);
   }
-  
+
   .actionButtonContainer {
     flex-direction: column;
   }
@@ -291,7 +287,7 @@
   .statsGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .shortcutsGrid {
     grid-template-columns: 1fr;
   }
