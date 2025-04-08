@@ -49,6 +49,8 @@ function App() {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/team-login" element={<TeamLogin />} />
         <Route path="/client-login" element={<ClientLogin />} />
+        <Route path="/investor-login" element={<InvestorLogin />} />
+        <Route path="/partner-login" element={<PartnerLogin />} />
       </Route>
 
       {/* Protected Dashboard Routes */}
