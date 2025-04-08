@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
-import LoginLink from '../common/LoginLink';
 import styles from './Header.module.css';
 
 const Header = () => {
@@ -70,9 +69,9 @@ const Header = () => {
         </nav>
 
         <div className={styles.headerButtons}>
-          <LoginLink to="/client-login" className={styles.clientLoginBtn}>
+          <Link to="/client-login" className={styles.clientLoginBtn}>
             Client Login
-          </LoginLink>
+          </Link>
           <Link to="/consultation" className={styles.consultationBtn}>
             Free Consultation
           </Link>

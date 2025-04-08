@@ -2,7 +2,6 @@ import React from 'react';
 import { FaEnvelope, FaFacebook, FaInstagram, FaLinkedin, FaPhone } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import { Link } from 'react-router-dom';
-import LoginLink from '../common/LoginLink';
 import styles from './Footer.module.css';
 
 const Footer = () => {
@@ -59,10 +58,10 @@ const Footer = () => {
             <div className={styles.footerColumn}>
               <h3 className={styles.footerHeading}>Login</h3>
               <ul className={styles.footerLinks}>
-                <li><LoginLink to="/client-login">Client Login</LoginLink></li>
-                <li><LoginLink to="/investor-login">Investor Login</LoginLink></li>
-                <li><LoginLink to="/partner-login">Partner Login</LoginLink></li>
-                <li><LoginLink to="/team-login">Team Login</LoginLink></li>
+                <li><Link to="/client-login">Client Login</Link></li>
+                <li><Link to="/investor-login">Investor Login</Link></li>
+                <li><Link to="/partner-login">Partner Login</Link></li>
+                <li><Link to="/team-login">Team Login</Link></li>
               </ul>
             </div>
           </div>
