@@ -16,7 +16,15 @@ const InvestorLogin = () => {
 
   // Scroll to top when component mounts
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // Scroll to top with a slight delay to ensure DOM is fully rendered
+    const timeoutId = setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
   }, []);
 
   const handleChange = (e) => {

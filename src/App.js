@@ -8,6 +8,7 @@ import TeamLogin from './components/auth/TeamLogin';
 import BlogCreate from './components/blog/BlogCreate';
 import BlogEdit from './components/blog/BlogEdit';
 import BlogManage from './components/blog/BlogManage';
+import ScrollToTop from './components/common/ScrollToTop';
 import DashboardWrapper from './components/common/DashboardWrapper';
 import Analytics from './components/Dashboard/Analytics';
 import ClientsDashboard from './components/Dashboard/ClientsDashboard';
@@ -45,6 +46,9 @@ import { USER_ROLES } from './context/AuthContext';
 function App() {
   return (
     <ToastProvider position="bottomRight">
+      {/* ScrollToTop component to handle scrolling on route changes */}
+      <ScrollToTop />
+      
       <Routes>
         {/* Public Routes */}
         <Route element={<Layout />}>
