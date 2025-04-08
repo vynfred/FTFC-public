@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaChartBar, FaChartLine, FaExchangeAlt, FaHandshake, FaMoneyBillWave, FaRocket } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import styles from './Services.module.css';
 

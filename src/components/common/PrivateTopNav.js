@@ -1,8 +1,9 @@
 import React from 'react';
-import { FaSearch } from 'react-icons/fa';
+import { FaBars, FaSearch } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useDateRange } from '../../context/DateRangeContext';
 import { useStatsView } from '../../context/StatsViewContext';
+import styles from './PrivateTopNav.module.css';
 
 const PrivateTopNav = ({ toggleMobileMenu }) => {
   const { dateRange, setDateRange, dateRanges } = useDateRange();
