@@ -1,0 +1,145 @@
+.meetingSection {
+  margin-bottom: 20px;
+}
+
+.meetingTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: #f59e0b;
+}
+
+.meetingCard {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.meetingHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.meetingHeader h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.meetingType {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.meetingTypeIcon {
+  margin-right: 6px;
+}
+
+.meetingDetails {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.meetingDetail {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.meetingDetailIcon {
+  color: #f59e0b;
+  margin-right: 8px;
+}
+
+.meetingActions {
+  display: flex;
+  gap: 12px;
+}
+
+.meetingButton {
+  background-color: #f59e0b;
+  color: #0f172a;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.meetingButton:hover {
+  background-color: #f5a623;
+}
+
+.meetingButtonOutline {
+  background-color: transparent;
+  color: #f59e0b;
+  border: 1px solid #f59e0b;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.meetingButtonOutline:hover {
+  background-color: rgba(245, 158, 11, 0.1);
+}
+
+.noMeetingCard {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.noMeetingText {
+  font-size: 16px;
+  color: #94a3b8;
+  margin: 0 0 16px 0;
+}
+
+.bookMeetingButton {
+  background-color: #f59e0b;
+  color: #0f172a;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.bookMeetingButton:hover {
+  background-color: #f5a623;
+}
+
+@media (max-width: 576px) {
+  .meetingHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .meetingType {
+    margin-top: 8px;
+  }
+  
+  .meetingDetails {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .meetingActions {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,59 @@
+.milestoneList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.milestoneItem {
+  display: flex;
+  align-items: flex-start;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.milestoneStatus {
+  margin-right: 16px;
+  font-size: 20px;
+  padding-top: 2px;
+}
+
+.completedIcon {
+  color: #22c55e;
+}
+
+.pendingIcon {
+  color: #94a3b8;
+}
+
+.milestoneContent {
+  flex: 1;
+}
+
+.milestoneTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.milestoneDescription {
+  font-size: 14px;
+  color: #94a3b8;
+  margin: 0 0 8px 0;
+}
+
+.milestoneDate {
+  font-size: 12px;
+  color: #64748b;
+  margin: 0;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 24px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+}

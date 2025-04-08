@@ -8,8 +8,8 @@ import TeamLogin from './components/auth/TeamLogin';
 import BlogCreate from './components/blog/BlogCreate';
 import BlogEdit from './components/blog/BlogEdit';
 import BlogManage from './components/blog/BlogManage';
-import ScrollToTop from './components/common/ScrollToTop';
 import DashboardWrapper from './components/common/DashboardWrapper';
+import ScrollToTop from './components/common/ScrollToTop';
 import Analytics from './components/Dashboard/Analytics';
 import ClientsDashboard from './components/Dashboard/ClientsDashboard';
 import CompanySettings from './components/Dashboard/CompanySettings';
@@ -23,6 +23,7 @@ import PartnerDashboard from './components/Dashboard/PartnerDashboard';
 import ComponentsExamples from './components/examples/ComponentsExamples';
 import CssExamples from './components/examples/CssExamples';
 import FormExamples from './components/examples/FormExamples';
+import ReferralIntakeForm from './components/forms/ReferralIntakeForm';
 import Layout from './components/layout/Layout';
 import NotFound from './components/NotFound';
 import About from './components/public/About';
@@ -40,15 +41,15 @@ import ClientPortal from './components/portals/ClientPortal';
 import InvestorPortal from './components/portals/InvestorPortal';
 import PartnerPortal from './components/portals/PartnerPortal';
 
-import { ToastProvider } from './context/ToastContext';
 import { USER_ROLES } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
 
 function App() {
   return (
     <ToastProvider position="bottomRight">
       {/* ScrollToTop component to handle scrolling on route changes */}
       <ScrollToTop />
-      
+
       <Routes>
         {/* Public Routes */}
         <Route element={<Layout />}>
@@ -65,40 +66,45 @@ function App() {
           <Route path="/client-login" element={<ClientLogin />} />
           <Route path="/investor-login" element={<InvestorLogin />} />
           <Route path="/partner-login" element={<PartnerLogin />} />
+
+          {/* Referral Intake Form Routes */}
+          <Route path="/intake" element={<ReferralIntakeForm />} />
+          <Route path="/intake/:type" element={<ReferralIntakeForm />} />
+          <Route path="/intake/:type/:referrerId" element={<ReferralIntakeForm />} />
         </Route>
 
         {/* Client Portal Routes */}
-        <Route 
-          path="/client-portal/*" 
+        <Route
+          path="/client-portal/*"
           element={
             <ProtectedRoute allowedRoles={[USER_ROLES.CLIENT, USER_ROLES.TEAM]} redirectPath="/client-login">
               <ClientPortal />
             </ProtectedRoute>
-          } 
+          }
         />
 
         {/* Investor Portal Routes */}
-        <Route 
-          path="/investor-portal/*" 
+        <Route
+          path="/investor-portal/*"
           element={
             <ProtectedRoute allowedRoles={[USER_ROLES.INVESTOR, USER_ROLES.TEAM]} redirectPath="/investor-login">
               <InvestorPortal />
             </ProtectedRoute>
-          } 
+          }
         />
 
         {/* Partner Portal Routes */}
-        <Route 
-          path="/partner-portal/*" 
+        <Route
+          path="/partner-portal/*"
           element={
             <ProtectedRoute allowedRoles={[USER_ROLES.PARTNER, USER_ROLES.TEAM]} redirectPath="/partner-login">
               <PartnerPortal />
             </ProtectedRoute>
-          } 
+          }
         />
 
         {/* Protected Dashboard Routes - Team Members Only */}
-        <Route 
+        <Route
           element={
             <ProtectedRoute allowedRoles={[USER_ROLES.TEAM]} redirectPath="/team-login">
               <DashboardWrapper />

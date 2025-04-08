@@ -1,0 +1,95 @@
+.teamMemberCard {
+  display: flex;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 20px;
+}
+
+.memberImageContainer {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 20px;
+  flex-shrink: 0;
+}
+
+.memberImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.memberImagePlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #f59e0b;
+  font-size: 32px;
+}
+
+.memberInfo {
+  flex: 1;
+}
+
+.memberName {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.memberTitle {
+  font-size: 14px;
+  color: #94a3b8;
+  margin: 0 0 12px 0;
+}
+
+.memberContact {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  font-size: 14px;
+}
+
+.contactIcon {
+  margin-right: 8px;
+  color: #f59e0b;
+}
+
+.contactItem a {
+  color: #ffffff;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.contactItem a:hover {
+  color: #f59e0b;
+}
+
+@media (max-width: 576px) {
+  .teamMemberCard {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .memberImageContainer {
+    margin-right: 0;
+    margin-bottom: 16px;
+  }
+
+  .memberContact {
+    align-items: center;
+  }
+}
