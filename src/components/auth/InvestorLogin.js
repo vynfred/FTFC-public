@@ -14,17 +14,26 @@ const InvestorLogin = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  // Scroll to top when component mounts
+  // Force scroll to top when component mounts
   useEffect(() => {
-    // Scroll to top with a slight delay to ensure DOM is fully rendered
-    const timeoutId = setTimeout(() => {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
-    }, 100);
+    // Immediate scroll
+    window.scrollTo(0, 0);
+    document.body.scrollTop = 0; // For Safari
+    document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
 
-    return () => clearTimeout(timeoutId);
+    // Set multiple timeouts to ensure it works
+    const timeoutIds = [];
+    for (let i = 0; i < 10; i++) {
+      timeoutIds.push(
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          document.body.scrollTop = 0;
+          document.documentElement.scrollTop = 0;
+        }, i * 100) // 0ms, 100ms, 200ms, etc.
+      );
+    }
+
+    return () => timeoutIds.forEach(id => clearTimeout(id));
   }, []);
 
   const handleChange = (e) => {
