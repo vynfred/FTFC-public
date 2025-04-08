@@ -27,7 +27,11 @@ ChartJS.register(
 const MarketingDashboard = () => {
   const navigate = useNavigate();
   const { dateRange } = useDateRange();
-  const { showMyStats } = useStatsView();
+  const { viewCompanyStats, setViewCompanyStats } = useStatsView();
+  // Force company stats view for Marketing Dashboard
+  useEffect(() => {
+    setViewCompanyStats(true);
+  }, [setViewCompanyStats]);
   const [graphSource, setGraphSource] = useState('all');
   const [trafficType, setTrafficType] = useState('leads'); // 'leads' or 'investors'
   const [showMyContentOnly, setShowMyContentOnly] = useState(false);
@@ -1083,14 +1087,14 @@ const MarketingDashboard = () => {
   return (
     <div className={styles.marketingDashboard}>
       <div className={styles.marketingHeader}>
-        <h1>Marketing Dashboard</h1>
+        <h1>Marketing</h1>
         <div className={styles.marketingSubheader}>
           <span>{getViewTypeText()} • {getDateRangeText()}</span>
         </div>
       </div>
 
       {/* Marketing Summary Section */}
-      <DashboardSection title="Marketing Summary">
+      <DashboardSection>
         <p className={styles.summaryText}>
           Your marketing efforts have generated {websiteVisitors.toLocaleString()} website visitors and {leadsGenerated} new leads in the {getDateRangeText().toLowerCase()}.
           The average conversion rate is {conversionRate}%, with a cost per lead of ${costPerLead}.

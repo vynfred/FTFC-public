@@ -10,9 +10,10 @@ This document provides a comprehensive inventory of all pages and their function
 - **Functions:**
   - Display company vitals (KPIs)
   - Show upcoming meetings
-  - Display action required items
+  - Display action required items (positioned under upcoming meetings)
   - Show lead analytics (conversion funnel, lead sources)
   - Display recent activity
+  - Toggle between company/user data
 
 ### Marketing Dashboard
 - **URL:** `/dashboard/marketing`
@@ -23,6 +24,7 @@ This document provides a comprehensive inventory of all pages and their function
   - Track content performance
   - Manage marketing budget
   - Display marketing calendar
+  - Fixed to company data view
 
 ### Leads Dashboard
 - **URL:** `/dashboard/leads`
@@ -33,6 +35,7 @@ This document provides a comprehensive inventory of all pages and their function
   - List recent leads
   - Filter leads by status
   - Sort leads by various criteria
+  - Toggle between company/user data
 
 ### Clients Dashboard
 - **URL:** `/dashboard/clients`
@@ -42,27 +45,30 @@ This document provides a comprehensive inventory of all pages and their function
   - Show active clients
   - Track client revenue
   - Monitor client satisfaction
-  - List recent client activity
+  - List clients with enhanced table styling
+  - No date range selector
 
 ### Investors Dashboard
 - **URL:** `/dashboard/investors`
-- **Component:** `InvestorsDashboard`
+- **Component:** `InvestorDashboard`
 - **Functions:**
   - Display investor statistics
   - Show active investments
   - Track investment performance
   - Monitor investor relations
-  - List recent investor activity
+  - List investors with enhanced table styling
+  - No date range selector
 
 ### Partners Dashboard
 - **URL:** `/dashboard/partners`
-- **Component:** `PartnersDashboard`
+- **Component:** `PartnerDashboard`
 - **Functions:**
   - Display partner statistics
   - Show active partnerships
   - Track partner performance
   - Monitor partner relations
-  - List recent partner activity
+  - List partners with enhanced table styling
+  - No date range selector
 
 ### Company Settings
 - **URL:** `/dashboard/company-settings`
@@ -73,6 +79,8 @@ This document provides a comprehensive inventory of all pages and their function
   - Set notification preferences
   - Customize dashboard appearance
   - Manage integrations
+  - Fixed to company data view
+  - No date range selector
 
 ## Detail Pages
 

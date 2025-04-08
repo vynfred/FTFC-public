@@ -6,7 +6,7 @@ import { useStatsView } from '../../context/StatsViewContext';
 import FileUploader from '../common/FileUploader';
 import DashboardSection from '../shared/DashboardSection';
 
-const PartnerDashboard = ({ dateRange = '7d' }) => {
+const PartnerDashboard = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -45,12 +45,12 @@ const PartnerDashboard = ({ dateRange = '7d' }) => {
     { id: 4, name: 'Retail Alliance', members: 10, focus: 'Retail & E-commerce', totalReferrals: 28, successRate: 60 },
   ]);
 
-  // Filter data based on dateRange
+  // Initial data fetch
   useEffect(() => {
-    // In a real app, you would fetch data based on the dateRange
-    console.log(`Fetching partner data for date range: ${dateRange}`);
+    // In a real app, you would fetch data based on a fixed date range
+    console.log(`Fetching partner data for fixed date range (30d)`);
     // For now, we'll just use our static data
-  }, [dateRange]);
+  }, []);
 
   // Get partners for stats based on filter
   const getPartnersForStats = () => {
@@ -366,8 +366,9 @@ const PartnerDashboard = ({ dateRange = '7d' }) => {
 
   return (
     <>
+      <h1 className="dashboard-title">Partners</h1>
       {/* AI Summary */}
-      <DashboardSection title="Summary">
+      <DashboardSection>
         <p className="summary-text">
           You have {partnerStats.activePartners} active partners who have generated {partnerStats.totalReferrals} referrals with a conversion rate of {Math.round(partnerStats.conversionRate)}%. This has resulted in ${partnerStats.totalCommission.toLocaleString()} in commissions paid. The Tech Advisors group has the highest success rate at 78%. Focus on nurturing your {referralStats.inProgressReferrals} in-progress referrals to increase your conversion rate.
         </p>
@@ -392,45 +393,6 @@ const PartnerDashboard = ({ dateRange = '7d' }) => {
             <h3>TOTAL COMMISSION</h3>
             <div className="value">${partnerStats.totalCommission.toLocaleString()}</div>
           </div>
-        </div>
-      </DashboardSection>
-
-      {/* Partner Groups */}
-      <DashboardSection title="Partner Groups"
-        actions={
-          <button className="action-button" onClick={() => navigate('/dashboard/create-partner-group')}>
-            <FaUserFriends /> Create Group
-          </button>
-        }>
-        <div className="table-container">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Group Name</th>
-                <th>Members</th>
-                <th>Focus Area</th>
-                <th>Total Referrals</th>
-                <th>Success Rate</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {partnerGroups.map(group => (
-                <tr key={group.id}>
-                  <td>{group.name}</td>
-                  <td>{group.members}</td>
-                  <td>{group.focus}</td>
-                  <td>{group.totalReferrals}</td>
-                  <td>{group.successRate}%</td>
-                  <td>
-                    <button className="icon-button" onClick={() => navigate(`/dashboard/partner-group/${group.id}`)}>
-                      <FaEye />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
       </DashboardSection>
 
@@ -485,7 +447,7 @@ const PartnerDashboard = ({ dateRange = '7d' }) => {
         </div>
 
         <div className="table-container">
-          <table className="data-table">
+          <table className="data-table partner-table">
             <thead>
               <tr>
                 <th onClick={() => requestSort('name')}>

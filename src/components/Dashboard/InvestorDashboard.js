@@ -7,7 +7,7 @@ import { generateInvestorsCSVTemplate, processInvestorsData, validateInvestorsCS
 import FileUploader from '../common/FileUploader';
 import DashboardSection from '../shared/DashboardSection';
 
-const InvestorDashboard = ({ dateRange = '7d' }) => {
+const InvestorDashboard = () => {
   const navigate = useNavigate();
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -169,12 +169,12 @@ const InvestorDashboard = ({ dateRange = '7d' }) => {
     setFilteredInvestors(filtered);
   }, [allInvestors, showMyStats, filterStatus, searchTerm, sortConfig]);
 
-  // Filter data based on dateRange
+  // Initial data fetch
   useEffect(() => {
-    // In a real app, you would fetch data based on the dateRange
-    console.log(`Fetching investor data for date range: ${dateRange}`);
+    // In a real app, you would fetch data based on a fixed date range
+    console.log(`Fetching investor data for fixed date range (30d)`);
     // For now, we'll just use our static data
-  }, [dateRange]);
+  }, []);
 
   const handleInvestorClick = (investorId) => {
     navigate(`/dashboard/investors/${investorId}`);
@@ -285,8 +285,9 @@ const InvestorDashboard = ({ dateRange = '7d' }) => {
 
   return (
     <>
+      <h1 className="dashboard-title">Investors</h1>
       {/* Summary Section */}
-      <DashboardSection title="Summary">
+      <DashboardSection>
         <p className="summary-text">
           You have {investorStats.activeInvestors} active investors with a total investment of ${investorStats.totalInvested.toLocaleString()} across {investorStats.totalDeals} deals.
           The average deal size is ${Math.round(investorStats.avgDealSize).toLocaleString()}.
@@ -321,40 +322,6 @@ const InvestorDashboard = ({ dateRange = '7d' }) => {
         </div>
       </DashboardSection>
 
-      {/* Upcoming Meetings Section */}
-      <DashboardSection title="Upcoming Meetings">
-        <div className="meetings-container">
-          {upcomingMeetings.length > 0 ? (
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Investor</th>
-                  <th>Firm</th>
-                  <th>Date & Time</th>
-                  <th>Type</th>
-                  <th>Purpose</th>
-                </tr>
-              </thead>
-              <tbody>
-                {upcomingMeetings.map(meeting => (
-                  <tr key={meeting.id}>
-                    <td>{meeting.investorName}</td>
-                    <td>{meeting.firm}</td>
-                    <td>{formatMeetingDate(meeting.date)}</td>
-                    <td>{meeting.type}</td>
-                    <td>{meeting.purpose}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <div className="no-data-message">
-              <p>No upcoming meetings scheduled</p>
-            </div>
-          )}
-        </div>
-      </DashboardSection>
-
       {/* Industry Preferences Section */}
       <DashboardSection title="Industry Preferences">
         <div className="chart-container">
@@ -378,45 +345,6 @@ const InvestorDashboard = ({ dateRange = '7d' }) => {
               </div>
             ))}
           </div>
-        </div>
-      </DashboardSection>
-
-      {/* Investor Pairing Tool Section */}
-      <DashboardSection title="Investor Pairing Tool">
-        <div className="pairing-container">
-          <p>Based on investor preferences and lead profiles, here are the top potential matches:</p>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Investor</th>
-                <th>Firm</th>
-                <th>Lead</th>
-                <th>Industry</th>
-                <th>Stage</th>
-                <th>Match Score</th>
-                <th>Investment Size</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {potentialPairings.map(pairing => (
-                <tr key={pairing.id}>
-                  <td>{pairing.investorName}</td>
-                  <td>{pairing.firm}</td>
-                  <td>{pairing.leadName}</td>
-                  <td>{pairing.industry}</td>
-                  <td>{pairing.stage}</td>
-                  <td><strong>{pairing.matchScore}%</strong></td>
-                  <td>{pairing.investmentSize}</td>
-                  <td>
-                    <span className={`status-badge ${getStatusColorClass(pairing.status)}`}>
-                      {pairing.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
       </DashboardSection>
 
@@ -449,7 +377,7 @@ const InvestorDashboard = ({ dateRange = '7d' }) => {
         }
       >
         <div className="table-container">
-          <table className="data-table">
+          <table className="data-table investor-table">
             <thead>
               <tr>
                 <th onClick={() => requestSort('name')} style={{ cursor: 'pointer' }}>

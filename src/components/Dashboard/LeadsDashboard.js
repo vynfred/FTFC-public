@@ -397,14 +397,14 @@ const LeadsDashboard = ({ dateRange = '7d' }) => {
   return (
     <div className={styles.leadsDashboard}>
       <div className={styles.leadsHeader}>
-        <h1>Leads Dashboard</h1>
+        <h1>Leads</h1>
         <div className={styles.leadsSubheader}>
           <span>{getViewTypeText()}</span>
         </div>
       </div>
 
       {/* Summary Section */}
-      <DashboardSection title="Summary">
+      <DashboardSection>
         <p className={styles.summaryText}>
           You have {leadStats.totalLeads} leads in your pipeline with a total value of ${leadStats.totalValue.toLocaleString()}.
           {leadStats.newLeads} new leads were added in the past {dateRange === '7d' ? 'week' : dateRange === '30d' ? 'month' : dateRange === '90d' ? 'quarter' : 'year'},
@@ -436,38 +436,6 @@ const LeadsDashboard = ({ dateRange = '7d' }) => {
             <h3>AVG LEAD VALUE</h3>
             <div className={styles.value}>${getLeadStats().avgValue.toLocaleString()}</div>
           </div>
-        </div>
-      </DashboardSection>
-
-      {/* Upcoming Meetings Section */}
-      <DashboardSection title="Upcoming Meetings">
-        <div className={styles.meetingsContainer}>
-          {upcomingMeetings.length > 0 ? (
-            <table className={styles.dataTable}>
-              <thead>
-                <tr>
-                  <th>Contact</th>
-                  <th>Company</th>
-                  <th>Date & Time</th>
-                  <th>Type</th>
-                </tr>
-              </thead>
-              <tbody>
-                {upcomingMeetings.map(meeting => (
-                  <tr key={meeting.id}>
-                    <td>{meeting.contact}</td>
-                    <td>{meeting.company}</td>
-                    <td>{formatMeetingDate(meeting.date)}</td>
-                    <td>{meeting.type}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <div className={styles.noDataMessage}>
-              <p>No upcoming meetings scheduled</p>
-            </div>
-          )}
         </div>
       </DashboardSection>
 

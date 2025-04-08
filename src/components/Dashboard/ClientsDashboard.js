@@ -37,7 +37,7 @@ const customCanvasBackgroundColor = {
   }
 };
 
-const ClientsDashboard = ({ dateRange = '7d' }) => {
+const ClientsDashboard = () => {
   const navigate = useNavigate();
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -108,7 +108,8 @@ const ClientsDashboard = ({ dateRange = '7d' }) => {
         const now = new Date();
         const monthsAgo = new Date(now);
 
-        switch(dateRange) {
+        // Using fixed date range (30d)
+        switch('30d') {
           case '7d':
             monthsAgo.setDate(now.getDate() - 7);
             break;
@@ -340,12 +341,12 @@ const ClientsDashboard = ({ dateRange = '7d' }) => {
     setFilteredClients(filtered);
   }, [allClients, showMyStats, filterStatus, searchTerm, sortConfig]);
 
-  // Filter data based on dateRange
+  // Initial data fetch
   useEffect(() => {
-    // In a real app, you would fetch data based on the dateRange
-    console.log(`Fetching client data for date range: ${dateRange}`);
+    // In a real app, you would fetch data based on a fixed date range
+    console.log(`Fetching client data for fixed date range (30d)`);
     // For now, we'll just use our static data
-  }, [dateRange]);
+  }, []);
 
   const handleClientClick = (id) => {
     navigate(`/dashboard/clients/${id}`);
@@ -644,11 +645,12 @@ const ClientsDashboard = ({ dateRange = '7d' }) => {
 
   return (
     <>
+      <h1 className="dashboard-title">Clients</h1>
       {/* Summary Section */}
-      <DashboardSection title="Summary">
+      <DashboardSection>
         <p className="summary-text">
           You have {clientStats.totalClients} clients, with {clientStats.activeClients} active and {clientStats.atRiskClients} at risk.
-          {clientStats.newClients} new clients were added in the past {dateRange === '7d' ? 'week' : dateRange === '30d' ? 'month' : dateRange === '90d' ? 'quarter' : 'year'}.
+          {clientStats.newClients} new clients were added in the past month.
           Total client revenue is ${clientStats.totalRevenue.toLocaleString()} with an average of ${clientStats.avgRevenue.toLocaleString()} per client.
         </p>
       </DashboardSection>
@@ -676,42 +678,6 @@ const ClientsDashboard = ({ dateRange = '7d' }) => {
             <h3>AVG REVENUE / CLIENT</h3>
             <div className="value">${clientStats.avgRevenue.toLocaleString()}</div>
           </div>
-        </div>
-      </DashboardSection>
-
-      {/* Upcoming Meetings Section */}
-      <DashboardSection title="Upcoming Meetings">
-        <div className="meetings-container">
-          {openMilestones.length > 0 ? (
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Client</th>
-                  <th>Milestone</th>
-                  <th>Due Date</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {openMilestones.map(milestone => (
-                  <tr key={milestone.id} onClick={() => handleClientClick(milestone.clientId)}>
-                    <td>{milestone.clientName}</td>
-                    <td>{milestone.title}</td>
-                    <td>{new Date(milestone.dueDate).toLocaleDateString()}</td>
-                    <td>
-                      <span className={`status-badge ${getStatusColorClass(milestone.status)}`}>
-                        {milestone.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <div className="no-data-message">
-              <p>No upcoming milestones</p>
-            </div>
-          )}
         </div>
       </DashboardSection>
 
@@ -745,7 +711,7 @@ const ClientsDashboard = ({ dateRange = '7d' }) => {
         }
       >
         <div className="table-container">
-          <table className="data-table">
+          <table className="data-table client-table">
             <thead>
               <tr>
                 <th onClick={() => requestSort('name')}>

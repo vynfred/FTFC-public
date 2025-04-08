@@ -158,6 +158,7 @@ const DashboardWithModules = () => {
 
   return (
     <Container fluid className={styles.dashboardPage}>
+      <h1 className={styles.dashboardTitle}>Sales</h1>
       {/* AI Summary Section */}
       <Container className={styles.summarySection}>
         <div className={styles.aiSummaryWrapper}>
