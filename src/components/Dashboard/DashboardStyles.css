@@ -1,0 +1,20 @@
+/* Common dashboard header styles */
+.marketing-header h1,
+.leads-header h1,
+.clients-header h1,
+.investors-header h1,
+.partners-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 24px 0;
+}
+
+/* Remove any existing subheader styles */
+.marketing-subheader,
+.leads-subheader,
+.clients-subheader,
+.investors-subheader,
+.partners-subheader {
+  display: none;
+}

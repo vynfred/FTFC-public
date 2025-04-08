@@ -1,5 +1,4 @@
 import React from 'react';
-import { FaChartBar, FaChartLine, FaExchangeAlt, FaHandshake, FaMoneyBillWave, FaRocket } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import styles from './Services.module.css';
 
@@ -17,7 +16,6 @@ const Services = () => {
         <div className={styles.container}>
           <div className={styles.servicesGrid}>
             <div className={styles.serviceCard} id="startup-funding">
-              <div className={styles.serviceIcon}><FaRocket /></div>
               <h2 className={styles.serviceTitle}>Startup Funding</h2>
               <p className={styles.serviceDescription}>
                 We help early-stage startups secure the capital they need to launch and grow. Our extensive network of angel investors, venture capitalists, and private equity firms allows us to match startups with the right funding partners.
@@ -28,11 +26,10 @@ const Services = () => {
                 <li>Pitch deck preparation and investor readiness</li>
                 <li>Valuation assistance and term sheet negotiation</li>
               </ul>
-              <Link to="/consultation" className={styles.serviceButton}>Get Started</Link>
+
             </div>
 
             <div className={styles.serviceCard} id="growth-capital">
-              <div className={styles.serviceIcon}><FaMoneyBillWave /></div>
               <h2 className={styles.serviceTitle}>Growth Capital</h2>
               <p className={styles.serviceDescription}>
                 Access the capital you need to scale your business through equity investments, revenue-based financing, and strategic partnerships tailored to your growth stage.
@@ -43,11 +40,9 @@ const Services = () => {
                 <li>Strategic partnership opportunities</li>
                 <li>Flexible capital solutions for scaling</li>
               </ul>
-              <Link to="/consultation" className={styles.serviceButton}>Get Started</Link>
             </div>
 
             <div className={styles.serviceCard} id="venture-capital">
-              <div className={styles.serviceIcon}><FaHandshake /></div>
               <h2 className={styles.serviceTitle}>Venture Capital</h2>
               <p className={styles.serviceDescription}>
                 For high-growth startups with innovative business models, we provide access to venture capital firms looking for the next big opportunity. Our VC connections span various industries and investment stages.
@@ -58,11 +53,9 @@ const Services = () => {
                 <li>Due diligence preparation</li>
                 <li>Post-funding growth strategy</li>
               </ul>
-              <Link to="/consultation" className={styles.serviceButton}>Get Started</Link>
             </div>
 
             <div className={styles.serviceCard} id="financial-consulting">
-              <div className={styles.serviceIcon}><FaChartLine /></div>
               <h2 className={styles.serviceTitle}>Financial Consulting</h2>
               <p className={styles.serviceDescription}>
                 Our team of financial experts provides strategic advice to optimize your business finances, improve cash flow, and prepare for future growth or funding rounds.
@@ -73,11 +66,9 @@ const Services = () => {
                 <li>Expense reduction analysis</li>
                 <li>Financial health assessment</li>
               </ul>
-              <Link to="/consultation" className={styles.serviceButton}>Get Started</Link>
             </div>
 
             <div className={styles.serviceCard} id="investment-strategies">
-              <div className={styles.serviceIcon}><FaChartBar /></div>
               <h2 className={styles.serviceTitle}>Investment Strategies</h2>
               <p className={styles.serviceDescription}>
                 For businesses looking to invest their capital wisely, we develop customized investment strategies that balance growth, risk, and liquidity needs.
@@ -88,11 +79,9 @@ const Services = () => {
                 <li>Diversification strategies</li>
                 <li>Regular portfolio review and optimization</li>
               </ul>
-              <Link to="/consultation" className={styles.serviceButton}>Get Started</Link>
             </div>
 
             <div className={styles.serviceCard} id="merger-acquisition">
-              <div className={styles.serviceIcon}><FaExchangeAlt /></div>
               <h2 className={styles.serviceTitle}>Merger & Acquisition</h2>
               <p className={styles.serviceDescription}>
                 Whether you're looking to acquire another business or prepare for an exit, our M&A services guide you through the complex process from valuation to closing.
@@ -103,7 +92,6 @@ const Services = () => {
                 <li>Due diligence coordination</li>
                 <li>Post-merger integration planning</li>
               </ul>
-              <Link to="/consultation" className={styles.serviceButton}>Get Started</Link>
             </div>
           </div>
         </div>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FaBuilding, FaChartLine, FaCheck, FaCopy, FaEdit, FaEye, FaFilter, FaHandshake, FaSearch, FaSort, FaSortDown, FaSortUp, FaUpload, FaUserFriends, FaUserPlus } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useStatsView } from '../../context/StatsViewContext';
+import './DashboardStyles.css';
 // CSS is now imported globally
 import FileUploader from '../common/FileUploader';
 import DashboardSection from '../shared/DashboardSection';
@@ -366,7 +367,9 @@ const PartnerDashboard = () => {
 
   return (
     <>
-      <h1 className="dashboard-title">Partners</h1>
+      <div className="partners-header">
+        <h1>Partners</h1>
+      </div>
       {/* AI Summary */}
       <DashboardSection>
         <p className="summary-text">

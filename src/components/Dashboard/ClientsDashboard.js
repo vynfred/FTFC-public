@@ -645,7 +645,9 @@ const ClientsDashboard = () => {
 
   return (
     <>
-      <h1 className="dashboard-title">Clients</h1>
+      <div className="clients-header">
+        <h1>Clients</h1>
+      </div>
       {/* Summary Section */}
       <DashboardSection>
         <p className="summary-text">

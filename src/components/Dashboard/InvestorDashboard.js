@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FaCalendarAlt, FaChartBar, FaExchangeAlt, FaSort, FaSortDown, FaSortUp, FaUpload, FaUserPlus } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useStatsView } from '../../context/StatsViewContext';
+import './DashboardStyles.css';
 // CSS is now imported globally
 import { generateInvestorsCSVTemplate, processInvestorsData, validateInvestorsCSV } from '../../utils/csvUtils';
 import FileUploader from '../common/FileUploader';
@@ -285,7 +286,9 @@ const InvestorDashboard = () => {
 
   return (
     <>
-      <h1 className="dashboard-title">Investors</h1>
+      <div className="investors-header">
+        <h1>Investors</h1>
+      </div>
       {/* Summary Section */}
       <DashboardSection>
         <p className="summary-text">

@@ -8,6 +8,7 @@ import { useStatsView } from '../../context/StatsViewContext';
 import { generateLeadsCSVTemplate, processLeadsData, validateLeadsCSV } from '../../utils/csvUtils';
 import FileUploader from '../common/FileUploader';
 import DashboardSection from '../shared/DashboardSection';
+import './DashboardStyles.css';
 import styles from './LeadsDashboard.module.css';
 
 // Register Chart.js components
@@ -398,9 +399,6 @@ const LeadsDashboard = ({ dateRange = '7d' }) => {
     <div className={styles.leadsDashboard}>
       <div className={styles.leadsHeader}>
         <h1>Leads</h1>
-        <div className={styles.leadsSubheader}>
-          <span>{getViewTypeText()}</span>
-        </div>
       </div>
 
       {/* Summary Section */}

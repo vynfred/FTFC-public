@@ -41,6 +41,7 @@ const Footer = () => {
                 <li><Link to="/team">Team</Link></li>
                 <li><Link to="/services">Services</Link></li>
                 <li><Link to="/contact">Contact</Link></li>
+                <li><Link to="/careers">Careers</Link></li>
               </ul>
             </div>
 
@@ -63,17 +64,11 @@ const Footer = () => {
 
             <div className={styles.footerColumn}>
               <h3 className={styles.footerHeading}>Login</h3>
-              <div className={styles.loginButtons}>
-                <Link to="/client-login" className={styles.loginButton}>
-                  Client Login
-                </Link>
-                <Link to="/investor-login" className={styles.loginButton}>
-                  Investor Login
-                </Link>
-                <Link to="/partner-login" className={styles.loginButton}>
-                  Partner Login
-                </Link>
-              </div>
+              <ul className={styles.footerLinks}>
+                <li><Link to="/client-login">Client Login</Link></li>
+                <li><Link to="/investor-login">Investor Login</Link></li>
+                <li><Link to="/partner-login">Partner Login</Link></li>
+              </ul>
             </div>
           </div>
         </div>

@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDateRange } from '../../context/DateRangeContext';
 import { useStatsView } from '../../context/StatsViewContext';
 import DashboardSection from '../shared/DashboardSection';
+import './DashboardStyles.css';
 import styles from './MarketingDashboard.module.css';
 
 // Register Chart.js components
@@ -1088,9 +1089,6 @@ const MarketingDashboard = () => {
     <div className={styles.marketingDashboard}>
       <div className={styles.marketingHeader}>
         <h1>Marketing</h1>
-        <div className={styles.marketingSubheader}>
-          <span>{getViewTypeText()} • {getDateRangeText()}</span>
-        </div>
       </div>
 
       {/* Marketing Summary Section */}
