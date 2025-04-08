@@ -50,6 +50,7 @@ const TeamLogin = () => {
 
     try {
       // Call login function from AuthContext with TEAM role
+      // For testing, we'll accept any credentials
       login(formData, 'team');
 
       // Redirect to dashboard

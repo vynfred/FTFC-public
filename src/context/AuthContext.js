@@ -47,15 +47,31 @@ export const AuthProvider = ({ children }) => {
     // In a real app, this would make an API call to validate credentials
     // and return user data with the appropriate role
 
-    // For demo purposes, we'll simulate different users based on role
+    // For demo purposes, we'll simulate different users based on role or email
     let userData;
+
+    // For testing purposes, allow specific email addresses to map to roles
+    if (credentials.email === 'team@ftfc.com' || credentials.email.includes('admin') || credentials.email.includes('john')) {
+      role = USER_ROLES.TEAM;
+    } else if (credentials.email === 'client@ftfc.com' || credentials.email.includes('client')) {
+      role = USER_ROLES.CLIENT;
+    } else if (credentials.email === 'investor@ftfc.com' || credentials.email.includes('investor')) {
+      role = USER_ROLES.INVESTOR;
+    } else if (credentials.email === 'partner@ftfc.com' || credentials.email.includes('partner')) {
+      role = USER_ROLES.PARTNER;
+    }
+
+    // If no role is specified or detected, default to TEAM for testing
+    if (!role) {
+      role = USER_ROLES.TEAM;
+    }
 
     switch (role) {
       case USER_ROLES.TEAM:
         userData = {
           id: 'team-1',
           name: 'Team Member',
-          email: credentials.email,
+          email: credentials.email || 'team@ftfc.com',
           role: USER_ROLES.TEAM,
           permissions: ['view_all', 'edit_all', 'admin']
         };
@@ -65,7 +81,7 @@ export const AuthProvider = ({ children }) => {
         userData = {
           id: 'client-1',
           name: 'Client User',
-          email: credentials.email,
+          email: credentials.email || 'client@ftfc.com',
           role: USER_ROLES.CLIENT,
           companyId: 'company-1',
           permissions: ['view_own_data']
@@ -76,7 +92,7 @@ export const AuthProvider = ({ children }) => {
         userData = {
           id: 'investor-1',
           name: 'Investor User',
-          email: credentials.email,
+          email: credentials.email || 'investor@ftfc.com',
           role: USER_ROLES.INVESTOR,
           investorId: 'investor-1',
           permissions: ['view_investments']
@@ -87,7 +103,7 @@ export const AuthProvider = ({ children }) => {
         userData = {
           id: 'partner-1',
           name: 'Partner User',
-          email: credentials.email,
+          email: credentials.email || 'partner@ftfc.com',
           role: USER_ROLES.PARTNER,
           partnerId: 'partner-1',
           permissions: ['view_referrals']
@@ -95,7 +111,14 @@ export const AuthProvider = ({ children }) => {
         break;
 
       default:
-        throw new Error('Invalid role specified');
+        // Default to team role for any unrecognized role
+        userData = {
+          id: 'team-1',
+          name: 'Team Member',
+          email: credentials.email || 'team@ftfc.com',
+          role: USER_ROLES.TEAM,
+          permissions: ['view_all', 'edit_all', 'admin']
+        };
     }
 
     // Store user in localStorage for session persistence
