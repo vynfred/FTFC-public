@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaEnvelope, FaLock } from 'react-icons/fa';
+import { useAuth } from '../../context/AuthContext';
 import styles from './Auth.module.css';
 
 const InvestorLogin = () => {
@@ -11,6 +12,7 @@ const InvestorLogin = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -52,11 +54,11 @@ const InvestorLogin = () => {
     setIsLoading(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Call login function from AuthContext with INVESTOR role
+      login(formData, 'investor');
       
-      // For demo purposes, we'll just redirect to the dashboard
-      navigate('/dashboard');
+      // Redirect to investor portal
+      navigate('/investor-portal');
     } catch (error) {
       setErrors({ general: 'Login failed. Please check your credentials and try again.' });
     } finally {
