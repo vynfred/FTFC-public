@@ -1,12 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import styles from './NotFound.module.css';
 
 const NotFound = () => (
-  <div className="not-found">
+  <div className={styles.notFound}>
     <h1>404 - Page Not Found</h1>
     <p>The page you're looking for doesn't exist.</p>
-    <Link to="/" className="btn-primary">Return Home</Link>
+    <Link to="/" className={styles.btnPrimary}>Return Home</Link>
   </div>
 );
 
-export default NotFound; 
+export default NotFound;
