@@ -143,7 +143,7 @@ const DashboardWithModules = () => {
 
   // Get data for the selected date range
   const data = getData();
-  
+
   // Destructure data
   const { meetings, metrics, salesGoal, leadStats, leadSources, lossReasons, actionsRequired } = data;
 
@@ -186,6 +186,25 @@ const DashboardWithModules = () => {
             </Link>
           ))}
         </Grid>
+      </Container>
+
+      {/* Action Required Section */}
+      <Container className={styles.dashboardSection}>
+        <h2 className={styles.sectionTitle}>Action Required</h2>
+        <div className={styles.actionTable}>
+          <div className={styles.actionHeader}>
+            <div className={styles.actionCell}>Client</div>
+            <div className={styles.actionCell}>Action</div>
+            <div className={styles.actionCell}>Deadline</div>
+          </div>
+          {actionsRequired.map((action, index) => (
+            <div className={styles.actionRow} key={index}>
+              <div className={styles.actionCell}>{action.client}</div>
+              <div className={styles.actionCell}>{action.action}</div>
+              <div className={styles.actionCell}>{action.deadline}</div>
+            </div>
+          ))}
+        </div>
       </Container>
 
       {/* Company Vitals Section */}
@@ -237,8 +256,8 @@ const DashboardWithModules = () => {
               <div className={styles.leadSourceItem} key={index}>
                 <div className={styles.leadSourceName}>{source.name}</div>
                 <div className={styles.leadSourceBarContainer}>
-                  <div 
-                    className={styles.leadSourceBar} 
+                  <div
+                    className={styles.leadSourceBar}
                     style={{ width: `${source.percentage}%` }}
                   ></div>
                 </div>
@@ -254,33 +273,14 @@ const DashboardWithModules = () => {
               <div className={styles.lossAnalysisItem} key={index}>
                 <div className={styles.lossReason}>{loss.reason}</div>
                 <div className={styles.lossBarContainer}>
-                  <div 
-                    className={styles.lossBar} 
+                  <div
+                    className={styles.lossBar}
                     style={{ width: `${loss.percentage}%` }}
                   ></div>
                 </div>
                 <div className={styles.lossPercentage}>{loss.percentage}%</div>
               </div>
             ))}
-          </div>
-
-          {/* Action Required */}
-          <div className={styles.actionRequiredSection}>
-            <h3 className={styles.subsectionTitle}>Action Required</h3>
-            <div className={styles.actionTable}>
-              <div className={styles.actionHeader}>
-                <div className={styles.actionCell}>Client</div>
-                <div className={styles.actionCell}>Action</div>
-                <div className={styles.actionCell}>Deadline</div>
-              </div>
-              {actionsRequired.map((action, index) => (
-                <div className={styles.actionRow} key={index}>
-                  <div className={styles.actionCell}>{action.client}</div>
-                  <div className={styles.actionCell}>{action.action}</div>
-                  <div className={styles.actionCell}>{action.deadline}</div>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </Container>

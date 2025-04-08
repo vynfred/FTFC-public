@@ -26,7 +26,7 @@ const SidebarNav = ({ collapsed, toggleSidebar }) => {
   const navItems = [
     {
       path: '/dashboard',
-      name: 'Dashboard',
+      name: 'Sales',
       icon: <FaChartBar />
     },
     {
