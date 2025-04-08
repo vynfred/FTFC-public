@@ -1,0 +1,311 @@
+.publicPagesManager {
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.editButton,
+.saveButton,
+.cancelButton,
+.previewButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.editButton {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.editButton:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.saveButton {
+  background-color: var(--color-primary);
+  color: var(--color-background-dark);
+  border: none;
+}
+
+.saveButton:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.cancelButton {
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cancelButton:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.previewButton {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.previewButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.contentContainer {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.pageTabs {
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  overflow-x: auto;
+}
+
+.pageTab {
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.pageTab:hover {
+  color: var(--color-text-primary);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.pageTab.active {
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+  background-color: rgba(245, 158, 11, 0.05);
+}
+
+.pageContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 24px;
+}
+
+.pageForm {
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  padding-right: 24px;
+}
+
+.formFields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formGroup label {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.formGroup input,
+.formGroup textarea {
+  padding: 10px 12px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: var(--color-text-primary);
+  font-size: 14px;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.formGroup input:disabled,
+.formGroup textarea:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.sectionItem {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.pageLivePreview {
+  padding-left: 24px;
+}
+
+.pageLivePreview h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 16px;
+  color: var(--color-text-secondary);
+}
+
+.previewContainer {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 24px;
+  color: var(--color-text-primary);
+  overflow-y: auto;
+  max-height: 500px;
+}
+
+.previewContainer h1 {
+  font-size: 24px;
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: var(--color-primary);
+}
+
+.previewContainer h2 {
+  font-size: 18px;
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: var(--color-text-secondary);
+}
+
+.heroText {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.ctaButton {
+  background-color: var(--color-primary);
+  color: var(--color-background-dark);
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 24px;
+}
+
+.previewSection {
+  margin-bottom: 24px;
+}
+
+.previewSection h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: var(--color-text-primary);
+}
+
+.servicesPreview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.serviceCard {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.serviceCard h3 {
+  font-size: 16px;
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.contactInfo {
+  margin-bottom: 24px;
+}
+
+.formPreview {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.formPreview h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.formPreview ul {
+  padding-left: 20px;
+}
+
+.teamPreview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.teamMemberCard {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.teamMemberCard h3 {
+  font-size: 16px;
+  margin-top: 0;
+  margin-bottom: 4px;
+}
+
+.memberTitle {
+  font-size: 14px;
+  color: var(--color-primary);
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+  .pageContent {
+    grid-template-columns: 1fr;
+  }
+  
+  .pageForm {
+    border-right: none;
+    padding-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 24px;
+  }
+  
+  .pageLivePreview {
+    padding-left: 0;
+  }
+}

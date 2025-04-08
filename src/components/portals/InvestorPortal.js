@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaBuilding, FaChartLine, FaFileAlt, FaHandshake } from 'react-icons/fa';
+import { FaChartLine, FaHandshake } from 'react-icons/fa';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import InvestmentProspectus from '../common/InvestmentProspectus';
@@ -200,7 +200,7 @@ const InvestorPortal = () => {
         </div>
         
         <div className={styles.portalSection}>
-          <h2 className={styles.sectionTitle}>Your Portfolio</h2>
+          <h2 className={styles.sectionTitle}>Your Investments</h2>
           
           <div className={styles.tableContainer}>
             <table className={styles.dataTable}>
@@ -238,7 +238,7 @@ const InvestorPortal = () => {
         
         {/* Referral Link Section */}
         <div className={styles.portalSection}>
-          <h2 className={styles.sectionTitle}>Refer an Investor</h2>
+          <h2 className={styles.sectionTitle}>Help expand our network</h2>
           <ReferralLink 
             userId={user?.uid || 'investor123'} 
             type="investor" 
@@ -248,7 +248,7 @@ const InvestorPortal = () => {
         
         {/* Team Member Card Section */}
         <div className={styles.portalSection}>
-          <h2 className={styles.sectionTitle}>Your Investment Manager</h2>
+          <h2 className={styles.sectionTitle}>Your FTFC Advisor</h2>
           <TeamMemberCard 
             name={investorData.assignedTeamMember.name}
             title={investorData.assignedTeamMember.title}

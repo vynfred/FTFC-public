@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FaCog, FaEnvelope, FaFileAlt, FaGlobe, FaPhone, FaUser, FaUsers } from 'react-icons/fa';
 import { useStatsView } from '../../context/StatsViewContext';
+import PublicPagesManager from './PublicPagesManager';
 
 const CompanySettings = () => {
   const [activeTab, setActiveTab] = useState('general');
