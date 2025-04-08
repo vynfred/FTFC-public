@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
+import LoginLink from '../common/LoginLink';
 import styles from './Header.module.css';
 
 const Header = () => {
@@ -22,20 +23,19 @@ const Header = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
-
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
-  // Close menu when route changes
+  // Close mobile menu when route changes
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location]);
 
   return (
-    <header className={styles.siteHeader}>
-      <div className={styles.headerContainer}>
+    <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''}`}>
+      <div className={styles.container}>
         <div className={styles.logo}>
           <Link to="/">FTFC</Link>
         </div>
@@ -70,9 +70,9 @@ const Header = () => {
         </nav>
 
         <div className={styles.headerButtons}>
-          <Link to="/client-login" className={styles.clientLoginBtn}>
+          <LoginLink to="/client-login" className={styles.clientLoginBtn}>
             Client Login
-          </Link>
+          </LoginLink>
           <Link to="/consultation" className={styles.consultationBtn}>
             Free Consultation
           </Link>
