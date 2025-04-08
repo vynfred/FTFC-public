@@ -174,14 +174,16 @@ const MarketingDashboard = () => {
   };
 
   // Get current data based on selected date range and traffic type
-  const currentTrafficData = trafficDataSets[trafficType][dateRange];
-  const currentLabels = currentTrafficData.labels;
-  const currentData = currentTrafficData.all;
+  // Make sure we have a valid date range key
+  const validDateRange = ['7d', '30d', '90d', '1y'].includes(dateRange) ? dateRange : '7d';
+  const currentTrafficData = trafficDataSets[trafficType][validDateRange];
+  const currentLabels = currentTrafficData?.labels || [];
+  const currentData = currentTrafficData?.all || {};
 
   // Calculate max value for y-axis scaling
-  const maxValue = Math.max(
-    ...Object.values(currentData).flatMap(arr => arr)
-  );
+  const maxValue = Object.values(currentData).length > 0
+    ? Math.max(...Object.values(currentData).flatMap(arr => arr || []))
+    : 100; // Default value if no data
 
   // Generate y-axis labels based on max value
   const yAxisLabels = [
@@ -232,17 +234,26 @@ const MarketingDashboard = () => {
   useEffect(() => {
     // In a real app, this would fetch data from Google Analytics API
     // For now, we'll use our mock data but structure it to match GA data format
-    const timeframeData = trafficDataSets[trafficType][dateRange];
-    const labels = timeframeData.labels;
+    // Make sure we have a valid date range key
+    const validDateRange = ['7d', '30d', '90d', '1y'].includes(dateRange) ? dateRange : '7d';
+    const timeframeData = trafficDataSets[trafficType][validDateRange];
+
+    if (!timeframeData) {
+      console.error(`No data found for traffic type ${trafficType} and date range ${validDateRange}`);
+      return;
+    }
+
+    const labels = timeframeData.labels || [];
+    const allData = timeframeData.all || {};
 
     let datasets = [];
 
     if (graphSource === 'all') {
       // Add all data sources
-      Object.keys(timeframeData.all).forEach(key => {
+      Object.keys(allData).forEach(key => {
         datasets.push({
           label: key.charAt(0).toUpperCase() + key.slice(1),
-          data: timeframeData.all[key],
+          data: allData[key] || [],
           backgroundColor: `${getSourceColor(key)}20`,
           borderColor: getSourceColor(key),
           borderWidth: 2,
@@ -252,11 +263,11 @@ const MarketingDashboard = () => {
           fill: true
         });
       });
-    } else {
-      // Add only selected source
+    } else if (allData[graphSource]) {
+      // Add only selected source if it exists
       datasets.push({
         label: graphSource.charAt(0).toUpperCase() + graphSource.slice(1),
-        data: timeframeData.all[graphSource],
+        data: allData[graphSource],
         backgroundColor: `${getSourceColor(graphSource)}20`,
         borderColor: getSourceColor(graphSource),
         borderWidth: 2,
@@ -268,12 +279,12 @@ const MarketingDashboard = () => {
     }
 
     setGraphData({
-      organicData: timeframeData.all.organic,
-      paidData: timeframeData.all.paid,
+      organicData: allData.organic || [],
+      paidData: allData.paid || [],
       labels,
       datasets
     });
-  }, [dateRange, graphSource, trafficType]);
+  }, [dateRange, trafficType]);
 
   // Sort content function
   const requestContentSort = (key) => {
