@@ -1,0 +1,271 @@
+/* LeadsDashboard.module.css */
+/* Styles for the leads dashboard */
+
+.leadsDashboard {
+  width: 100%;
+  padding: var(--spacing-md);
+}
+
+.leadsHeader {
+  margin-bottom: var(--spacing-md);
+}
+
+.leadsHeader h1 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.leadsSubheader {
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+}
+
+/* Summary Section */
+.summaryText {
+  font-size: var(--font-size-md);
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+/* Stats Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--spacing-md);
+}
+
+.statCard {
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-md);
+  text-align: center;
+}
+
+.statCard h3 {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-sm) 0;
+  text-transform: uppercase;
+}
+
+.value {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+/* Meetings Container */
+.meetingsContainer {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Table Styles */
+.tableContainer {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.dataTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dataTable th,
+.dataTable td {
+  padding: var(--spacing-sm);
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dataTable th {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.dataTable th:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.dataTable tbody tr {
+  transition: background-color var(--transition-default);
+  cursor: pointer;
+}
+
+.dataTable tbody tr:hover {
+  background-color: var(--color-background-light);
+}
+
+/* Status Badge */
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.statusNew {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+}
+
+.statusContacted {
+  background-color: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+.statusQualified {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.statusEvaluation {
+  background-color: rgba(139, 92, 246, 0.2);
+  color: #8b5cf6;
+}
+
+.statusOpportunity {
+  background-color: rgba(236, 72, 153, 0.2);
+  color: #ec4899;
+}
+
+.statusWon {
+  background-color: rgba(5, 150, 105, 0.2);
+  color: #059669;
+}
+
+.statusLost {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.statusDeferred {
+  background-color: rgba(107, 114, 128, 0.2);
+  color: #6b7280;
+}
+
+/* Search and Filter Container */
+.searchFilterContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.statusFilter {
+  padding: 0.5rem;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-background-dark);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}
+
+/* Action Button Container */
+.actionButtonContainer {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.createButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-primary);
+  color: var(--color-background-dark);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-default);
+}
+
+.createButton:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.uploadButton {
+  background-color: var(--color-background-light);
+  color: var(--color-text-primary);
+}
+
+.uploadButton:hover {
+  background-color: var(--color-surface-hover);
+}
+
+/* No Data Message */
+.noDataMessage {
+  padding: var(--spacing-md);
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+/* Shortcuts Grid */
+.shortcutsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-md);
+}
+
+.shortcutCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-default);
+}
+
+.shortcutCard:hover {
+  transform: translateY(-2px);
+  background-color: var(--color-surface-hover);
+}
+
+.shortcutIcon {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.shortcutTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 48rem) { /* 768px */
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .shortcutsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 36rem) { /* 576px */
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .shortcutsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .actionButtonContainer {
+    flex-direction: column;
+  }
+}

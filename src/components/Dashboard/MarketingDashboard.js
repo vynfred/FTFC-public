@@ -7,8 +7,8 @@ import { FaSort, FaSortDown, FaSortUp } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useDateRange } from '../../context/DateRangeContext';
 import { useStatsView } from '../../context/StatsViewContext';
-// CSS is now imported globally
 import DashboardSection from '../shared/DashboardSection';
+import styles from './MarketingDashboard.module.css';
 
 // Register Chart.js components
 ChartJS.register(
@@ -1081,19 +1081,196 @@ const MarketingDashboard = () => {
   };
 
   return (
-    <div className="marketing-dashboard">
-      <div className="marketing-header">
+    <div className={styles.marketingDashboard}>
+      <div className={styles.marketingHeader}>
         <h1>Marketing Dashboard</h1>
-        <div className="marketing-subheader">
+        <div className={styles.marketingSubheader}>
           <span>{getViewTypeText()} • {getDateRangeText()}</span>
         </div>
       </div>
 
-      <DashboardSection title="Campaign Performance">
-        {/* Campaign performance content */}
+      {/* Marketing Summary Section */}
+      <DashboardSection title="Marketing Summary">
+        <p className={styles.summaryText}>
+          Your marketing efforts have generated {websiteVisitors.toLocaleString()} website visitors and {leadsGenerated} new leads in the {getDateRangeText().toLowerCase()}.
+          The average conversion rate is {conversionRate}%, with a cost per lead of ${costPerLead}.
+          Your top performing campaign is "{topCampaign.name}" with {topCampaign.leads} leads generated.
+        </p>
       </DashboardSection>
 
-      {/* Additional sections */}
+      {/* Marketing Statistics Section */}
+      <DashboardSection title="Marketing Statistics">
+        <div className={styles.statsGrid}>
+          <div className={styles.statCard}>
+            <h3>WEBSITE VISITORS</h3>
+            <div className={styles.value}>{websiteVisitors.toLocaleString()}</div>
+            <div className={`${styles.change} ${trafficTrend === 'up' ? styles.positive : styles.negative}`}>
+              {trafficTrend === 'up' ? '+' : '-'}{trafficChangePercent}%
+            </div>
+          </div>
+          <div className={styles.statCard}>
+            <h3>CONVERSION RATE</h3>
+            <div className={styles.value}>{conversionRate}%</div>
+          </div>
+          <div className={styles.statCard}>
+            <h3>LEADS GENERATED</h3>
+            <div className={styles.value}>{leadsGenerated}</div>
+          </div>
+          <div className={styles.statCard}>
+            <h3>COST PER LEAD</h3>
+            <div className={styles.value}>${costPerLead}</div>
+          </div>
+        </div>
+      </DashboardSection>
+
+      {/* Traffic Sources Section */}
+      <DashboardSection title="Traffic Sources">
+        <div className={styles.trafficSourcesContainer}>
+          <div className={styles.trafficControls}>
+            <div className={styles.trafficTypeSelector}>
+              <button
+                className={`${styles.trafficTypeButton} ${trafficType === 'leads' ? styles.active : ''}`}
+                onClick={() => setTrafficType('leads')}
+              >
+                Lead Traffic
+              </button>
+              <button
+                className={`${styles.trafficTypeButton} ${trafficType === 'investors' ? styles.active : ''}`}
+                onClick={() => setTrafficType('investors')}
+              >
+                Investor Traffic
+              </button>
+            </div>
+            <div className={styles.sourceSelector}>
+              <button
+                className={`${styles.sourceButton} ${graphSource === 'all' ? styles.active : ''}`}
+                onClick={() => setGraphSource('all')}
+              >
+                All Sources
+              </button>
+              <button
+                className={`${styles.sourceButton} ${graphSource === 'organic' ? styles.active : ''}`}
+                onClick={() => setGraphSource('organic')}
+              >
+                Organic
+              </button>
+              <button
+                className={`${styles.sourceButton} ${graphSource === 'paid' ? styles.active : ''}`}
+                onClick={() => setGraphSource('paid')}
+              >
+                Paid
+              </button>
+              <button
+                className={`${styles.sourceButton} ${graphSource === 'social' ? styles.active : ''}`}
+                onClick={() => setGraphSource('social')}
+              >
+                Social
+              </button>
+              <button
+                className={`${styles.sourceButton} ${graphSource === 'referral' ? styles.active : ''}`}
+                onClick={() => setGraphSource('referral')}
+              >
+                Referral
+              </button>
+            </div>
+          </div>
+          <div className={styles.chartContainer}>
+            {/* Chart would be rendered here */}
+          </div>
+        </div>
+      </DashboardSection>
+
+      {/* Campaign Performance Section */}
+      <DashboardSection title="Campaign Performance">
+        <div className={styles.tableContainer}>
+          <table className={styles.campaignTable}>
+            <thead>
+              <tr>
+                <th onClick={() => requestCampaignSort('name')}>
+                  Campaign Name
+                </th>
+                <th onClick={() => requestCampaignSort('status')}>
+                  Status
+                </th>
+                <th onClick={() => requestCampaignSort('leads')}>
+                  Leads
+                </th>
+                <th onClick={() => requestCampaignSort('conversion')}>
+                  Conversion
+                </th>
+                <th onClick={() => requestCampaignSort('cost')}>
+                  Cost
+                </th>
+                <th onClick={() => requestCampaignSort('roi')}>
+                  ROI
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {allCampaigns.map(campaign => (
+                <tr key={campaign.id} onClick={() => handleCampaignClick(campaign.id)}>
+                  <td className={styles.campaignName}>{campaign.name}</td>
+                  <td>
+                    <span className={`${styles.campaignStatus} ${styles[`status${campaign.status.replace(' ', '')}`]}`}>
+                      {campaign.status}
+                    </span>
+                  </td>
+                  <td>{campaign.leads || 0}</td>
+                  <td>{campaign.conversion || 0}%</td>
+                  <td>${campaign.cost ? campaign.cost.toLocaleString() : '0'}</td>
+                  <td>{campaign.roi || 0}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </DashboardSection>
+
+      {/* Content Performance Section */}
+      <DashboardSection title="Content Performance">
+        <div className={styles.tableContainer}>
+          <table className={styles.contentTable}>
+            <thead>
+              <tr>
+                <th onClick={() => requestContentSort('title')}>
+                  Title
+                </th>
+                <th onClick={() => requestContentSort('type')}>
+                  Type
+                </th>
+                <th onClick={() => requestContentSort('views')}>
+                  Views
+                </th>
+                <th onClick={() => requestContentSort('conversions')}>
+                  Conversions
+                </th>
+                <th onClick={() => requestContentSort('conversionRate')}>
+                  Conv. Rate
+                </th>
+                <th onClick={() => requestContentSort('publishDate')}>
+                  Published
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {allContent.map(content => (
+                <tr key={content.id} onClick={() => handleContentClick(content.id)}>
+                  <td className={styles.contentTitle}>{content.title}</td>
+                  <td>
+                    <span className={`${styles.contentType} ${styles[`type${content.type}`]}`}>
+                      {content.type}
+                    </span>
+                  </td>
+                  <td>{content.views ? content.views.toLocaleString() : '0'}</td>
+                  <td>{content.conversions || 0}</td>
+                  <td>{content.views && content.conversions ? ((content.conversions / content.views) * 100).toFixed(1) : '0'}%</td>
+                  <td>{new Date(content.publishDate).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </DashboardSection>
     </div>
   );
 };

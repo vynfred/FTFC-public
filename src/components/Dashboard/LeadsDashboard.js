@@ -5,10 +5,10 @@ import React, { useEffect, useState } from 'react';
 import { FaAd, FaCalendarAlt, FaEdit, FaSort, FaSortDown, FaSortUp, FaUpload, FaUserPlus } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useStatsView } from '../../context/StatsViewContext';
-// CSS is now imported globally
 import { generateLeadsCSVTemplate, processLeadsData, validateLeadsCSV } from '../../utils/csvUtils';
 import FileUploader from '../common/FileUploader';
 import DashboardSection from '../shared/DashboardSection';
+import styles from './LeadsDashboard.module.css';
 
 // Register Chart.js components
 ChartJS.register(
@@ -305,21 +305,21 @@ const LeadsDashboard = ({ dateRange = '7d' }) => {
   const getStatusColorClass = (status) => {
     switch(status) {
       case 'Unqualified':
-        return 'status-new';
+        return 'statusNew';
       case 'In Qualification':
-        return 'status-contacted';
+        return 'statusContacted';
       case 'Qualified':
-        return 'status-qualified';
+        return 'statusQualified';
       case 'Evaluation':
-        return 'status-evaluation';
+        return 'statusEvaluation';
       case 'Opportunity':
-        return 'status-opportunity';
+        return 'statusOpportunity';
       case 'Closed Won':
-        return 'status-won';
+        return 'statusWon';
       case 'Closed Lost':
-        return 'status-lost';
+        return 'statusLost';
       case 'Closed Deferred':
-        return 'status-deferred';
+        return 'statusDeferred';
       default:
         return '';
     }
@@ -328,11 +328,11 @@ const LeadsDashboard = ({ dateRange = '7d' }) => {
   // Table actions component for the leads table
   const leadsTableActions = (
     <>
-      <div className="search-filter-container">
+      <div className={styles.searchFilterContainer}>
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="status-filter"
+          className={styles.statusFilter}
         >
           <option value="all">All Statuses</option>
           <option value="Unqualified">Unqualified</option>
@@ -345,11 +345,11 @@ const LeadsDashboard = ({ dateRange = '7d' }) => {
           <option value="Closed Deferred">Closed Deferred</option>
         </select>
       </div>
-      <div className="action-button-container">
-        <button className="create-button" onClick={handleCreateLead}>
+      <div className={styles.actionButtonContainer}>
+        <button className={styles.createButton} onClick={handleCreateLead}>
           <FaUserPlus /> Create Lead
         </button>
-        <button className="create-button upload-button" onClick={handleToggleUploader}>
+        <button className={`${styles.createButton} ${styles.uploadButton}`} onClick={handleToggleUploader}>
           <FaUpload /> {showUploader ? 'Hide Uploader' : 'Upload Leads'}
         </button>
       </div>
@@ -395,17 +395,17 @@ const LeadsDashboard = ({ dateRange = '7d' }) => {
   };
 
   return (
-    <div className="leads-dashboard">
-      <div className="leads-header">
+    <div className={styles.leadsDashboard}>
+      <div className={styles.leadsHeader}>
         <h1>Leads Dashboard</h1>
-        <div className="leads-subheader">
+        <div className={styles.leadsSubheader}>
           <span>{getViewTypeText()}</span>
         </div>
       </div>
 
       {/* Summary Section */}
       <DashboardSection title="Summary">
-        <p className="summary-text">
+        <p className={styles.summaryText}>
           You have {leadStats.totalLeads} leads in your pipeline with a total value of ${leadStats.totalValue.toLocaleString()}.
           {leadStats.newLeads} new leads were added in the past {dateRange === '7d' ? 'week' : dateRange === '30d' ? 'month' : dateRange === '90d' ? 'quarter' : 'year'},
           with {leadStats.meetingsScheduled} meetings scheduled. Your top lead source is {getTopLeadSource()},
@@ -415,35 +415,35 @@ const LeadsDashboard = ({ dateRange = '7d' }) => {
 
       {/* Lead Statistics Section */}
       <DashboardSection title="Lead Statistics">
-        <div className="stats-grid">
-          <div className="stat-card">
+        <div className={styles.statsGrid}>
+          <div className={styles.statCard}>
             <h3>NEW LEADS</h3>
-            <div className="value">{getLeadStats().newLeads}</div>
+            <div className={styles.value}>{getLeadStats().newLeads}</div>
           </div>
-          <div className="stat-card">
+          <div className={styles.statCard}>
             <h3>QUALIFIED LEADS</h3>
-            <div className="value">{getLeadStats().qualifiedLeads}</div>
+            <div className={styles.value}>{getLeadStats().qualifiedLeads}</div>
           </div>
-          <div className="stat-card">
+          <div className={styles.statCard}>
             <h3>MEETINGS SCHEDULED</h3>
-            <div className="value">{getLeadStats().meetingsScheduled}</div>
+            <div className={styles.value}>{getLeadStats().meetingsScheduled}</div>
           </div>
-          <div className="stat-card">
+          <div className={styles.statCard}>
             <h3>PROPOSALS SENT</h3>
-            <div className="value">{getLeadStats().proposalsSent}</div>
+            <div className={styles.value}>{getLeadStats().proposalsSent}</div>
           </div>
-          <div className="stat-card">
+          <div className={styles.statCard}>
             <h3>AVG LEAD VALUE</h3>
-            <div className="value">${getLeadStats().avgValue.toLocaleString()}</div>
+            <div className={styles.value}>${getLeadStats().avgValue.toLocaleString()}</div>
           </div>
         </div>
       </DashboardSection>
 
       {/* Upcoming Meetings Section */}
       <DashboardSection title="Upcoming Meetings">
-        <div className="meetings-container">
+        <div className={styles.meetingsContainer}>
           {upcomingMeetings.length > 0 ? (
-            <table className="data-table">
+            <table className={styles.dataTable}>
               <thead>
                 <tr>
                   <th>Contact</th>
@@ -464,7 +464,7 @@ const LeadsDashboard = ({ dateRange = '7d' }) => {
               </tbody>
             </table>
           ) : (
-            <div className="no-data-message">
+            <div className={styles.noDataMessage}>
               <p>No upcoming meetings scheduled</p>
             </div>
           )}
@@ -487,8 +487,8 @@ const LeadsDashboard = ({ dateRange = '7d' }) => {
         title="Sales Pipeline"
         actions={leadsTableActions}
       >
-        <div className="table-container">
-          <table className="data-table">
+        <div className={styles.tableContainer}>
+          <table className={styles.dataTable}>
             <thead>
               <tr>
                 <th onClick={() => requestSort('name')}>
@@ -517,7 +517,7 @@ const LeadsDashboard = ({ dateRange = '7d' }) => {
                   <td>{lead.name}</td>
                   <td>{lead.company}</td>
                   <td>
-                    <span className={`status-badge ${getStatusColorClass(lead.status)}`}>
+                    <span className={`${styles.statusBadge} ${styles[getStatusColorClass(lead.status)]}`}>
                       {lead.status}
                     </span>
                   </td>
@@ -533,22 +533,22 @@ const LeadsDashboard = ({ dateRange = '7d' }) => {
 
       {/* Shortcuts Section */}
       <DashboardSection title="Shortcuts">
-        <div className="shortcuts-grid">
-          <div className="shortcut-card" onClick={() => handleShortcutClick('create-lead')}>
-            <div className="shortcut-icon"><FaUserPlus /></div>
-            <div className="shortcut-title">Create Lead</div>
+        <div className={styles.shortcutsGrid}>
+          <div className={styles.shortcutCard} onClick={() => handleShortcutClick('create-lead')}>
+            <div className={styles.shortcutIcon}><FaUserPlus /></div>
+            <div className={styles.shortcutTitle}>Create Lead</div>
           </div>
-          <div className="shortcut-card" onClick={() => handleShortcutClick('schedule-meeting')}>
-            <div className="shortcut-icon"><FaCalendarAlt /></div>
-            <div className="shortcut-title">Schedule Meeting</div>
+          <div className={styles.shortcutCard} onClick={() => handleShortcutClick('schedule-meeting')}>
+            <div className={styles.shortcutIcon}><FaCalendarAlt /></div>
+            <div className={styles.shortcutTitle}>Schedule Meeting</div>
           </div>
-          <div className="shortcut-card" onClick={() => handleShortcutClick('blog')}>
-            <div className="shortcut-icon"><FaEdit /></div>
-            <div className="shortcut-title">Create Blog</div>
+          <div className={styles.shortcutCard} onClick={() => handleShortcutClick('blog')}>
+            <div className={styles.shortcutIcon}><FaEdit /></div>
+            <div className={styles.shortcutTitle}>Create Blog</div>
           </div>
-          <div className="shortcut-card" onClick={() => handleShortcutClick('ad')}>
-            <div className="shortcut-icon"><FaAd /></div>
-            <div className="shortcut-title">Create Ad</div>
+          <div className={styles.shortcutCard} onClick={() => handleShortcutClick('ad')}>
+            <div className={styles.shortcutIcon}><FaAd /></div>
+            <div className={styles.shortcutTitle}>Create Ad</div>
           </div>
         </div>
       </DashboardSection>

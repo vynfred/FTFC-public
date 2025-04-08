@@ -193,158 +193,153 @@ const Dashboard = () => {
   ];
 
   return (
-    <Container fluid className="dashboard-page">
+    <Container fluid className={styles.dashboardPage}>
       {/* AI Summary Section */}
-      <Container className="summary-section">
-        <div className="ai-summary-wrapper">
-          <p className="ai-summary">
+      <DashboardSection>
+        <div className={styles.aiSummaryWrapper}>
+          <p className={styles.aiSummary}>
           Welcome back! Today you have 3 client meetings scheduled. TechStart Inc is ready to sign their contract, and Capital Partners is considering increasing their investment by $250K. Your lead volume has increased by 12% this week, with website conversions showing the highest growth. The sales team is at 72% of this month's target with 10 days remaining.
           </p>
         </div>
-      </Container>
+      </DashboardSection>
 
       {/* Upcoming Meetings Section */}
-      <Container className="dashboard-section">
-        <h2 className="section-title">Upcoming Meetings</h2>
-        <Grid columns={1} gap="md" className="meetings-container">
+      <DashboardSection title="Upcoming Meetings">
+        <Grid columns={1} gap="md" className={styles.meetingsContainer}>
           {meetings.map((meeting) => (
-            <Link to={`/dashboard/meetings/${meeting.id}`} key={meeting.id} className="meeting-link">
-              <div className="meeting-card">
-                <div className="meeting-info">
+            <Link to={`/dashboard/meetings/${meeting.id}`} key={meeting.id} className={styles.meetingLink}>
+              <div className={styles.meetingCard}>
+                <div className={styles.meetingInfo}>
                   <h3>{meeting.title}</h3>
-                  <div className="meeting-time">
+                  <div className={styles.meetingTime}>
                     <FaCalendarAlt style={{ marginRight: '6px' }} />
                     {meeting.time}
                   </div>
-                  <div className="meeting-type">{meeting.type}</div>
+                  <div className={styles.meetingType}>{meeting.type}</div>
                 </div>
               </div>
             </Link>
           ))}
         </Grid>
-      </Container>
+      </DashboardSection>
 
       {/* Company Vitals Section */}
-      <Container className="dashboard-section">
-        <h2 className="section-title">Company Vitals</h2>
-        <Grid columns={2} mdColumns={2} smColumns={1} gap="md" className="metrics-grid">
+      <DashboardSection title="Company Vitals">
+        <Grid columns={2} mdColumns={2} smColumns={1} gap="md" className={styles.metricsGrid}>
           {metrics.map((metric, index) => (
-            <div className="metric-card" key={index}>
-              <div className="metric-label">{metric.label}</div>
-              <div className="metric-value">{metric.value}</div>
-              <div className={`metric-change ${metric.positive ? 'positive' : 'negative'}`}>
+            <div className={styles.metricCard} key={index}>
+              <div className={styles.metricLabel}>{metric.label}</div>
+              <div className={styles.metricValue}>{metric.value}</div>
+              <div className={`${styles.metricChange} ${metric.positive ? styles.positive : styles.negative}`}>
                 {metric.change}
               </div>
             </div>
           ))}
         </Grid>
-      </Container>
+      </DashboardSection>
 
       {/* Sales Goal Section */}
-      <Container className="dashboard-section">
-        <h2 className="section-title">Sales Goal</h2>
-        <div className="sales-goal-container">
-          <div className="sales-goal-amount">${salesGoal.current.toLocaleString()} / ${salesGoal.target.toLocaleString()}</div>
-          <div className="progress-text">{salesGoal.progress.toFixed(1)}% of {dateRange || 'Last 30 Days'} goal</div>
-          <div className="progress-bar-container">
-            <div className="progress-bar" style={{ width: `${salesGoal.progress}%` }}></div>
+      <DashboardSection title="Sales Goal">
+        <div className={styles.salesGoalContainer}>
+          <div className={styles.salesGoalAmount}>${salesGoal.current.toLocaleString()} / ${salesGoal.target.toLocaleString()}</div>
+          <div className={styles.progressText}>{salesGoal.progress.toFixed(1)}% of {dateRange || 'Last 30 Days'} goal</div>
+          <div className={styles.progressBarContainer}>
+            <div className={styles.progressBar} style={{ width: `${salesGoal.progress}%` }}></div>
           </div>
         </div>
-      </Container>
+      </DashboardSection>
 
       {/* Lead Analytics Section */}
-      <Container className="dashboard-section">
-        <h2 className="section-title">Lead Analytics</h2>
-        <div className="lead-analytics-container">
+      <DashboardSection title="Lead Analytics">
+        <div className={styles.leadAnalyticsContainer}>
           {/* Top-Level KPIs */}
-          <Grid columns={3} mdColumns={3} smColumns={1} gap="md" className="lead-stats">
+          <Grid columns={3} mdColumns={3} smColumns={1} gap="md" className={styles.leadStats}>
             {leadStats.map((stat, index) => (
-              <div className="lead-stat" key={index}>
-                <div className="lead-stat-value">{stat.value}</div>
-                <div className="lead-stat-label">{stat.label}</div>
+              <div className={styles.leadStat} key={index}>
+                <div className={styles.leadStatValue}>{stat.value}</div>
+                <div className={styles.leadStatLabel}>{stat.label}</div>
               </div>
             ))}
           </Grid>
 
           {/* Stage Timing Analysis */}
-          <div className="stage-timing-section">
-            <h3 className="subsection-title">Stage Timing (Avg Days)</h3>
+          <div className={styles.stageTimingSection}>
+            <h3 className={styles.subsectionTitle}>Stage Timing (Avg Days)</h3>
             {stageTimings.map((item, index) => (
-              <div className="stage-timing-item" key={index}>
-                <div className="stage-name">{item.stage}</div>
-                <div className="stage-bar-container">
-                  <div className="stage-bar" style={{ width: `${(item.days / 10) * 100}%` }}></div>
+              <div className={styles.stageTimingItem} key={index}>
+                <div className={styles.stageName}>{item.stage}</div>
+                <div className={styles.stageBarContainer}>
+                  <div className={styles.stageBar} style={{ width: `${(item.days / 10) * 100}%` }}></div>
                 </div>
-                <div className="stage-days">{item.days} days</div>
+                <div className={styles.stageDays}>{item.days} days</div>
               </div>
             ))}
           </div>
 
           {/* Loss Analysis */}
-          <div className="loss-analysis-section">
-            <h3 className="subsection-title">Loss Analysis</h3>
+          <div className={styles.lossAnalysisSection}>
+            <h3 className={styles.subsectionTitle}>Loss Analysis</h3>
             {lossAnalysis.map((item, index) => (
-              <div className="loss-analysis-item" key={index}>
-                <div className="loss-reason">{item.reason}</div>
-                <div className="loss-bar-container">
-                  <div className="loss-bar" style={{ width: `${item.percentage}%` }}></div>
+              <div className={styles.lossAnalysisItem} key={index}>
+                <div className={styles.lossReason}>{item.reason}</div>
+                <div className={styles.lossBarContainer}>
+                  <div className={styles.lossBar} style={{ width: `${item.percentage}%` }}></div>
                 </div>
-                <div className="loss-percentage">{item.percentage}%</div>
+                <div className={styles.lossPercentage}>{item.percentage}%</div>
               </div>
             ))}
           </div>
 
           {/* Action Required */}
-          <div className="action-required-section">
-            <h3 className="subsection-title">Action Required</h3>
-            <div className="action-table">
-              <div className="action-header">
-                <div className="action-cell">Lead</div>
-                <div className="action-cell">Stage</div>
-                <div className="action-cell">Value</div>
-                <div className="action-cell">Days Idle</div>
-                <div className="action-cell">Next Step</div>
+          <div className={styles.actionRequiredSection}>
+            <h3 className={styles.subsectionTitle}>Action Required</h3>
+            <div className={styles.actionTable}>
+              <div className={styles.actionHeader}>
+                <div className={styles.actionCell}>Lead</div>
+                <div className={styles.actionCell}>Stage</div>
+                <div className={styles.actionCell}>Value</div>
+                <div className={styles.actionCell}>Days Idle</div>
+                <div className={styles.actionCell}>Next Step</div>
               </div>
               {actionRequired.map((item, index) => (
-                <div className="action-row" key={index}>
-                  <div className="action-cell">{item.lead}</div>
-                  <div className="action-cell">{item.stage}</div>
-                  <div className="action-cell">{item.value}</div>
-                  <div className="action-cell">{item.days}</div>
-                  <div className="action-cell">{item.action}</div>
+                <div className={styles.actionRow} key={index}>
+                  <div className={styles.actionCell}>{item.lead}</div>
+                  <div className={styles.actionCell}>{item.stage}</div>
+                  <div className={styles.actionCell}>{item.value}</div>
+                  <div className={styles.actionCell}>{item.days}</div>
+                  <div className={styles.actionCell}>{item.action}</div>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Lead Sources */}
-          <div className="lead-source-section">
-            <h3 className="subsection-title">Lead Sources</h3>
+          <div className={styles.leadSourceSection}>
+            <h3 className={styles.subsectionTitle}>Lead Sources</h3>
             {leadSources.map((source, index) => (
-              <div className="lead-source-item" key={index}>
-                <div className="lead-source-name">{source.name}</div>
-                <div className="lead-source-bar-container">
-                  <div className="lead-source-bar" style={{ width: `${source.percentage}%` }}></div>
+              <div className={styles.leadSourceItem} key={index}>
+                <div className={styles.leadSourceName}>{source.name}</div>
+                <div className={styles.leadSourceBarContainer}>
+                  <div className={styles.leadSourceBar} style={{ width: `${source.percentage}%` }}></div>
                 </div>
-                <div className="lead-source-percent">{source.percentage}%</div>
+                <div className={styles.leadSourcePercent}>{source.percentage}%</div>
               </div>
             ))}
           </div>
         </div>
-      </Container>
+      </DashboardSection>
 
       {/* Shortcut Links Section */}
-      <Container className="dashboard-section">
-        <h2 className="section-title">Quick Actions</h2>
-        <Grid columns={4} mdColumns={2} smColumns={1} gap="md" className="shortcuts-grid">
+      <DashboardSection title="Quick Actions">
+        <Grid columns={4} mdColumns={2} smColumns={1} gap="md" className={styles.shortcutsGrid}>
           {shortcuts.map((shortcut, index) => (
-            <Link to={shortcut.link} key={index} className="shortcut-card">
-              <div className="shortcut-icon">{shortcut.icon}</div>
-              <h3 className="shortcut-title">{shortcut.title}</h3>
+            <Link to={shortcut.link} key={index} className={styles.shortcutCard}>
+              <div className={styles.shortcutIcon}>{shortcut.icon}</div>
+              <h3 className={styles.shortcutTitle}>{shortcut.title}</h3>
             </Link>
           ))}
         </Grid>
-      </Container>
+      </DashboardSection>
     </Container>
   );
 };

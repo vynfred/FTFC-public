@@ -193,6 +193,46 @@
   color: var(--color-text-secondary);
 }
 
+/* Stage Timing */
+.stageTimingSection {
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.stageTimingItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-xs);
+}
+
+.stageName {
+  width: 180px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.stageBarContainer {
+  flex: 1;
+  height: 8px;
+  background-color: var(--color-background-light);
+  border-radius: 4px;
+  margin: 0 var(--spacing-sm);
+  overflow: hidden;
+}
+
+.stageBar {
+  height: 100%;
+  background-color: var(--color-primary);
+  border-radius: 4px;
+}
+
+.stageDays {
+  width: 60px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  text-align: right;
+}
+
 /* Lead Sources */
 .leadSourceSection,
 .lossAnalysisSection,
@@ -318,18 +358,18 @@
   .dashboardPage {
     padding: var(--spacing-sm);
   }
-  
+
   .sectionTitle {
     font-size: var(--font-size-md);
     padding: var(--spacing-sm);
   }
-  
+
   .metricValue,
   .leadStatValue,
   .salesGoalAmount {
     font-size: var(--font-size-lg);
   }
-  
+
   .leadSourceName,
   .lossReason {
     width: 80px;

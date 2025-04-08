@@ -53,8 +53,8 @@ function App() {
 
       {/* Protected Dashboard Routes */}
       <Route element={<ProtectedRoute><DashboardWrapper /></ProtectedRoute>}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/dashboard-modules" element={<DashboardWithModules />} />
+        <Route path="/dashboard" element={<DashboardWithModules />} />
+        <Route path="/dashboard-old" element={<Dashboard />} />
         <Route path="/dashboard/analytics" element={<Analytics />} />
         <Route path="/dashboard/leads" element={<LeadsDashboard />} />
         <Route path="/dashboard/clients" element={<ClientsDashboard />} />
