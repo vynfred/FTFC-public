@@ -1,0 +1,90 @@
+/* DashboardWrapper.module.css */
+/* Styles for the dashboard wrapper component */
+
+.dashboardLayoutContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+}
+
+.dashboardLayoutContainer.sidebarCollapsed {
+  --sidebar-width: 60px;
+}
+
+.sidebar {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  width: var(--sidebar-width, 240px);
+  height: calc(100vh - 60px);
+  background-color: var(--color-background-dark);
+  border-right: 1px solid var(--color-border);
+  z-index: 100;
+  transition: width var(--transition-default), transform var(--transition-default);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar.collapsed {
+  width: var(--sidebar-width, 60px);
+}
+
+.mobileMenuOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 90;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-default), visibility var(--transition-default);
+}
+
+.mobileMenuOverlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.dashboardContent {
+  margin-left: var(--sidebar-width, 240px);
+  margin-top: 60px;
+  width: calc(100% - var(--sidebar-width, 240px));
+  min-height: calc(100vh - 60px);
+  transition: margin-left var(--transition-default), width var(--transition-default);
+  background-color: var(--color-background);
+  padding: var(--spacing-md);
+  box-sizing: border-box;
+}
+
+.dashboardWrapper {
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* When sidebar is collapsed */
+.sidebarCollapsed .dashboardContent {
+  margin-left: var(--sidebar-width, 60px);
+  width: calc(100% - var(--sidebar-width, 60px));
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.mobileOpen {
+    transform: translateX(0);
+  }
+  
+  .dashboardContent,
+  .sidebarCollapsed .dashboardContent {
+    margin-left: 0;
+    width: 100%;
+  }
+}

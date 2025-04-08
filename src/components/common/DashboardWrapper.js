@@ -50,25 +50,25 @@ const DashboardWrapper = () => {
   useEffect(() => {
     // Toggle sidebar collapsed class on body for global styling
     if (sidebarCollapsed) {
-      document.body.classList.add('sidebar-collapsed');
+      document.body.classList.add(styles.sidebarCollapsed);
     } else {
-      document.body.classList.remove('sidebar-collapsed');
+      document.body.classList.remove(styles.sidebarCollapsed);
     }
 
     return () => {
-      document.body.classList.remove('sidebar-collapsed');
+      document.body.classList.remove(styles.sidebarCollapsed);
     };
   }, [sidebarCollapsed]);
 
   return (
-    <div className={`dashboard-layout-container ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+    <div className={`${styles.dashboardLayoutContainer} ${sidebarCollapsed ? styles.sidebarCollapsed : ''}`}>
       {/* Top Navigation */}
       <PrivateTopNav
         toggleMobileMenu={toggleMobileMenu}
       />
 
       {/* Sidebar */}
-      <div className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''} ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+      <div className={`${styles.sidebar} ${sidebarCollapsed ? styles.collapsed : ''} ${isMobileMenuOpen ? styles.mobileOpen : ''}`}>
         <SidebarNav
           collapsed={sidebarCollapsed}
           toggleSidebar={toggleSidebar}
@@ -82,13 +82,13 @@ const DashboardWrapper = () => {
 
       {/* Mobile menu overlay */}
       <div
-        className={`mobile-menu-overlay ${isMobileMenuOpen ? 'active' : ''}`}
+        className={`${styles.mobileMenuOverlay} ${isMobileMenuOpen ? styles.active : ''}`}
         onClick={() => setIsMobileMenuOpen(false)}
       />
 
       {/* Content Area */}
-      <div className="dashboard-content">
-        <div className="dashboard-wrapper">
+      <div className={styles.dashboardContent}>
+        <div className={styles.dashboardWrapper}>
           <Outlet />
         </div>
       </div>
