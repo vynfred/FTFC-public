@@ -643,7 +643,7 @@ const MarketingDashboard = () => {
     // Generate example content data
     generateContentData();
 
-  }, [dateRange, showMyStats]);
+  }, [dateRange, viewCompanyStats]);
 
   const generateTrafficData = () => {
     const today = new Date();
@@ -1081,7 +1081,7 @@ const MarketingDashboard = () => {
 
   // Get view type text
   const getViewTypeText = () => {
-    return showMyStats ? 'My Marketing' : 'Company Marketing';
+    return !viewCompanyStats ? 'My Marketing' : 'Company Marketing';
   };
 
   return (
