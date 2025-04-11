@@ -9,6 +9,8 @@ import BlogCreate from './components/blog/BlogCreate';
 import BlogEdit from './components/blog/BlogEdit';
 import BlogManage from './components/blog/BlogManage';
 import DashboardWrapper from './components/common/DashboardWrapper';
+import EmailExample from './components/common/EmailExample';
+import PWAInstallPrompt from './components/common/PWAInstallPrompt';
 import ScrollToTop from './components/common/ScrollToTop';
 import Analytics from './components/Dashboard/Analytics';
 import ClientsDashboard from './components/Dashboard/ClientsDashboard';

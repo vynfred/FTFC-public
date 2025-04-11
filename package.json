@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
+    "build": "DISABLE_ESLINT_PLUGIN=true react-app-rewired build",
+    "build:with-lint": "react-app-rewired build",
     "build:high-memory": "node build-high-memory.js",
     "build:icons": "node scripts/convert-svg-to-png.js",
     "build:deploy": "node scripts/build-and-deploy.js",

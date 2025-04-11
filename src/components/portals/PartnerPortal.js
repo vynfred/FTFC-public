@@ -6,6 +6,7 @@ import FocusAreas from '../common/FocusAreas';
 import MeetingSection from '../common/MeetingSection';
 import ReferralLink from '../common/ReferralLink';
 import TeamMemberCard from '../common/TeamMemberCard';
+import MeetingTranscriptList from '../meetings/MeetingTranscriptList';
 import styles from './Portal.module.css';
 
 const PartnerPortal = () => {

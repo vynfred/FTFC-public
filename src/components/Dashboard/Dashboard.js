@@ -5,6 +5,8 @@ import { useDateRange } from '../../context/DateRangeContext';
 import { useStatsView } from '../../context/StatsViewContext';
 import Container from '../ui/layout/Container';
 import Grid from '../ui/layout/Grid';
+import styles from './Dashboard.module.css';
+import DashboardSection from './DashboardSection';
 
 const SalesDashboard = () => {
   const { dateRange } = useDateRange();

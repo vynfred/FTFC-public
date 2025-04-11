@@ -10,6 +10,7 @@ import TeamMemberCard from '../common/TeamMemberCard';
 import GoogleCalendarConnect from '../integrations/GoogleCalendarConnect';
 import MeetingHistory from '../integrations/MeetingHistoryUpdated';
 import MeetingScheduler from '../integrations/MeetingScheduler';
+import MeetingTranscriptList from '../meetings/MeetingTranscriptList';
 import styles from './Portal.module.css';
 
 const ClientPortal = () => {

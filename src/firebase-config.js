@@ -4,7 +4,7 @@ import {
     signOut as firebaseSignOut
 } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { getFunctions } from 'firebase/functions';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { getStorage } from 'firebase/storage';
 
 // Firebase configuration

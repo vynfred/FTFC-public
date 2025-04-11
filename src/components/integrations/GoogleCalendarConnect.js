@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { clearTokens, getAuthUrl, getStoredTokens, getUserProfile } from '../../services/googleIntegration';
+import styles from './GoogleIntegrations.module.css';
 
 /**
  * Google Calendar Connect Component

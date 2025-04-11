@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaChartBar, FaChartLine, FaChevronLeft, FaChevronRight, FaCog, FaHandshake, FaHistory, FaUserFriends, FaUsers } from 'react-icons/fa';
+import { FaCalendarAlt, FaChartBar, FaChartLine, FaChevronLeft, FaChevronRight, FaCog, FaHandshake, FaHistory, FaUserFriends, FaUsers } from 'react-icons/fa';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import styles from './SidebarNav.module.css';
 

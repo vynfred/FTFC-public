@@ -1,0 +1,161 @@
+.meeting-transcripts {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.transcripts-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #0a1950;
+}
+
+.transcripts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.transcript-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff;
+  transition: box-shadow 0.2s ease;
+}
+
+.transcript-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.transcript-item.expanded {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.transcript-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  cursor: pointer;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.transcript-item.expanded .transcript-header {
+  background-color: #f0f4f8;
+}
+
+.transcript-title {
+  flex: 1;
+}
+
+.transcript-title h4 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0a1950;
+}
+
+.transcript-date {
+  font-size: 12px;
+  color: #666;
+}
+
+.transcript-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.toggle-icon {
+  font-size: 18px;
+  font-weight: bold;
+  color: #0a1950;
+}
+
+.transcript-content {
+  padding: 15px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.transcript-summary,
+.transcript-key-points,
+.transcript-action-items,
+.transcript-full {
+  margin-bottom: 20px;
+}
+
+.transcript-summary h5,
+.transcript-key-points h5,
+.transcript-action-items h5,
+.transcript-full h5 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+  color: #0a1950;
+}
+
+.transcript-summary p {
+  margin: 0;
+  line-height: 1.5;
+  color: #333;
+}
+
+.transcript-key-points ul,
+.transcript-action-items ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.transcript-key-points li,
+.transcript-action-items li {
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.transcript-text {
+  white-space: pre-wrap;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.transcript-source {
+  font-size: 12px;
+  color: #666;
+  text-align: right;
+  margin-top: 10px;
+}
+
+.transcript-source p {
+  margin: 0;
+}
+
+.transcript-loading {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+}
+
+.transcript-error {
+  padding: 20px;
+  text-align: center;
+  color: #d32f2f;
+}
+
+.transcript-empty {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px dashed #e0e0e0;
+}
