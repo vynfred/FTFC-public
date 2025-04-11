@@ -29,7 +29,11 @@
     "analyze:large-deps": "node scripts/optimize-large-deps.js",
     "analyze:firebase": "node scripts/optimize-firebase-hosting.js",
     "optimize": "npm run analyze:deps && npm run analyze:webpack && npm run analyze:costs && npm run analyze:large-deps && npm run analyze:firebase",
-    "deploy:optimized": "node scripts/optimize-and-deploy.js"
+    "deploy:optimized": "node scripts/optimize-and-deploy.js",
+    "test:pwa": "node scripts/test-pwa-functionality.js",
+    "test:sendgrid": "node scripts/test-sendgrid-integration.js",
+    "test:meeting-notes": "node scripts/test-meeting-notes-capture.js",
+    "test:4.0": "npm run test:pwa && npm run test:sendgrid && npm run test:meeting-notes"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.2.2",
@@ -75,18 +79,23 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@sendgrid/mail": "^7.7.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
+    "chalk": "^4.1.2",
     "compression-webpack-plugin": "^11.1.0",
     "cross-env": "^7.0.3",
     "eslint": "^8.0.0",
     "firebase-tools": "^12.0.0",
     "husky": "^7.0.0",
+    "inquirer": "^8.2.5",
     "node-polyfill-webpack-plugin": "^4.1.0",
     "prettier": "^2.0.0",
+    "puppeteer": "^21.0.0",
     "sharp": "^0.34.1",
     "source-map-explorer": "^2.5.3",
     "string-replace-loader": "^3.1.0",
     "terser-webpack-plugin": "^5.3.14",
+    "uuid": "^9.0.0",
     "webpack-bundle-analyzer": "^4.10.2"
   },
   "browserslist": {
