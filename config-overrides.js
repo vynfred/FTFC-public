@@ -1,4 +1,5 @@
 const webpack = require('webpack');
+const path = require('path');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
@@ -143,12 +144,22 @@ module.exports = function override(config, env) {
     },
   });
 
-  // Exclude googleapis from the build
-  config.externals = {
-    ...config.externals,
-    'googleapis': 'googleapis',
-    'googleapis-common': 'googleapis-common'
-  };
+  // Provide mock implementations for Node.js modules
+  config.plugins.push(
+    new webpack.ProvidePlugin({
+      googleapis: [path.resolve(__dirname, 'src/mocks/googleapis-mock.js'), 'default'],
+      'googleapis-common': [path.resolve(__dirname, 'src/mocks/googleapis-common-mock.js'), 'default'],
+      'google-logging-utils': [path.resolve(__dirname, 'src/mocks/google-logging-utils-mock.js'), 'default']
+    })
+  );
+
+  // Add a mock for the process.stdout.isTTY property
+  config.plugins.push(
+    new webpack.DefinePlugin({
+      'process.stdout.isTTY': JSON.stringify(false),
+      'process.stderr.isTTY': JSON.stringify(false)
+    })
+  );
 
   return config;
 };
