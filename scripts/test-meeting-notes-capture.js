@@ -1,6 +1,6 @@
 /**
  * Meeting Notes Capture Test Script
- * 
+ *
  * This script tests the meeting notes capture functionality:
  * 1. Tests Google Drive integration
  * 2. Tests entity matching logic
@@ -15,13 +15,34 @@ const inquirer = require('inquirer');
 const fs = require('fs');
 const path = require('path');
 
+// Add fetch polyfill for Node.js
+global.fetch = require('node-fetch');
+
 // Initialize Firebase Admin with service account
 try {
-  admin.initializeApp({
-    credential: admin.credential.applicationDefault()
-  });
+  // Check if service account file exists
+  const serviceAccountPath = path.join(__dirname, '..', 'service-account.json');
+
+  if (fs.existsSync(serviceAccountPath)) {
+    const serviceAccount = require(serviceAccountPath);
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
+  } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    // Use application default credentials
+    admin.initializeApp({
+      credential: admin.credential.applicationDefault()
+    });
+  } else {
+    console.warn(chalk.yellow('No service account found. Some tests may fail.'));
+    console.warn(chalk.yellow('Please set up service-account.json or GOOGLE_APPLICATION_CREDENTIALS.'));
+
+    // Initialize without credentials for basic tests
+    admin.initializeApp();
+  }
 } catch (error) {
   console.error('Firebase Admin initialization error:', error);
+  console.warn(chalk.yellow('Continuing with limited functionality...'));
 }
 
 // Configuration
@@ -46,38 +67,38 @@ function logResult(test, result, message) {
 // Main test function
 async function testMeetingNotesCapture() {
   console.log(chalk.blue('Starting Meeting Notes Capture Tests'));
-  
+
   // Get Google OAuth credentials
   const credentials = await getGoogleCredentials();
   if (!credentials) {
     console.error(chalk.red('Google credentials not found. Tests cannot proceed.'));
     return;
   }
-  
+
   try {
     // Initialize Google API clients
     const { drive, docs } = await initializeGoogleClients(credentials);
-    
+
     // Test 1: Google Drive Connection
     console.log(chalk.yellow('\nTest 1: Google Drive Connection'));
     await testGoogleDriveConnection(drive);
-    
+
     // Test 2: Create Test Meeting Note
     console.log(chalk.yellow('\nTest 2: Create Test Meeting Note'));
     const noteId = await createTestMeetingNote(drive, docs);
-    
+
     // Test 3: Entity Matching Logic
     console.log(chalk.yellow('\nTest 3: Entity Matching Logic'));
     await testEntityMatching();
-    
+
     // Test 4: Process Meeting Note
     console.log(chalk.yellow('\nTest 4: Process Meeting Note'));
     await testProcessMeetingNote(noteId);
-    
+
     // Test 5: Scheduled Function
     console.log(chalk.yellow('\nTest 5: Scheduled Function'));
     await testScheduledFunction();
-    
+
     console.log(chalk.blue('\nAll Meeting Notes Capture Tests Completed'));
   } catch (error) {
     console.error(chalk.red('Error during Meeting Notes Capture testing:'), error);
@@ -92,7 +113,7 @@ async function getGoogleCredentials() {
     if (fs.existsSync(credentialsPath)) {
       return JSON.parse(fs.readFileSync(credentialsPath, 'utf8'));
     }
-    
+
     // If not found, prompt user
     const { clientId, clientSecret } = await inquirer.prompt([
       {
@@ -108,7 +129,7 @@ async function getGoogleCredentials() {
         validate: input => input.length > 0 ? true : 'Client secret is required'
       }
     ]);
-    
+
     const credentials = {
       installed: {
         client_id: clientId,
@@ -116,10 +137,10 @@ async function getGoogleCredentials() {
         redirect_uris: ['urn:ietf:wg:oauth:2.0:oob', 'http://localhost']
       }
     };
-    
+
     // Save credentials for future use
     fs.writeFileSync(credentialsPath, JSON.stringify(credentials, null, 2));
-    
+
     return credentials;
   } catch (error) {
     console.error('Error getting Google credentials:', error);
@@ -131,14 +152,14 @@ async function getGoogleCredentials() {
 async function initializeGoogleClients(credentials) {
   try {
     const { client_id, client_secret, redirect_uris } = credentials.installed;
-    
+
     // Create OAuth2 client
     const oAuth2Client = new google.auth.OAuth2(
       client_id,
       client_secret,
       redirect_uris[0]
     );
-    
+
     // Check if token exists
     const tokenPath = path.join(__dirname, '..', 'google-token.json');
     if (!fs.existsSync(tokenPath)) {
@@ -151,10 +172,10 @@ async function initializeGoogleClients(credentials) {
           'https://www.googleapis.com/auth/drive.file'
         ]
       });
-      
+
       console.log(chalk.yellow('Authorize this app by visiting:'));
       console.log(chalk.blue(authUrl));
-      
+
       const { code } = await inquirer.prompt([
         {
           type: 'input',
@@ -163,24 +184,24 @@ async function initializeGoogleClients(credentials) {
           validate: input => input.length > 0 ? true : 'Authorization code is required'
         }
       ]);
-      
+
       // Get token
       const { tokens } = await oAuth2Client.getToken(code);
-      
+
       // Save token for future use
       fs.writeFileSync(tokenPath, JSON.stringify(tokens, null, 2));
-      
+
       oAuth2Client.setCredentials(tokens);
     } else {
       // Use existing token
       const tokens = JSON.parse(fs.readFileSync(tokenPath, 'utf8'));
       oAuth2Client.setCredentials(tokens);
     }
-    
+
     // Initialize Drive and Docs clients
     const drive = google.drive({ version: 'v3', auth: oAuth2Client });
     const docs = google.docs({ version: 'v1', auth: oAuth2Client });
-    
+
     return { drive, docs };
   } catch (error) {
     console.error('Error initializing Google clients:', error);
@@ -197,15 +218,15 @@ async function testGoogleDriveConnection(drive) {
       fields: 'files(id, name, mimeType)',
       spaces: 'drive'
     });
-    
+
     const files = response.data.files;
-    
+
     logResult(
       'Google Drive Connection',
       true,
       `Successfully connected to Google Drive. Found ${files.length} files in the test folder.`
     );
-    
+
     return true;
   } catch (error) {
     logResult('Google Drive Connection', false, `Error: ${error.message}`);
@@ -222,9 +243,9 @@ async function createTestMeetingNote(drive, docs) {
         title: config.testMeetingTitle
       }
     });
-    
+
     const docId = docResponse.data.documentId;
-    
+
     // Add content to the document
     await docs.documents.batchUpdate({
       documentId: docId,
@@ -241,20 +262,20 @@ async function createTestMeetingNote(drive, docs) {
         ]
       }
     });
-    
+
     // Move the document to the test folder
     await drive.files.update({
       fileId: docId,
       addParents: config.testFolderId,
       fields: 'id, parents'
     });
-    
+
     logResult(
       'Create Test Meeting Note',
       true,
       `Successfully created test meeting note with ID: ${docId}`
     );
-    
+
     return docId;
   } catch (error) {
     logResult('Create Test Meeting Note', false, `Error: ${error.message}`);
@@ -267,58 +288,58 @@ async function testEntityMatching() {
   try {
     // Create test entities in Firestore
     const db = admin.firestore();
-    
+
     // Create test client
     await db.collection('clients').doc('test-client').set({
       name: 'Client ABC',
       email: config.testClientEmail,
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
-    
+
     // Create test investor
     await db.collection('investors').doc('test-investor').set({
       name: 'Investor XYZ',
       email: config.testInvestorEmail,
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
-    
+
     // Create test partner
     await db.collection('partners').doc('test-partner').set({
       name: 'Partner 123',
       email: config.testPartnerEmail,
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
-    
+
     // Test matching logic with client email
     const clientMatch = await testMatchEntity(config.testClientEmail);
     logResult(
       'Entity Matching - Client',
       clientMatch && clientMatch.type === 'client',
-      clientMatch 
+      clientMatch
         ? `Successfully matched client email to entity: ${clientMatch.type}/${clientMatch.id}`
         : 'Failed to match client email to entity'
     );
-    
+
     // Test matching logic with investor email
     const investorMatch = await testMatchEntity(config.testInvestorEmail);
     logResult(
       'Entity Matching - Investor',
       investorMatch && investorMatch.type === 'investor',
-      investorMatch 
+      investorMatch
         ? `Successfully matched investor email to entity: ${investorMatch.type}/${investorMatch.id}`
         : 'Failed to match investor email to entity'
     );
-    
+
     // Test matching logic with partner email
     const partnerMatch = await testMatchEntity(config.testPartnerEmail);
     logResult(
       'Entity Matching - Partner',
       partnerMatch && partnerMatch.type === 'partner',
-      partnerMatch 
+      partnerMatch
         ? `Successfully matched partner email to entity: ${partnerMatch.type}/${partnerMatch.id}`
         : 'Failed to match partner email to entity'
     );
-    
+
     return true;
   } catch (error) {
     logResult('Entity Matching', false, `Error: ${error.message}`);
@@ -330,46 +351,46 @@ async function testEntityMatching() {
 async function testMatchEntity(email) {
   try {
     const db = admin.firestore();
-    
+
     // Check clients
     const clientsSnapshot = await db.collection('clients')
       .where('email', '==', email)
       .limit(1)
       .get();
-    
+
     if (!clientsSnapshot.empty) {
       return {
         type: 'client',
         id: clientsSnapshot.docs[0].id
       };
     }
-    
+
     // Check investors
     const investorsSnapshot = await db.collection('investors')
       .where('email', '==', email)
       .limit(1)
       .get();
-    
+
     if (!investorsSnapshot.empty) {
       return {
         type: 'investor',
         id: investorsSnapshot.docs[0].id
       };
     }
-    
+
     // Check partners
     const partnersSnapshot = await db.collection('partners')
       .where('email', '==', email)
       .limit(1)
       .get();
-    
+
     if (!partnersSnapshot.empty) {
       return {
         type: 'partner',
         id: partnersSnapshot.docs[0].id
       };
     }
-    
+
     return null;
   } catch (error) {
     console.error('Error matching entity:', error);
@@ -383,10 +404,10 @@ async function testProcessMeetingNote(noteId) {
     logResult('Process Meeting Note', false, 'No note ID provided');
     return false;
   }
-  
+
   try {
     const db = admin.firestore();
-    
+
     // Create a test processed note record
     await db.collection('processedNotes').add({
       fileId: noteId,
@@ -394,7 +415,7 @@ async function testProcessMeetingNote(noteId) {
       entityType: 'client',
       entityId: 'test-client'
     });
-    
+
     // Create a test transcript record
     const transcriptRef = await db.collection('transcripts').add({
       title: config.testMeetingTitle,
@@ -411,7 +432,7 @@ async function testProcessMeetingNote(noteId) {
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
-    
+
     // Update client with reference to transcript
     await db.collection('clients').doc('test-client').update({
       transcripts: admin.firestore.FieldValue.arrayUnion({
@@ -423,16 +444,16 @@ async function testProcessMeetingNote(noteId) {
       }),
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
-    
+
     // Verify the transcript was created and associated with the client
     const transcriptDoc = await db.collection('transcripts').doc(transcriptRef.id).get();
     const clientDoc = await db.collection('clients').doc('test-client').get();
-    
+
     const transcriptExists = transcriptDoc.exists;
-    const clientHasTranscript = clientDoc.exists && 
-                               clientDoc.data().transcripts && 
+    const clientHasTranscript = clientDoc.exists &&
+                               clientDoc.data().transcripts &&
                                clientDoc.data().transcripts.some(t => t.id === transcriptRef.id);
-    
+
     logResult(
       'Process Meeting Note',
       transcriptExists && clientHasTranscript,
@@ -440,7 +461,7 @@ async function testProcessMeetingNote(noteId) {
         ? `Successfully processed meeting note and associated with client`
         : `Failed to process meeting note or associate with client`
     );
-    
+
     return true;
   } catch (error) {
     logResult('Process Meeting Note', false, `Error: ${error.message}`);
@@ -453,11 +474,11 @@ async function testScheduledFunction() {
   try {
     // Call the Cloud Function directly
     const functionsUrl = 'https://us-central1-ftfc-start.cloudfunctions.net/triggerGeminiNotesProcessing';
-    
+
     // Use fetch to call the function
     const response = await fetch(functionsUrl);
     const data = await response.json();
-    
+
     logResult(
       'Scheduled Function',
       response.ok,
@@ -465,7 +486,7 @@ async function testScheduledFunction() {
         ? `Successfully triggered Gemini notes processing: ${JSON.stringify(data)}`
         : `Failed to trigger Gemini notes processing: ${response.statusText}`
     );
-    
+
     return true;
   } catch (error) {
     logResult('Scheduled Function', false, `Error: ${error.message}`);

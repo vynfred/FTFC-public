@@ -1,6 +1,6 @@
 /**
  * SendGrid Email Integration Test Script
- * 
+ *
  * This script tests the SendGrid email integration for the FTFC application:
  * 1. Tests the password reset email flow
  * 2. Tests other email notifications
@@ -12,14 +12,34 @@ const sgMail = require('@sendgrid/mail');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
 const { v4: uuidv4 } = require('uuid');
+const fs = require('fs');
+const path = require('path');
 
 // Initialize Firebase Admin with service account
 try {
-  admin.initializeApp({
-    credential: admin.credential.applicationDefault()
-  });
+  // Check if service account file exists
+  const serviceAccountPath = path.join(__dirname, '..', 'service-account.json');
+
+  if (fs.existsSync(serviceAccountPath)) {
+    const serviceAccount = require(serviceAccountPath);
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
+  } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    // Use application default credentials
+    admin.initializeApp({
+      credential: admin.credential.applicationDefault()
+    });
+  } else {
+    console.warn(chalk.yellow('No service account found. Some tests may fail.'));
+    console.warn(chalk.yellow('Please set up service-account.json or GOOGLE_APPLICATION_CREDENTIALS.'));
+
+    // Initialize without credentials for basic tests
+    admin.initializeApp();
+  }
 } catch (error) {
   console.error('Firebase Admin initialization error:', error);
+  console.warn(chalk.yellow('Continuing with limited functionality...'));
 }
 
 // Configuration
@@ -41,34 +61,34 @@ function logResult(test, result, message) {
 // Main test function
 async function testSendGridIntegration() {
   console.log(chalk.blue('Starting SendGrid Email Integration Tests'));
-  
+
   // Get SendGrid API key
   const apiKey = await getSendGridApiKey();
   if (!apiKey) {
     console.error(chalk.red('SendGrid API key not found. Tests cannot proceed.'));
     return;
   }
-  
+
   // Initialize SendGrid
   sgMail.setApiKey(apiKey);
-  
+
   try {
     // Test 1: Send a test email
     console.log(chalk.yellow('\nTest 1: Send Test Email'));
     await testSendEmail(apiKey);
-    
+
     // Test 2: Test password reset email
     console.log(chalk.yellow('\nTest 2: Password Reset Email'));
     await testPasswordResetEmail();
-    
+
     // Test 3: Test welcome email
     console.log(chalk.yellow('\nTest 3: Welcome Email'));
     await testWelcomeEmail();
-    
+
     // Test 4: Test meeting notification email
     console.log(chalk.yellow('\nTest 4: Meeting Notification Email'));
     await testMeetingEmail();
-    
+
     console.log(chalk.blue('\nAll SendGrid Email Tests Completed'));
   } catch (error) {
     console.error(chalk.red('Error during SendGrid testing:'), error);
@@ -83,7 +103,7 @@ async function getSendGridApiKey() {
     if (sendgridConfig && sendgridConfig.key) {
       return sendgridConfig.key;
     }
-    
+
     // If not found in config, prompt user
     const { apiKey } = await inquirer.prompt([
       {
@@ -93,7 +113,7 @@ async function getSendGridApiKey() {
         validate: input => input.length > 0 ? true : 'API key is required'
       }
     ]);
-    
+
     return apiKey;
   } catch (error) {
     console.error('Error getting SendGrid API key:', error);
@@ -125,15 +145,15 @@ async function testSendEmail(apiKey) {
         </div>
       `
     };
-    
+
     const response = await sgMail.send(msg);
-    
+
     logResult(
       'Send Test Email',
       response && response[0] && response[0].statusCode >= 200 && response[0].statusCode < 300,
       `Email sent with status code: ${response[0].statusCode}`
     );
-    
+
     return true;
   } catch (error) {
     logResult('Send Test Email', false, `Error: ${error.message}`);
@@ -154,10 +174,10 @@ async function testPasswordResetEmail() {
       displayName: 'Test User',
       uid: config.testUserId
     });
-    
+
     // Generate password reset link
     const resetLink = await admin.auth().generatePasswordResetLink(config.testEmail);
-    
+
     // Send password reset email
     const msg = {
       to: config.testEmail,
@@ -182,29 +202,29 @@ async function testPasswordResetEmail() {
         </div>
       `
     };
-    
+
     const response = await sgMail.send(msg);
-    
+
     logResult(
       'Password Reset Email',
       response && response[0] && response[0].statusCode >= 200 && response[0].statusCode < 300,
       `Password reset email sent with status code: ${response[0].statusCode}`
     );
-    
+
     // Clean up - delete test user
     await admin.auth().deleteUser(config.testUserId);
-    
+
     return true;
   } catch (error) {
     logResult('Password Reset Email', false, `Error: ${error.message}`);
-    
+
     // Try to clean up even if there was an error
     try {
       await admin.auth().deleteUser(config.testUserId);
     } catch (cleanupError) {
       console.error('Error cleaning up test user:', cleanupError);
     }
-    
+
     return false;
   }
 }
@@ -236,15 +256,15 @@ async function testWelcomeEmail() {
         </div>
       `
     };
-    
+
     const response = await sgMail.send(msg);
-    
+
     logResult(
       'Welcome Email',
       response && response[0] && response[0].statusCode >= 200 && response[0].statusCode < 300,
       `Welcome email sent with status code: ${response[0].statusCode}`
     );
-    
+
     return true;
   } catch (error) {
     logResult('Welcome Email', false, `Error: ${error.message}`);
@@ -257,7 +277,7 @@ async function testMeetingEmail() {
   try {
     const meetingDate = new Date();
     meetingDate.setDate(meetingDate.getDate() + 3); // 3 days from now
-    
+
     const msg = {
       to: config.testEmail,
       from: config.fromEmail,
@@ -270,16 +290,16 @@ async function testMeetingEmail() {
           <div style="padding: 20px; background-color: #f5f5f5;">
             <h2>Quarterly Review</h2>
             <p>A new meeting has been scheduled with your FTFC team member.</p>
-            
+
             <div style="background-color: white; padding: 15px; border-radius: 4px; margin: 20px 0;">
               <p><strong>Date:</strong> ${meetingDate.toLocaleDateString()}</p>
               <p><strong>Time:</strong> ${meetingDate.toLocaleTimeString()}</p>
               <p><strong>Location:</strong> Google Meet</p>
               <p><strong>Meeting Link:</strong> <a href="https://meet.google.com/test-meeting-link">https://meet.google.com/test-meeting-link</a></p>
             </div>
-            
+
             <p>Please make sure to add this meeting to your calendar. We look forward to speaking with you!</p>
-            
+
             <p style="text-align: center; margin: 30px 0;">
               <a href="https://calendar.google.com" style="background-color: #0a1950; color: #ffd700; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">Add to Calendar</a>
             </p>
@@ -290,15 +310,15 @@ async function testMeetingEmail() {
         </div>
       `
     };
-    
+
     const response = await sgMail.send(msg);
-    
+
     logResult(
       'Meeting Notification Email',
       response && response[0] && response[0].statusCode >= 200 && response[0].statusCode < 300,
       `Meeting notification email sent with status code: ${response[0].statusCode}`
     );
-    
+
     return true;
   } catch (error) {
     logResult('Meeting Notification Email', false, `Error: ${error.message}`);
