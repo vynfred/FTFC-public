@@ -144,20 +144,26 @@ module.exports = function override(config, env) {
     },
   });
 
-  // Provide mock implementations for Node.js modules
-  config.plugins.push(
-    new webpack.ProvidePlugin({
-      googleapis: [path.resolve(__dirname, 'src/mocks/googleapis-mock.js'), 'default'],
-      'googleapis-common': [path.resolve(__dirname, 'src/mocks/googleapis-common-mock.js'), 'default'],
-      'google-logging-utils': [path.resolve(__dirname, 'src/mocks/google-logging-utils-mock.js'), 'default']
-    })
-  );
+  // Completely exclude problematic Node.js modules
+  config.resolve.alias = {
+    ...config.resolve.alias,
+    'googleapis': path.resolve(__dirname, 'src/mocks/googleapis-mock.js'),
+    'googleapis-common': path.resolve(__dirname, 'src/mocks/googleapis-common-mock.js'),
+    'google-logging-utils': path.resolve(__dirname, 'src/mocks/google-logging-utils-mock.js'),
+    'gcp-metadata': path.resolve(__dirname, 'src/mocks/empty-module.js'),
+    'gtoken': path.resolve(__dirname, 'src/mocks/empty-module.js'),
+    'https-proxy-agent': path.resolve(__dirname, 'src/mocks/empty-module.js'),
+    'agent-base': path.resolve(__dirname, 'src/mocks/empty-module.js')
+  };
 
-  // Add a mock for the process.stdout.isTTY property
+  // Add a comprehensive mock for the process object
   config.plugins.push(
     new webpack.DefinePlugin({
-      'process.stdout.isTTY': JSON.stringify(false),
-      'process.stderr.isTTY': JSON.stringify(false)
+      'process.stdout': JSON.stringify({}),
+      'process.stderr': JSON.stringify({}),
+      'process.version': JSON.stringify('v16.0.0'),
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+      'process.env.NODE_DEBUG': JSON.stringify(false)
     })
   );
 

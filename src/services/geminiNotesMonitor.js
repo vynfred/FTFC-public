@@ -9,19 +9,10 @@ import {
     addDoc, collection, doc,
     getDoc, getDocs, query, serverTimestamp, updateDoc, where
 } from 'firebase/firestore';
-import { OAuth2Client } from 'googleapis-common';
-import { docs_v1 } from 'googleapis/build/src/apis/docs';
-import { drive_v3 } from 'googleapis/build/src/apis/drive';
+import googleapis from 'googleapis';
 import { db } from '../firebase-config';
 
-// Create a minimal google object with just what we need
-const google = {
-  auth: {
-    OAuth2: OAuth2Client
-  },
-  drive: ({ version, auth }) => new drive_v3.Drive({ version, auth }),
-  docs: ({ version, auth }) => new docs_v1.Docs({ version, auth })
-};
+const { google } = googleapis;
 
 /**
  * Get yesterday's date in ISO format for Google Drive query

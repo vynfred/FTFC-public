@@ -13,21 +13,9 @@
  * - Retrieving meeting recordings
  */
 
-// Import only the specific Google APIs we need
-import { OAuth2Client } from 'googleapis-common';
-import { calendar_v3 } from 'googleapis/build/src/apis/calendar';
-import { drive_v3 } from 'googleapis/build/src/apis/drive';
-import { people_v1 } from 'googleapis/build/src/apis/people';
-
-// Create a minimal google object with just what we need
-const google = {
-  auth: {
-    OAuth2: OAuth2Client
-  },
-  calendar: ({ version, auth }) => new calendar_v3.Calendar({ version, auth }),
-  drive: ({ version, auth }) => new drive_v3.Drive({ version, auth }),
-  people: ({ version, auth }) => new people_v1.People({ version, auth })
-};
+// Import the mock implementation
+import googleapis from 'googleapis';
+const { google } = googleapis;
 
 // Create OAuth2 client
 const createOAuth2Client = () => {
