@@ -13,15 +13,23 @@ import EmailExample from './components/common/EmailExample';
 import PWAInstallPrompt from './components/common/PWAInstallPrompt';
 import ScrollToTop from './components/common/ScrollToTop';
 import Analytics from './components/Dashboard/Analytics';
+import BlogDetail from './components/Dashboard/BlogDetail';
+import Calendar from './components/Dashboard/Calendar';
+import CampaignDetail from './components/Dashboard/CampaignDetail';
+import ClientDetail from './components/Dashboard/ClientDetail';
 import ClientsDashboard from './components/Dashboard/ClientsDashboard';
 import CompanySettings from './components/Dashboard/CompanySettings';
 import Dashboard from './components/Dashboard/Dashboard';
 import DashboardWithModules from './components/Dashboard/DashboardWithModules';
 import InvestorDashboard from './components/Dashboard/InvestorDashboard';
 import InvestorDashboardWithModules from './components/Dashboard/InvestorDashboardWithModules';
+import InvestorDetail from './components/Dashboard/InvestorDetail';
+import LeadDetail from './components/Dashboard/LeadDetail';
 import LeadsDashboard from './components/Dashboard/LeadsDashboard';
 import MarketingDashboard from './components/Dashboard/MarketingDashboard';
+import MeetingDetail from './components/Dashboard/MeetingDetail';
 import PartnerDashboard from './components/Dashboard/PartnerDashboard';
+import PartnerDetail from './components/Dashboard/PartnerDetail';
 import UserProfile from './components/Dashboard/UserProfile';
 import ComponentsExamples from './components/examples/ComponentsExamples';
 import CssExamples from './components/examples/CssExamples';
@@ -128,6 +136,7 @@ function App() {
           <Route path="/dashboard/analytics" element={<Analytics />} />
           <Route path="/dashboard/leads" element={<LeadsDashboard />} />
           <Route path="/dashboard/clients" element={<ClientsDashboard />} />
+          <Route path="/dashboard/clients/create" element={<ClientCreate />} />
           <Route path="/dashboard/marketing" element={<MarketingDashboard />} />
           <Route path="/dashboard/investors" element={<InvestorDashboard />} />
           <Route path="/dashboard/investors-modules" element={<InvestorDashboardWithModules />} />
@@ -138,6 +147,17 @@ function App() {
           <Route path="/dashboard/form-examples" element={<FormExamples />} />
           <Route path="/dashboard/components-examples" element={<ComponentsExamples />} />
           <Route path="/dashboard/email-example" element={<EmailExample />} />
+          <Route path="/dashboard/calendar" element={<Calendar />} />
+          <Route path="/dashboard/marketing/content/:id" element={<BlogDetail />} />
+          <Route path="/dashboard/marketing/campaigns/:id" element={<CampaignDetail />} />
+          <Route path="/dashboard/marketing/create-blog" element={<BlogCreate />} />
+          <Route path="/dashboard/marketing/edit-content/:id" element={<BlogCreate />} />
+          <Route path="/dashboard/marketing/create-campaign" element={<CampaignDetail />} />
+          <Route path="/dashboard/clients/:id" element={<ClientDetail />} />
+          <Route path="/dashboard/investors/:id" element={<InvestorDetail />} />
+          <Route path="/dashboard/partners/:id" element={<PartnerDetail />} />
+          <Route path="/dashboard/leads/:id" element={<LeadDetail />} />
+          <Route path="/dashboard/meetings/:id" element={<MeetingDetail />} />
 
           {/* Blog Management Routes */}
           <Route path="/admin/blog" element={<BlogManage />} />
