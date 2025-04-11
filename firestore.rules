@@ -5,15 +5,77 @@ service cloud.firestore {
     match /{document=**} {
       allow read: if request.auth != null;
     }
-    
+
     // Only authenticated users can write to leads collection
     match /leads/{document} {
       allow write: if request.auth != null;
     }
-    
+
     // Only authenticated users can write to investors collection
     match /investors/{document} {
       allow write: if request.auth != null;
     }
+
+    // Transcripts can be read by the entity owner and team members
+    match /transcripts/{transcriptId} {
+      allow read: if request.auth != null && (
+        resource.data.entityType == 'client' && (
+          resource.data.entityId == request.auth.uid ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team'
+        ) ||
+        resource.data.entityType == 'investor' && (
+          resource.data.entityId == request.auth.uid ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team'
+        ) ||
+        resource.data.entityType == 'partner' && (
+          resource.data.entityId == request.auth.uid ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team'
+        )
+      );
+
+      // Only team members can write to transcripts
+      allow write: if request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team';
+    }
+
+    // Meeting webhooks can only be accessed by team members
+    match /meetingWebhooks/{webhookId} {
+      allow read, write: if request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team';
+    }
+
+    // Recording configs can only be accessed by team members
+    match /recordingConfigs/{configId} {
+      allow read, write: if request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team';
+    }
+
+    // Transcription jobs can only be accessed by team members
+    match /transcriptionJobs/{jobId} {
+      allow read, write: if request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team';
+    }
+
+    // Meetings can be read by the entity owner and team members
+    match /meetings/{meetingId} {
+      allow read: if request.auth != null && (
+        resource.data.entityType == 'client' && (
+          resource.data.entityId == request.auth.uid ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team'
+        ) ||
+        resource.data.entityType == 'investor' && (
+          resource.data.entityId == request.auth.uid ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team'
+        ) ||
+        resource.data.entityType == 'partner' && (
+          resource.data.entityId == request.auth.uid ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team'
+        )
+      );
+
+      // Only team members can write to meetings
+      allow write: if request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team';
+    }
   }
-} 
+}

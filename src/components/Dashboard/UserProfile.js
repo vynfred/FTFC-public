@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
-import { FaCamera, FaEnvelope, FaPhone, FaUser } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaCalendarAlt, FaCamera, FaEnvelope, FaPhone, FaUser, FaGoogleDrive } from 'react-icons/fa';
 import styles from './UserProfile.module.css';
+import { useAuth } from '../../context/AuthContext';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../firebase-config';
+import GoogleDriveConnect from '../integrations/GoogleDriveConnect';
 
 const UserProfile = () => {
-  // Mock user data - in a real app, this would come from context/API
+  const { user } = useAuth();
+  // User data state
   const [userData, setUserData] = useState({
     name: 'John Doe',
     email: 'john.doe@example.com',
@@ -16,6 +21,42 @@ const UserProfile = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ ...userData });
+
+  // Fetch user data from Firestore
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (user && user.uid) {
+        try {
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          if (userDoc.exists()) {
+            const data = userDoc.data();
+            setUserData({
+              name: data.displayName || user.displayName || 'User',
+              email: data.email || user.email || '',
+              phone: data.phone || '',
+              role: data.role || 'Team Member',
+              department: data.department || '',
+              joinDate: data.createdAt ? new Date(data.createdAt.toDate()).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+              profileImage: data.photoURL || user.photoURL || null
+            });
+            setFormData({
+              name: data.displayName || user.displayName || 'User',
+              email: data.email || user.email || '',
+              phone: data.phone || '',
+              role: data.role || 'Team Member',
+              department: data.department || '',
+              joinDate: data.createdAt ? new Date(data.createdAt.toDate()).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+              profileImage: data.photoURL || user.photoURL || null
+            });
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,10 +90,10 @@ const UserProfile = () => {
           <div className={styles.profileImageSection}>
             <div className={styles.profileImageContainer}>
               {userData.profileImage ? (
-                <img 
-                  src={userData.profileImage} 
-                  alt={userData.name} 
-                  className={styles.profileImage} 
+                <img
+                  src={userData.profileImage}
+                  alt={userData.name}
+                  className={styles.profileImage}
                 />
               ) : (
                 <div className={styles.profileImagePlaceholder}>
@@ -154,7 +195,7 @@ const UserProfile = () => {
                   </div>
                 </div>
 
-                <button 
+                <button
                   className={styles.editButton}
                   onClick={() => setIsEditing(true)}
                 >
@@ -167,20 +208,58 @@ const UserProfile = () => {
 
         <div className={styles.profileCard}>
           <h3>Account Settings</h3>
-          
+
           <div className={styles.settingsSection}>
             <h4>Password</h4>
             <button className={styles.actionButton}>Change Password</button>
           </div>
-          
+
           <div className={styles.settingsSection}>
             <h4>Notifications</h4>
             <button className={styles.actionButton}>Manage Notifications</button>
           </div>
-          
+
           <div className={styles.settingsSection}>
             <h4>Two-Factor Authentication</h4>
             <button className={styles.actionButton}>Enable 2FA</button>
+          </div>
+        </div>
+
+        {/* Google Drive Integration Section */}
+        <div className={styles.profileCard}>
+          <h3>
+            <FaGoogleDrive className={styles.sectionIcon} />
+            Google Drive Integration
+          </h3>
+          <p className={styles.sectionDescription}>
+            Connect your Google Drive to enable automatic processing of Gemini meeting notes
+          </p>
+
+          <GoogleDriveConnect 
+            onConnect={(tokens, profile) => {
+              console.log('Google Drive connected', profile);
+            }}
+            onDisconnect={() => {
+              console.log('Google Drive disconnected');
+            }}
+          />
+        </div>
+
+        {/* Calendar Integration Section */}
+        <div className={styles.profileCard}>
+          <h3>
+            <FaCalendarAlt className={styles.sectionIcon} />
+            Calendar Integration
+          </h3>
+          <p className={styles.sectionDescription}>
+            Connect your Google Calendar to schedule and manage client meetings
+          </p>
+
+          {/* Replace with your CalendarIntegration component */}
+          <div className={styles.placeholderIntegration}>
+            <button className={styles.connectButton}>
+              Connect Google Calendar
+            </button>
           </div>
         </div>
       </div>

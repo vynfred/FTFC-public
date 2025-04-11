@@ -1,0 +1,233 @@
+.google-connect {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.loading {
+  padding: 15px;
+  text-align: center;
+  color: #6c757d;
+}
+
+.connect-description {
+  margin-bottom: 15px;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.connected-status {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.user-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #212529;
+}
+
+.user-email {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.connection-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.status-indicator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.status-indicator.connected {
+  background-color: #28a745;
+}
+
+.status-indicator.disconnected {
+  background-color: #dc3545;
+}
+
+.connect-button,
+.disconnect-button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  border: none;
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+
+.connect-button {
+  background-color: #4285f4;
+  color: white;
+}
+
+.connect-button:hover {
+  background-color: #3367d6;
+}
+
+.disconnect-button {
+  background-color: #f8f9fa;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+}
+
+.disconnect-button:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
+.connect-prompt {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin-top: 5px;
+}
+
+.retry-button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  background-color: #6c757d;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+
+.retry-button:hover {
+  background-color: #5a6268;
+}
+
+/* OAuth Callback Styles */
+.oauth-callback {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.processing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #4285f4;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.success, .error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.success-icon {
+  width: 50px;
+  height: 50px;
+  background-color: #28a745;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.error-icon {
+  width: 50px;
+  height: 50px;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.redirect-message {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-top: 10px;
+}
+
+.error-message {
+  padding: 10px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  color: #721c24;
+  font-size: 0.9rem;
+  max-width: 100%;
+  word-break: break-word;
+}
+
+@media (max-width: 768px) {
+  .google-connect {
+    padding: 15px;
+  }
+
+  .connect-button,
+  .disconnect-button,
+  .retry-button {
+    width: 100%;
+  }
+
+  .oauth-callback {
+    margin: 20px;
+    padding: 20px;
+  }
+}

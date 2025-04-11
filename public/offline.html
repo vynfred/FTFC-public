@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FTFC - Offline</title>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: #0a1950;
+      color: #ffffff;
+      text-align: center;
+    }
+    .container {
+      max-width: 600px;
+      padding: 2rem;
+    }
+    h1 {
+      color: #ffd700;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    p {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+    .logo {
+      width: 120px;
+      height: 120px;
+      margin-bottom: 2rem;
+      background-color: #0a1950;
+      border: 3px solid #ffd700;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      font-weight: bold;
+      color: #ffd700;
+    }
+    .retry-button {
+      background-color: #ffd700;
+      color: #0a1950;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 0.25rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .retry-button:hover {
+      background-color: #e6c200;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">FTFC</div>
+    <h1>You're Offline</h1>
+    <p>It looks like you've lost your internet connection. Please check your connection and try again.</p>
+    <p>Some features of the FTFC Dashboard are available offline, but you'll need to be online to access all functionality.</p>
+    <button class="retry-button" onclick="window.location.reload()">Retry Connection</button>
+  </div>
+  <script>
+    // Check if the user comes back online
+    window.addEventListener('online', () => {
+      window.location.reload();
+    });
+  </script>
+</body>
+</html>

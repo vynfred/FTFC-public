@@ -103,6 +103,7 @@ This document provides a comprehensive inventory of all pages and their function
   - Track client history
   - Manage client documents
   - Monitor client projects
+  - View meeting transcripts from Gemini
 
 ### Investor Detail
 - **URL:** `/dashboard/investors/:id`
@@ -113,6 +114,7 @@ This document provides a comprehensive inventory of all pages and their function
   - Track investment history
   - Manage investor documents
   - Monitor investment performance
+  - View meeting transcripts from Gemini
 
 ### Partner Detail
 - **URL:** `/dashboard/partners/:id`
@@ -123,6 +125,7 @@ This document provides a comprehensive inventory of all pages and their function
   - Track partnership history
   - Manage partner documents
   - Monitor partnership performance
+  - View meeting transcripts from Gemini
 
 ## Public Pages
 
@@ -197,6 +200,20 @@ This document provides a comprehensive inventory of all pages and their function
   - Show related articles
   - Enable social sharing
   - Allow comments
+
+## Integration Features
+
+### Gemini Notes Integration
+- **Components:**
+  - `MeetingTranscriptList`
+  - `MeetingTranscript`
+- **Functions:**
+  - Automatically process meeting notes created by Google Gemini
+  - Extract participant information from notes
+  - Determine which client/investor/partner the meeting was with
+  - Associate notes with the appropriate entity
+  - Display meeting transcripts in client/investor/partner portals
+  - Allow team members to view and edit transcripts
 
 ## Authentication Pages
 

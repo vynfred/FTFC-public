@@ -16,7 +16,7 @@ const InvestorPortal = () => {
   useEffect(() => {
     // Scroll to top when component mounts
     window.scrollTo(0, 0);
-    
+
     // Set page title
     document.title = 'FTFC | Investor Portal';
   }, []);
@@ -126,7 +126,7 @@ const InvestorPortal = () => {
       <div className={styles.portalContent}>
         <div className={styles.portalSection}>
           <h2 className={styles.sectionTitle}>Overview</h2>
-          
+
           <div className={styles.metricsGrid}>
             <div className={styles.metricCard}>
               <div className={styles.metricIcon}>
@@ -137,7 +137,7 @@ const InvestorPortal = () => {
                 <p className={styles.metricValue}>{investorData.activeInvestments}</p>
               </div>
             </div>
-            
+
             <div className={styles.metricCard}>
               <div className={styles.metricIcon}>
                 <FaHandshake />
@@ -149,28 +149,38 @@ const InvestorPortal = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Investment Prospectus Section */}
         <div className={styles.portalSection}>
           <h2 className={styles.sectionTitle}>Your Investment Profile</h2>
-          <InvestmentProspectus 
-            prospectus={investorData.investmentProspectus} 
+          <InvestmentProspectus
+            prospectus={investorData.investmentProspectus}
             onSaveNotes={handleSaveNotes}
           />
         </div>
-        
+
         {/* Meeting Section */}
         <div className={styles.portalSection}>
           <h2 className={styles.sectionTitle}>Meetings</h2>
-          <MeetingSection 
-            meeting={investorData.upcomingMeeting} 
-            onBookMeeting={handleBookMeeting} 
+          <MeetingSection
+            meeting={investorData.upcomingMeeting}
+            onBookMeeting={handleBookMeeting}
           />
         </div>
-        
+
+        {/* Meeting Transcripts Section */}
+        <div className={styles.portalSection}>
+          <h2 className={styles.sectionTitle}>Meeting Transcripts</h2>
+          <MeetingTranscriptList
+            entityType="investor"
+            entityId={user?.uid || '123'}
+            readOnly={true}
+          />
+        </div>
+
         <div className={styles.portalSection}>
           <h2 className={styles.sectionTitle}>Investment Opportunities</h2>
-          
+
           <div className={styles.opportunitiesList}>
             {investorData.opportunities.map((opportunity) => (
               <div key={opportunity.id} className={styles.opportunityCard}>
@@ -198,10 +208,10 @@ const InvestorPortal = () => {
             ))}
           </div>
         </div>
-        
+
         <div className={styles.portalSection}>
           <h2 className={styles.sectionTitle}>Your Investments</h2>
-          
+
           <div className={styles.tableContainer}>
             <table className={styles.dataTable}>
               <thead>
@@ -235,21 +245,21 @@ const InvestorPortal = () => {
             </table>
           </div>
         </div>
-        
+
         {/* Referral Link Section */}
         <div className={styles.portalSection}>
           <h2 className={styles.sectionTitle}>Help expand our network</h2>
-          <ReferralLink 
-            userId={user?.uid || 'investor123'} 
-            type="investor" 
-            title="Your Investor Referral Link" 
+          <ReferralLink
+            userId={user?.uid || 'investor123'}
+            type="investor"
+            title="Your Investor Referral Link"
           />
         </div>
-        
+
         {/* Team Member Card Section */}
         <div className={styles.portalSection}>
           <h2 className={styles.sectionTitle}>Your FTFC Advisor</h2>
-          <TeamMemberCard 
+          <TeamMemberCard
             name={investorData.assignedTeamMember.name}
             title={investorData.assignedTeamMember.title}
             email={investorData.assignedTeamMember.email}

@@ -16,7 +16,7 @@ const ClientPortal = () => {
   useEffect(() => {
     // Scroll to top when component mounts
     window.scrollTo(0, 0);
-    
+
     // Set page title
     document.title = 'FTFC | Client Portal';
   }, []);
@@ -133,13 +133,12 @@ const ClientPortal = () => {
     <div className={styles.portalContainer}>
       <div className={styles.portalHeader}>
         <h1>Welcome to Your Client Portal</h1>
-        <p>Access your financial information and services</p>
       </div>
 
       <div className={styles.portalContent}>
         <div className={styles.portalSection}>
           <h2 className={styles.sectionTitle}>Overview</h2>
-          
+
           <div className={styles.metricsGrid}>
             <div className={styles.metricCard}>
               <div className={styles.metricIcon}>
@@ -150,7 +149,7 @@ const ClientPortal = () => {
                 <p className={styles.metricValue}>{clientData.status}</p>
               </div>
             </div>
-            
+
             <div className={styles.metricCard}>
               <div className={styles.metricIcon}>
                 <FaFileAlt />
@@ -162,31 +161,41 @@ const ClientPortal = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Goals Section */}
         <div className={styles.portalSection}>
           <h2 className={styles.sectionTitle}>Your Goals</h2>
           <GoalSection goals={clientData.goals} />
         </div>
-        
+
         {/* Milestones Section */}
         <div className={styles.portalSection}>
           <h2 className={styles.sectionTitle}>Your Milestones</h2>
           <MilestoneList milestones={clientData.milestones} />
         </div>
-        
+
         {/* Meeting Section */}
         <div className={styles.portalSection}>
           <h2 className={styles.sectionTitle}>Meetings</h2>
-          <MeetingSection 
-            meeting={clientData.upcomingMeeting} 
-            onBookMeeting={handleBookMeeting} 
+          <MeetingSection
+            meeting={clientData.upcomingMeeting}
+            onBookMeeting={handleBookMeeting}
           />
         </div>
-        
+
+        {/* Meeting Transcripts Section */}
+        <div className={styles.portalSection}>
+          <h2 className={styles.sectionTitle}>Meeting Transcripts</h2>
+          <MeetingTranscriptList
+            entityType="client"
+            entityId={user?.uid || '123'}
+            readOnly={true}
+          />
+        </div>
+
         <div className={styles.portalSection}>
           <h2 className={styles.sectionTitle}>Recent Activity</h2>
-          
+
           <div className={styles.activityList}>
             {clientData.recentActivity.map((activity, index) => (
               <div key={index} className={styles.activityItem}>
@@ -199,10 +208,10 @@ const ClientPortal = () => {
             ))}
           </div>
         </div>
-        
+
         <div className={styles.portalSection}>
           <h2 className={styles.sectionTitle}>Your Documents</h2>
-          
+
           <div className={styles.documentList}>
             {clientData.documentList.map((document, index) => (
               <div key={index} className={styles.documentItem}>
@@ -217,24 +226,24 @@ const ClientPortal = () => {
               </div>
             ))}
           </div>
-          
+
           <button className={styles.viewAllButton}>View All Documents</button>
         </div>
-        
+
         {/* Referral Link Section */}
         <div className={styles.portalSection}>
-          <h2 className={styles.sectionTitle}>Refer a Company</h2>
-          <ReferralLink 
-            userId={user?.uid || 'client123'} 
-            type="client" 
-            title="Your Company Referral Link" 
+          <h2 className={styles.sectionTitle}>Referrals</h2>
+          <ReferralLink
+            userId={user?.uid || 'client123'}
+            type="client"
+            title="Your Company Referral Link"
           />
         </div>
-        
+
         {/* Team Member Card Section */}
         <div className={styles.portalSection}>
-          <h2 className={styles.sectionTitle}>Your Advisor</h2>
-          <TeamMemberCard 
+          <h2 className={styles.sectionTitle}>Your FTFC Advisor</h2>
+          <TeamMemberCard
             name={clientData.assignedTeamMember.name}
             title={clientData.assignedTeamMember.title}
             email={clientData.assignedTeamMember.email}

@@ -1,0 +1,15 @@
+To create a new branch for integrations, please run the following commands in your terminal:
+
+1. Add all changes:
+   git add .
+
+2. Commit the changes:
+   git commit -m "Fix ClientPortal component"
+
+3. Create and switch to the new branch:
+   git checkout -b FTFC-3.3-Integrations
+
+4. Verify that you're on the new branch:
+   git branch
+
+You should now be on the FTFC-3.3-Integrations branch and ready to start working on integrations.

@@ -18,6 +18,9 @@
 /* Import responsive utilities */
 @import './responsive.css';
 
+/* Import PWA styles */
+@import './PWAInstallPrompt.css';
+
 /* Import component styles */
 @import './dashboard-sections.css';
 

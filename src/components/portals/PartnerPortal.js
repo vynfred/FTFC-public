@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaChartLine, FaEnvelope, FaFileAlt, FaUsers } from 'react-icons/fa';
+import { FaChartLine, FaFileAlt, FaUsers } from 'react-icons/fa';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import FocusAreas from '../common/FocusAreas';
@@ -15,7 +15,7 @@ const PartnerPortal = () => {
   useEffect(() => {
     // Scroll to top when component mounts
     window.scrollTo(0, 0);
-    
+
     // Set page title
     document.title = 'FTFC | Partner Portal';
   }, []);
@@ -118,7 +118,7 @@ const PartnerPortal = () => {
       <div className={styles.portalContent}>
         <div className={styles.portalSection}>
           <h2 className={styles.sectionTitle}>Referral Performance</h2>
-          
+
           <div className={styles.metricsGrid}>
             <div className={styles.metricCard}>
               <div className={styles.metricIcon}>
@@ -129,7 +129,7 @@ const PartnerPortal = () => {
                 <p className={styles.metricValue}>{partnerData.totalReferrals}</p>
               </div>
             </div>
-            
+
             <div className={styles.metricCard}>
               <div className={styles.metricIcon}>
                 <FaChartLine />
@@ -139,7 +139,7 @@ const PartnerPortal = () => {
                 <p className={styles.metricValue}>{partnerData.activeReferrals}</p>
               </div>
             </div>
-            
+
             <div className={styles.metricCard}>
               <div className={styles.metricIcon}>
                 <FaChartLine />
@@ -151,25 +151,35 @@ const PartnerPortal = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Focus Areas Section */}
         <div className={styles.portalSection}>
           <h2 className={styles.sectionTitle}>Your Areas of Focus</h2>
           <FocusAreas focusAreas={partnerData.focusAreas} />
         </div>
-        
+
         {/* Meeting Section */}
         <div className={styles.portalSection}>
           <h2 className={styles.sectionTitle}>Meetings</h2>
-          <MeetingSection 
-            meeting={partnerData.upcomingMeeting} 
-            onBookMeeting={handleBookMeeting} 
+          <MeetingSection
+            meeting={partnerData.upcomingMeeting}
+            onBookMeeting={handleBookMeeting}
           />
         </div>
-        
+
+        {/* Meeting Transcripts Section */}
+        <div className={styles.portalSection}>
+          <h2 className={styles.sectionTitle}>Meeting Transcripts</h2>
+          <MeetingTranscriptList
+            entityType="partner"
+            entityId={user?.uid || '123'}
+            readOnly={true}
+          />
+        </div>
+
         <div className={styles.portalSection}>
           <h2 className={styles.sectionTitle}>Your Referrals</h2>
-          
+
           <div className={styles.referralsList}>
             {partnerData.referrals.map((referral, index) => (
               <div key={index} className={styles.referralItem}>
@@ -202,25 +212,25 @@ const PartnerPortal = () => {
               </div>
             ))}
           </div>
-          
+
           <button className={styles.viewAllButton}>View All Referrals</button>
         </div>
-        
+
         <div className={styles.portalSection}>
           <h2 className={styles.sectionTitle}>Your Referral Tools</h2>
-          
+
           <div className={styles.toolsGrid}>
             {/* Referral Link */}
             <div className={styles.toolCard}>
               <h3>Referral Link</h3>
               <p>Share this unique link with potential clients</p>
-              <ReferralLink 
-                userId={user?.uid || 'partner123'} 
-                type="client" 
-                title="" 
+              <ReferralLink
+                userId={user?.uid || 'partner123'}
+                type="client"
+                title=""
               />
             </div>
-            
+
             {/* Marketing Materials */}
             <div className={styles.toolCard}>
               <h3>Marketing Materials</h3>
@@ -241,11 +251,11 @@ const PartnerPortal = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Team Member Card Section */}
         <div className={styles.portalSection}>
           <h2 className={styles.sectionTitle}>Your Partner Manager</h2>
-          <TeamMemberCard 
+          <TeamMemberCard
             name={partnerData.assignedTeamMember.name}
             title={partnerData.assignedTeamMember.title}
             email={partnerData.assignedTeamMember.email}

@@ -1,11 +1,10 @@
 import { initializeApp } from 'firebase/app';
-import { 
-  getAuth, 
-  signInWithEmailAndPassword, 
-  signOut as firebaseSignOut,
-  onAuthStateChanged as firebaseAuthStateChanged
+import {
+    getAuth, onAuthStateChanged as firebaseAuthStateChanged, signInWithEmailAndPassword,
+    signOut as firebaseSignOut
 } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getFunctions } from 'firebase/functions';
 import { getStorage } from 'firebase/storage';
 
 // Firebase configuration
@@ -15,7 +14,8 @@ const firebaseConfig = {
   projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
   storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_FIREBASE_APP_ID
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  driveFolderId: process.env.REACT_APP_GOOGLE_DRIVE_FOLDER_ID
 };
 
 // Initialize Firebase
@@ -23,12 +23,13 @@ const app = initializeApp(firebaseConfig);
 const firebaseAuth = getAuth(app);
 const firebaseDb = getFirestore(app);
 const firebaseStorage = getStorage(app);
+const firebaseFunctions = getFunctions(app);
 
 // Development mode check
 const isDevelopment = process.env.NODE_ENV === 'development';
 
 // Auth service
-const auth = isDevelopment ? 
+const auth = isDevelopment ?
   // Mock auth for development
   {
     currentUser: {
@@ -51,7 +52,7 @@ const auth = isDevelopment ?
     },
     signOut: () => Promise.resolve(),
     createUserWithEmailAndPassword: () => Promise.resolve()
-  } : 
+  } :
   // Real Firebase auth for production
   {
     currentUser: firebaseAuth.currentUser,
@@ -148,5 +149,29 @@ const handleFirebaseError = (error) => {
   return 'An error occurred. Please try again.';
 };
 
+// Functions service
+const functions = isDevelopment ?
+  // Mock functions for development
+  {
+    httpsCallable: (name) => (data) => {
+      console.log(`Mock function call: ${name}`, data);
+      return Promise.resolve({ data: { success: true } });
+    }
+  } :
+  // Real Firebase functions for production
+  firebaseFunctions;
+
+// Export httpsCallable function for use in services
+export const callFunction = (name, data) => {
+  if (isDevelopment) {
+    // Mock implementation for development
+    console.log(`Mock function call: ${name}`, data);
+    return Promise.resolve({ data: { success: true } });
+  } else {
+    // Real implementation for production
+    return httpsCallable(functions, name)(data);
+  }
+};
+
 // Export services
-export { db, auth, storage, handleFirebaseError };
+export { db, auth, storage, handleFirebaseError, functions, app };

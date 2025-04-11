@@ -25,6 +25,8 @@ import ComponentsExamples from './components/examples/ComponentsExamples';
 import CssExamples from './components/examples/CssExamples';
 import FormExamples from './components/examples/FormExamples';
 import ReferralIntakeForm from './components/forms/ReferralIntakeForm';
+import GoogleDriveCallback from './components/integrations/GoogleDriveCallback';
+import GoogleOAuthCallback from './components/integrations/GoogleOAuthCallback';
 import Layout from './components/layout/Layout';
 import NotFound from './components/NotFound';
 import About from './components/public/About';
@@ -38,7 +40,7 @@ import Services from './components/public/Services';
 import Team from './components/public/Team';
 
 // Portal components
-import ClientPortal from './components/portals/ClientPortal';
+import ClientPortal from './components/portals/ClientPortalUpdated';
 import InvestorPortal from './components/portals/InvestorPortal';
 import PartnerPortal from './components/portals/PartnerPortal';
 
@@ -50,6 +52,9 @@ function App() {
     <ToastProvider position="bottomRight">
       {/* ScrollToTop component to handle scrolling on route changes */}
       <ScrollToTop />
+
+      {/* PWA Install Prompt */}
+      <PWAInstallPrompt />
 
       <Routes>
         {/* Public Routes */}
@@ -72,6 +77,10 @@ function App() {
           <Route path="/intake" element={<ReferralIntakeForm />} />
           <Route path="/intake/:type" element={<ReferralIntakeForm />} />
           <Route path="/intake/:type/:referrerId" element={<ReferralIntakeForm />} />
+
+          {/* Google OAuth Callback Routes */}
+          <Route path="/api/google/oauth-callback" element={<GoogleOAuthCallback />} />
+          <Route path="/api/google-drive/oauth-callback" element={<GoogleDriveCallback />} />
         </Route>
 
         {/* Client Portal Routes */}
@@ -126,6 +135,7 @@ function App() {
           <Route path="/dashboard/css-examples" element={<CssExamples />} />
           <Route path="/dashboard/form-examples" element={<FormExamples />} />
           <Route path="/dashboard/components-examples" element={<ComponentsExamples />} />
+          <Route path="/dashboard/email-example" element={<EmailExample />} />
 
           {/* Blog Management Routes */}
           <Route path="/admin/blog" element={<BlogManage />} />

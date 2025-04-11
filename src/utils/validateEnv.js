@@ -6,7 +6,13 @@ export const validateEnv = () => {
     'REACT_APP_FIREBASE_STORAGE_BUCKET',
     'REACT_APP_FIREBASE_MESSAGING_SENDER_ID',
     'REACT_APP_FIREBASE_APP_ID',
-    'REACT_APP_TINYMCE_API_KEY'
+    'REACT_APP_TINYMCE_API_KEY',
+    // Google OAuth credentials
+    'REACT_APP_GOOGLE_CLIENT_ID',
+    'REACT_APP_GOOGLE_CLIENT_SECRET',
+    'REACT_APP_GOOGLE_REDIRECT_URI',
+    // Calendly API key
+    'REACT_APP_CALENDLY_API_KEY'
   ];
 
   const missing = required.filter(key => !process.env[key]);
@@ -17,4 +23,4 @@ export const validateEnv = () => {
   }
 
   return true;
-}; 
+};

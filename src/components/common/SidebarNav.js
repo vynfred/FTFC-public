@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-    FaChartBar, FaChartLine, FaChevronLeft, FaChevronRight, FaCog, FaHandshake, FaHistory, FaUserFriends, FaUsers
-} from 'react-icons/fa';
+import { FaChartBar, FaChartLine, FaChevronLeft, FaChevronRight, FaCog, FaHandshake, FaHistory, FaUserFriends, FaUsers } from 'react-icons/fa';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import styles from './SidebarNav.module.css';
 
@@ -54,6 +52,11 @@ const SidebarNav = ({ collapsed, toggleSidebar }) => {
       path: '/dashboard/partners',
       name: 'Partners',
       icon: <FaHandshake />
+    },
+    {
+      path: '/dashboard/calendar',
+      name: 'Calendar',
+      icon: <FaCalendarAlt />
     },
     {
       path: '/dashboard/company-settings',

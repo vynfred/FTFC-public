@@ -353,6 +353,104 @@
   margin: 0;
 }
 
+/* Calendar Integration Styles */
+.calendarIntegrationContainer {
+  margin-top: var(--spacing-md);
+}
+
+.sectionHeader {
+  margin-bottom: var(--spacing-md);
+}
+
+.sectionHeader h2,
+.sectionHeader h3 {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.headerIcon {
+  margin-right: var(--spacing-sm);
+  color: var(--color-primary);
+}
+
+.sectionHeader p {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  margin-top: 0;
+}
+
+.calendarConnectSection {
+  margin-bottom: var(--spacing-md);
+}
+
+.meetingActionsSection {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+}
+
+.clientSelectContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.clientSelect {
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  background-color: var(--color-background-light);
+  color: var(--color-text-primary);
+  max-width: 300px;
+}
+
+.scheduleButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  max-width: 200px;
+  transition: background-color var(--transition-default);
+}
+
+.scheduleButton:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.scheduleButton:disabled {
+  background-color: var(--color-disabled);
+  cursor: not-allowed;
+}
+
+.buttonIcon {
+  font-size: 0.75rem;
+}
+
+.meetingSchedulerContainer {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+.meetingHistorySection {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+}
+
 /* Responsive adjustments */
 @media (max-width: 48rem) { /* 768px */
   .dashboardPage {
@@ -373,5 +471,13 @@
   .leadSourceName,
   .lossReason {
     width: 80px;
+  }
+
+  .clientSelect {
+    max-width: 100%;
+  }
+
+  .scheduleButton {
+    max-width: 100%;
   }
 }
