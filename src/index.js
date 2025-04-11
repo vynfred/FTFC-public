@@ -37,7 +37,14 @@ root.render(
   </React.StrictMode>
 );
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://cra.link/PWA
-serviceWorkerRegistration.register();
+// Register service worker for PWA functionality
+// This will only activate for team members on dashboard routes
+// Public pages will function as a normal website
+serviceWorkerRegistration.register({
+  onSuccess: (registration) => {
+    console.log('PWA successfully registered for team dashboard');
+  },
+  onUpdate: (registration) => {
+    console.log('New PWA content is available. Please refresh the page.');
+  }
+});
