@@ -7,6 +7,7 @@ import MeetingSection from '../common/MeetingSection';
 import MilestoneList from '../common/MilestoneList';
 import ReferralLink from '../common/ReferralLink';
 import TeamMemberCard from '../common/TeamMemberCard';
+import CalendlyBookingLink from '../integrations/CalendlyBookingLink';
 import GoogleCalendarConnect from '../integrations/GoogleCalendarConnect';
 import MeetingHistory from '../integrations/MeetingHistoryUpdated';
 import MeetingScheduler from '../integrations/MeetingScheduler';
@@ -57,65 +58,79 @@ const ClientPortal = () => {
     // In a real app, you would update the client data with the new meeting
   };
 
-  // Sample data - in a real app, this would come from your backend
+  // Mock client data - in a real app, this would come from your backend
   const clientData = {
-    name: 'Acme Startup',
-    status: 'Series A Ready',
+    name: 'Acme Corporation',
+    status: 'Active',
     documentCount: 12,
     assignedTeamMember: {
+      id: '1', // Added team member ID for Calendly booking
       name: 'John Smith',
-      title: 'Senior Advisor',
+      title: 'Financial Advisor',
       email: 'john.smith@ftfc.com',
       phone: '(555) 123-4567',
       imageSrc: '/images/team-member-1.jpg'
     },
-    // Upcoming meeting - set to null to show the booking button
-    upcomingMeeting: {
-      title: 'Quarterly Review',
-      date: 'June 15, 2023',
-      time: '10:00 AM EST',
-      type: 'video'
-    },
-    goals: [
-      {
-        title: 'Complete Series A Funding',
-        progress: 75,
-        description: 'Raise $5M in Series A funding by Q3 2023'
-      },
-      {
-        title: 'Expand Team',
-        progress: 40,
-        description: 'Hire key leadership positions: CTO, CMO, and COO'
-      },
-      {
-        title: 'Product Launch',
-        progress: 90,
-        description: 'Launch MVP to early adopters by end of Q2'
-      }
-    ],
+    upcomingMeeting: null, // Set to null to show the booking button
     milestones: [
       {
-        title: 'Financial Model Review',
-        completed: true,
+        id: '1',
+        title: 'Initial Consultation',
+        description: 'Discuss funding needs and options',
+        status: 'completed',
         date: 'May 1, 2023'
       },
       {
-        title: 'Pitch Deck Finalization',
-        completed: true,
+        id: '2',
+        title: 'Financial Documentation',
+        description: 'Prepare and submit financial statements',
+        status: 'completed',
         date: 'May 15, 2023'
       },
       {
-        title: 'Investor Introductions',
-        completed: false,
-        date: 'June 30, 2023'
+        id: '3',
+        title: 'Term Sheet Review',
+        description: 'Review and negotiate term sheet',
+        status: 'in-progress',
+        date: 'June 1, 2023'
       },
       {
-        title: 'Term Sheet Negotiation',
-        completed: false,
-        date: 'July 15, 2023'
+        id: '4',
+        title: 'Due Diligence',
+        description: 'Complete investor due diligence process',
+        status: 'pending',
+        date: 'June 15, 2023'
+      },
+      {
+        id: '5',
+        title: 'Funding',
+        description: 'Receive initial funding',
+        status: 'pending',
+        date: 'July 1, 2023'
+      }
+    ],
+    goals: [
+      {
+        id: '1',
+        title: 'Series A Funding',
+        target: '$2,000,000',
+        current: '$1,500,000',
+        progress: 75
+      },
+      {
+        id: '2',
+        title: 'Monthly Revenue',
+        target: '$100,000',
+        current: '$85,000',
+        progress: 85
       }
     ],
     recentActivity: [
+      {
+        date: 'Jun 1, 2023',
+        title: 'Document Uploaded',
+        description: 'Financial Statement Q2 2023'
+      },
       {
         date: 'May 28, 2023',
         title: 'Meeting Completed',
@@ -127,7 +142,7 @@ const ClientPortal = () => {
         description: 'Series A Documentation Completed'
       }
     ],
-    documentList: [ // Changed from documents to documentList to avoid conflict
+    documentList: [
       {
         title: 'Financial Statement Q2 2023',
         date: 'Jun 1, 2023'
@@ -146,63 +161,24 @@ const ClientPortal = () => {
   return (
     <div className={styles.portalContainer}>
       <div className={styles.portalHeader}>
-        <h1>Welcome to Your Client Portal</h1>
-        <p>Here's everything you need to know about your engagement with FTFC</p>
+        <h1 className={styles.portalTitle}>Client Portal</h1>
+        <div className={styles.portalStatus}>
+          <span className={styles.statusLabel}>Status:</span>
+          <span className={styles.statusValue}>{clientData.status}</span>
+        </div>
       </div>
 
       <div className={styles.portalContent}>
         <div className={styles.portalSection}>
-          <h2 className={styles.sectionTitle}>Overview</h2>
-
-          <div className={styles.metricsGrid}>
-            <div className={styles.metricCard}>
-              <div className={styles.metricIcon}>
-                <FaChartLine />
-              </div>
-              <div className={styles.metricContent}>
-                <h3>Current Status</h3>
-                <p className={styles.metricValue}>{clientData.status}</p>
-              </div>
-            </div>
-
-            <div className={styles.metricCard}>
-              <div className={styles.metricIcon}>
-                <FaFileAlt />
-              </div>
-              <div className={styles.metricContent}>
-                <h3>Documents</h3>
-                <p className={styles.metricValue}>{clientData.documentCount}</p>
-              </div>
-            </div>
-
-            <div className={styles.metricCard}>
-              <div className={styles.metricIcon}>
-                <FaCalendarAlt />
-              </div>
-              <div className={styles.metricContent}>
-                <h3>Calendar</h3>
-                <p className={styles.metricValue}>
-                  {isCalendarConnected ? 'Connected' : 'Not Connected'}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className={styles.portalSection}>
-          <h2 className={styles.sectionTitle}>Your Team</h2>
-          <TeamMemberCard teamMember={clientData.assignedTeamMember} />
-        </div>
-
-        {/* Goals Section */}
-        <div className={styles.portalSection}>
-          <h2 className={styles.sectionTitle}>Your Goals</h2>
+          <h2 className={styles.sectionTitle}>
+            <FaChartLine className={styles.sectionIcon} />
+            Goals
+          </h2>
           <GoalSection goals={clientData.goals} />
         </div>
 
-        {/* Milestones Section */}
         <div className={styles.portalSection}>
-          <h2 className={styles.sectionTitle}>Your Milestones</h2>
+          <h2 className={styles.sectionTitle}>Milestones</h2>
           <MilestoneList milestones={clientData.milestones} />
         </div>
 
@@ -227,6 +203,9 @@ const ClientPortal = () => {
                 <MeetingScheduler
                   onScheduled={handleMeetingScheduled}
                   contactEmail={user?.email}
+                  entityType="client"
+                  entityId={user?.uid || '123'}
+                  entityName={clientData.name}
                 />
               )}
             </div>
@@ -241,6 +220,20 @@ const ClientPortal = () => {
             onBookMeeting={handleBookMeeting}
           />
         </div>
+
+        {/* Calendly Booking Link - Show when no Google Calendar connection */}
+        {!isCalendarConnected && (
+          <div className={styles.portalSection}>
+            <h2 className={styles.sectionTitle}>Schedule a Meeting</h2>
+            <CalendlyBookingLink
+              teamMemberId={clientData.assignedTeamMember.id}
+              teamMemberName={clientData.assignedTeamMember.name}
+              entityType="client"
+              entityId={user?.uid || '123'}
+              entityName={clientData.name}
+            />
+          </div>
+        )}
 
         {/* Meeting History Section - Only show if calendar is connected */}
         {isCalendarConnected && (
@@ -261,22 +254,6 @@ const ClientPortal = () => {
             entityId={user?.uid || '123'}
             readOnly={true}
           />
-        </div>
-
-        <div className={styles.portalSection}>
-          <h2 className={styles.sectionTitle}>Recent Activity</h2>
-
-          <div className={styles.activityList}>
-            {clientData.recentActivity.map((activity, index) => (
-              <div key={index} className={styles.activityItem}>
-                <div className={styles.activityDate}>{activity.date}</div>
-                <div className={styles.activityContent}>
-                  <h4>{activity.title}</h4>
-                  <p>{activity.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
 
         <div className={styles.portalSection}>
@@ -304,6 +281,18 @@ const ClientPortal = () => {
             type="client"
             referrerId={user?.uid || '123'}
             referrerName={clientData.name}
+          />
+        </div>
+
+        {/* Team Member Card Section */}
+        <div className={styles.portalSection}>
+          <h2 className={styles.sectionTitle}>Your FTFC Advisor</h2>
+          <TeamMemberCard
+            name={clientData.assignedTeamMember.name}
+            title={clientData.assignedTeamMember.title}
+            email={clientData.assignedTeamMember.email}
+            phone={clientData.assignedTeamMember.phone}
+            imageSrc={clientData.assignedTeamMember.imageSrc}
           />
         </div>
       </div>

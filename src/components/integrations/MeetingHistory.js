@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getMeetingRecordings, getStoredTokens, listUpcomingEvents } from '../../services/googleIntegration';
+import { useStatsView } from '../../context/StatsViewContext';
 
 /**
  * Meeting History Component
@@ -7,24 +8,34 @@ import { getMeetingRecordings, getStoredTokens, listUpcomingEvents } from '../..
  * This component displays a list of past and upcoming meetings,
  * along with their recordings if available.
  */
-const MeetingHistory = () => {
+const MeetingHistory = ({ entityType = null, entityId = null }) => {
   const [meetings, setMeetings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedMeeting, setExpandedMeeting] = useState(null);
   const [recordings, setRecordings] = useState({});
+  const { viewCompanyStats } = useStatsView();
 
-  // Fetch meetings on component mount
+  // Fetch meetings on component mount or when viewCompanyStats changes
   useEffect(() => {
     const fetchMeetings = async () => {
       try {
+        setIsLoading(true);
         const tokens = getStoredTokens();
 
         if (!tokens) {
           throw new Error('Not connected to Google Calendar');
         }
 
-        const events = await listUpcomingEvents(tokens, 20);
+        // Get events with proper filtering based on company/user toggle
+        const events = await listUpcomingEvents(
+          tokens, 
+          20, 
+          true, // includePast
+          viewCompanyStats, // companyWide - use the stats toggle value
+          entityType,
+          entityId
+        );
 
         // Filter for Google Meet events
         const meetEvents = events.filter(event =>
@@ -43,7 +54,7 @@ const MeetingHistory = () => {
     };
 
     fetchMeetings();
-  }, []);
+  }, [entityType, entityId, viewCompanyStats]); // Re-fetch when viewCompanyStats changes
 
   // Fetch recordings for a meeting
   const fetchRecordings = async (meetingId) => {

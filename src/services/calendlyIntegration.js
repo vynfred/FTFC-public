@@ -1,11 +1,11 @@
 /**
  * Calendly Integration Service
- * 
+ *
  * This service handles integration with Calendly API:
  * - Fetching scheduled events
  * - Creating webhook subscriptions
  * - Processing webhook events
- * 
+ *
  * It provides methods for:
  * - Getting user's scheduled events
  * - Creating webhook subscriptions
@@ -34,7 +34,7 @@ const createCalendlyClient = () => {
  */
 export const getUserInfo = async () => {
   const client = createCalendlyClient();
-  
+
   try {
     const response = await client.get('/users/me');
     return response.data;
@@ -52,7 +52,7 @@ export const getUserInfo = async () => {
  */
 export const getScheduledEvents = async (userId, params = {}) => {
   const client = createCalendlyClient();
-  
+
   try {
     const response = await client.get(`/scheduled_events`, {
       params: {
@@ -60,7 +60,7 @@ export const getScheduledEvents = async (userId, params = {}) => {
         ...params
       }
     });
-    
+
     return response.data;
   } catch (error) {
     console.error('Error getting scheduled events:', error);
@@ -75,7 +75,7 @@ export const getScheduledEvents = async (userId, params = {}) => {
  */
 export const getEventDetails = async (eventUuid) => {
   const client = createCalendlyClient();
-  
+
   try {
     const response = await client.get(`/scheduled_events/${eventUuid}`);
     return response.data;
@@ -92,7 +92,7 @@ export const getEventDetails = async (eventUuid) => {
  */
 export const getEventInvitees = async (eventUuid) => {
   const client = createCalendlyClient();
-  
+
   try {
     const response = await client.get(`/scheduled_events/${eventUuid}/invitees`);
     return response.data;
@@ -112,7 +112,7 @@ export const getEventInvitees = async (eventUuid) => {
  */
 export const createWebhookSubscription = async (url, events, scope, scopeId) => {
   const client = createCalendlyClient();
-  
+
   try {
     const response = await client.post('/webhook_subscriptions', {
       url,
@@ -121,7 +121,7 @@ export const createWebhookSubscription = async (url, events, scope, scopeId) => 
       organization: scope === 'organization' ? scopeId : undefined,
       user: scope === 'user' ? scopeId : undefined
     });
-    
+
     return response.data;
   } catch (error) {
     console.error('Error creating webhook subscription:', error);
@@ -137,7 +137,7 @@ export const createWebhookSubscription = async (url, events, scope, scopeId) => 
  */
 export const listWebhookSubscriptions = async (scope, scopeId) => {
   const client = createCalendlyClient();
-  
+
   try {
     const response = await client.get('/webhook_subscriptions', {
       params: {
@@ -145,7 +145,7 @@ export const listWebhookSubscriptions = async (scope, scopeId) => {
         user: scope === 'user' ? scopeId : undefined
       }
     });
-    
+
     return response.data;
   } catch (error) {
     console.error('Error listing webhook subscriptions:', error);
@@ -160,7 +160,7 @@ export const listWebhookSubscriptions = async (scope, scopeId) => {
  */
 export const deleteWebhookSubscription = async (webhookUuid) => {
   const client = createCalendlyClient();
-  
+
   try {
     await client.delete(`/webhook_subscriptions/${webhookUuid}`);
   } catch (error) {
@@ -177,10 +177,10 @@ export const deleteWebhookSubscription = async (webhookUuid) => {
 export const processWebhookEvent = (event) => {
   // Verify webhook signature (in a real implementation)
   // ...
-  
+
   const eventType = event.payload.event;
   const eventData = event.payload.data;
-  
+
   switch (eventType) {
     case 'invitee.created':
       return {
@@ -202,5 +202,86 @@ export const processWebhookEvent = (event) => {
         type: 'unknown',
         data: eventData
       };
+  }
+};
+
+/**
+ * Sync Calendly event to Google Calendar
+ * @param {Object} eventData - Calendly event data
+ * @param {Object} tokens - Google OAuth tokens
+ * @param {String} entityType - Type of entity (client, investor, partner)
+ * @param {String} entityId - ID of the entity
+ * @returns {Promise<Object>} - Created Google Calendar event
+ */
+export const syncCalendlyEventToGoogle = async (eventData, tokens, entityType = null, entityId = null) => {
+  try {
+    // Import required functions
+    const { createMeetEvent } = await import('./googleIntegration');
+    const { registerMeetingWebhook, configureAutoRecording } = await import('./meetingWebhookService');
+    const { db } = await import('../firebase-config');
+    const { collection, addDoc, serverTimestamp } = await import('firebase/firestore');
+
+    // Extract event details from Calendly data
+    const eventDetails = {
+      title: eventData.name || 'Calendly Meeting',
+      description: eventData.description || 'Meeting scheduled via Calendly',
+      start: eventData.start_time,
+      end: eventData.end_time,
+      attendees: []
+    };
+
+    // Add invitee email if available
+    if (eventData.invitee && eventData.invitee.email) {
+      eventDetails.attendees.push(eventData.invitee.email);
+    }
+
+    // Add host email if available
+    if (eventData.event_memberships && eventData.event_memberships.length > 0) {
+      const host = eventData.event_memberships.find(m => m.role === 'host');
+      if (host && host.user && host.user.email) {
+        eventDetails.attendees.push(host.user.email);
+      }
+    }
+
+    // Add entity information if available
+    if (entityType && entityId) {
+      eventDetails.entityType = entityType;
+      eventDetails.entityId = entityId;
+
+      // Format title with FTFC convention if entity info is available
+      const today = new Date().toISOString().split('T')[0];
+      eventDetails.title = `FTFC-${entityType.toUpperCase()}-${entityId}-${today}-Calendly`;
+    }
+
+    // Create Google Calendar event with Meet link
+    const createdEvent = await createMeetEvent(tokens, eventDetails);
+
+    // Store the Calendly to Google Calendar mapping
+    await addDoc(collection(db, 'calendlyEvents'), {
+      calendlyEventId: eventData.uri,
+      googleEventId: createdEvent.id,
+      title: createdEvent.summary,
+      startTime: createdEvent.start.dateTime,
+      endTime: createdEvent.end.dateTime,
+      attendees: createdEvent.attendees?.map(a => a.email) || [],
+      meetingLink: createdEvent.hangoutLink,
+      entityType,
+      entityId,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+
+    // Register webhook for meeting recording notifications
+    if (entityType && entityId) {
+      await registerMeetingWebhook(createdEvent, entityType, entityId);
+
+      // Configure automatic recording for the meeting
+      await configureAutoRecording(createdEvent);
+    }
+
+    return createdEvent;
+  } catch (error) {
+    console.error('Error syncing Calendly event to Google Calendar:', error);
+    throw error;
   }
 };

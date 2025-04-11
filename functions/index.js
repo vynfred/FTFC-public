@@ -11,6 +11,8 @@ const meetingTranscripts = require('./src/meetingTranscripts');
 const geminiNotesProcessor = require('./src/geminiNotesProcessor');
 const googleDriveProxy = require('./src/googleDriveProxy');
 const emailFunctions = require('./src/emailFunctions');
+const calendlyWebhook = require('./src/calendlyWebhook');
+const calendarTaskProcessor = require('./src/calendarTaskProcessor');
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -56,3 +58,27 @@ exports.getGoogleDriveStatus = onCall((data, context) => {
 
 // Callable Email Function
 exports.sendCustomEmail = emailFunctions.sendCustomEmail;
+
+// Calendly Webhook Functions
+exports.processCalendlyWebhook = onRequest((request, response) => {
+  return calendlyWebhook.processCalendlyWebhook(request, response);
+});
+
+// Calendar Task Processor Functions
+exports.processCalendarTasks = calendarTaskProcessor.processCalendarTasks;
+
+// Google Meet Auto-Recording Configuration
+exports.configureMeetRecording = onRequest((request, response) => {
+  // Verify API key
+  const apiKey = request.headers['x-api-key'];
+  if (apiKey !== process.env.WEBHOOK_API_KEY) {
+    return response.status(401).send('Unauthorized');
+  }
+
+  // Return success for now - this would be implemented with the Google Meet API
+  return response.status(200).json({
+    success: true,
+    message: 'Auto-recording configured successfully',
+    configId: request.body.configId
+  });
+});

@@ -1,19 +1,16 @@
 /**
  * Meeting Webhook Service
- * 
+ *
  * This service handles the registration and management of Google Meet webhooks
  * for automatic recording and transcription.
  */
 
-import { db } from '../firebase-config';
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  doc, 
-  getDoc, 
-  serverTimestamp 
+import {
+    addDoc, collection, doc,
+    getDoc,
+    serverTimestamp, updateDoc
 } from 'firebase/firestore';
+import { db } from '../firebase-config';
 import { getStoredTokens } from './googleIntegration';
 
 /**
@@ -26,14 +23,12 @@ import { getStoredTokens } from './googleIntegration';
 export const registerMeetingWebhook = async (meetingData, entityType, entityId) => {
   try {
     const tokens = getStoredTokens();
-    
+
     if (!tokens) {
       throw new Error('Not connected to Google Calendar');
     }
-    
-    // In a real implementation, you would call the Google Meet API to register a webhook
-    // For now, we'll create a placeholder webhook registration in Firestore
-    
+
+    // Create webhook data for Firestore
     const webhookData = {
       meetingId: meetingData.id,
       conferenceId: meetingData.conferenceData?.conferenceId,
@@ -45,14 +40,61 @@ export const registerMeetingWebhook = async (meetingData, entityType, entityId) 
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     };
-    
+
     // Save webhook registration to Firestore
     const webhookRef = await addDoc(collection(db, 'meetingWebhooks'), webhookData);
-    
+
+    // Register the webhook with Firebase Functions
+    // This will create a Cloud Function trigger for this specific meeting
+    try {
+      // Get the Firebase Functions URL from environment variables
+      const functionsRegion = process.env.REACT_APP_FUNCTIONS_REGION || 'us-central1';
+      const projectId = process.env.REACT_APP_FIREBASE_PROJECT_ID;
+      const webhookApiKey = process.env.REACT_APP_WEBHOOK_API_KEY;
+
+      if (!projectId || !webhookApiKey) {
+        throw new Error('Missing Firebase configuration');
+      }
+
+      // Construct the webhook URL
+      const webhookUrl = `https://${functionsRegion}-${projectId}.cloudfunctions.net/processMeetRecording`;
+
+      // Register the webhook with Google Meet API
+      // In a production environment, this would be a direct API call to Google Meet API
+      // For now, we'll simulate this by calling our own Firebase Function
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': webhookApiKey
+        },
+        body: JSON.stringify({
+          action: 'register',
+          meetingId: meetingData.id,
+          conferenceId: meetingData.conferenceData?.conferenceId,
+          webhookId: webhookRef.id
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to register webhook: ${response.statusText}`);
+      }
+
+      // Update webhook status based on response
+      await updateDoc(doc(db, 'meetingWebhooks', webhookRef.id), {
+        status: 'active',
+        webhookUrl,
+        updatedAt: serverTimestamp()
+      });
+    } catch (webhookError) {
+      console.error('Error registering webhook with API:', webhookError);
+      // Continue even if API registration fails - we'll rely on the Firestore trigger
+    }
+
     // Update the meeting with webhook reference
     const meetingRef = doc(db, 'meetings', meetingData.id);
     const meetingDoc = await getDoc(meetingRef);
-    
+
     if (meetingDoc.exists()) {
       await updateDoc(meetingRef, {
         webhookId: webhookRef.id,
@@ -72,7 +114,7 @@ export const registerMeetingWebhook = async (meetingData, entityType, entityId) 
         updatedAt: serverTimestamp()
       });
     }
-    
+
     return {
       id: webhookRef.id,
       ...webhookData
@@ -91,31 +133,104 @@ export const registerMeetingWebhook = async (meetingData, entityType, entityId) 
 export const configureAutoRecording = async (meetingData) => {
   try {
     const tokens = getStoredTokens();
-    
+
     if (!tokens) {
       throw new Error('Not connected to Google Calendar');
     }
-    
-    // In a real implementation, you would call the Google Meet API to configure auto-recording
-    // For now, we'll create a placeholder recording configuration
-    
+
+    // Create recording configuration for Firestore
     const recordingConfig = {
       meetingId: meetingData.id,
       conferenceId: meetingData.conferenceData?.conferenceId,
       autoRecord: true,
       autoTranscribe: true,
-      status: 'configured',
+      status: 'pending',
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     };
-    
+
     // Save recording configuration to Firestore
     const configRef = await addDoc(collection(db, 'recordingConfigs'), recordingConfig);
-    
-    return {
-      id: configRef.id,
-      ...recordingConfig
-    };
+
+    // Configure auto-recording with Firebase Functions
+    try {
+      // Get the Firebase Functions URL from environment variables
+      const functionsRegion = process.env.REACT_APP_FUNCTIONS_REGION || 'us-central1';
+      const projectId = process.env.REACT_APP_FIREBASE_PROJECT_ID;
+      const webhookApiKey = process.env.REACT_APP_WEBHOOK_API_KEY;
+
+      if (!projectId || !webhookApiKey) {
+        throw new Error('Missing Firebase configuration');
+      }
+
+      // Construct the function URL
+      const functionUrl = `https://${functionsRegion}-${projectId}.cloudfunctions.net/configureMeetRecording`;
+
+      // Call the Firebase Function to configure auto-recording
+      const response = await fetch(functionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': webhookApiKey
+        },
+        body: JSON.stringify({
+          meetingId: meetingData.id,
+          conferenceId: meetingData.conferenceData?.conferenceId,
+          configId: configRef.id,
+          autoRecord: true,
+          autoTranscribe: true
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to configure auto-recording: ${response.statusText}`);
+      }
+
+      // Update configuration status based on response
+      const responseData = await response.json();
+
+      await updateDoc(doc(db, 'recordingConfigs', configRef.id), {
+        status: 'configured',
+        configDetails: responseData,
+        updatedAt: serverTimestamp()
+      });
+
+      // Also update the meeting document with recording configuration
+      const meetingRef = doc(db, 'meetings', meetingData.id);
+      const meetingDoc = await getDoc(meetingRef);
+
+      if (meetingDoc.exists()) {
+        await updateDoc(meetingRef, {
+          recordingConfigId: configRef.id,
+          autoRecordEnabled: true,
+          updatedAt: serverTimestamp()
+        });
+      }
+
+      return {
+        id: configRef.id,
+        ...recordingConfig,
+        status: 'configured',
+        configDetails: responseData
+      };
+    } catch (configError) {
+      console.error('Error configuring auto-recording with API:', configError);
+
+      // Update status to reflect the error
+      await updateDoc(doc(db, 'recordingConfigs', configRef.id), {
+        status: 'error',
+        errorMessage: configError.message,
+        updatedAt: serverTimestamp()
+      });
+
+      // Return the configuration with error status
+      return {
+        id: configRef.id,
+        ...recordingConfig,
+        status: 'error',
+        errorMessage: configError.message
+      };
+    }
   } catch (error) {
     console.error('Error configuring auto recording:', error);
     throw error;

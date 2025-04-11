@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FaCalendarAlt, FaChevronDown, FaChevronUp, FaFileAlt, FaVideo } from 'react-icons/fa';
 import { getMeetingRecordings, getStoredTokens, listUpcomingEvents } from '../../services/googleIntegration';
 import { getTranscriptsForEntity } from '../../services/meetingTranscriptService';
+import { useStatsView } from '../../context/StatsViewContext';
 import MeetingTranscriptList from './MeetingTranscriptList';
 import styles from './Integrations.module.css';
 
@@ -20,19 +21,28 @@ const MeetingHistory = ({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showTranscripts, setShowTranscripts] = useState(false);
+  const { viewCompanyStats } = useStatsView();
 
-  // Fetch meetings on component mount
+  // Fetch meetings on component mount or when viewCompanyStats changes
   useEffect(() => {
     const fetchMeetings = async () => {
       try {
+        setIsLoading(true);
         const tokens = getStoredTokens();
         
         if (!tokens) {
           throw new Error('Not connected to Google Calendar');
         }
         
-        // Get upcoming and past events
-        const events = await listUpcomingEvents(tokens, 10, true);
+        // Get upcoming and past events, respecting the company/user toggle
+        const events = await listUpcomingEvents(
+          tokens,
+          10,
+          true, // includePast
+          viewCompanyStats, // companyWide - use the stats toggle value
+          entityType,
+          entityId
+        );
         
         // Process events
         const processedMeetings = await Promise.all(events.map(async (event) => {
@@ -90,7 +100,7 @@ const MeetingHistory = ({
     };
     
     fetchMeetings();
-  }, []);
+  }, [entityType, entityId, viewCompanyStats]); // Re-fetch when viewCompanyStats changes
   
   // Toggle meeting expansion
   const toggleMeeting = (meetingId) => {
