@@ -1,12 +1,12 @@
 import React from 'react';
-import { FaCalendarAlt, FaFileContract, FaLightbulb, FaPencilAlt, FaUserPlus } from 'react-icons/fa';
+import { FaCalendarAlt, FaChartBar, FaFileContract, FaLightbulb, FaPencilAlt, FaUserPlus } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useDateRange } from '../../context/DateRangeContext';
 import { useStatsView } from '../../context/StatsViewContext';
-import Container from '../ui/layout/Container';
 import Grid from '../ui/layout/Grid';
 import styles from './Dashboard.module.css';
 import DashboardSection from './DashboardSection';
+import './DashboardStyles.css';
 
 const SalesDashboard = () => {
   const { dateRange } = useDateRange();
@@ -195,7 +195,11 @@ const SalesDashboard = () => {
   ];
 
   return (
-    <Container fluid className={styles.dashboardPage}>
+    <div className="dashboard-container">
+      <div className="dashboard-header">
+        <h1>Sales</h1>
+      </div>
+
       {/* AI Summary Section */}
       <DashboardSection>
         <div className={styles.aiSummaryWrapper}>
@@ -227,39 +231,46 @@ const SalesDashboard = () => {
 
       {/* Action Required Section */}
       <DashboardSection title="Action Required">
-        <div className={styles.actionTable}>
-          <div className={styles.actionHeader}>
-            <div className={styles.actionCell}>Lead</div>
-            <div className={styles.actionCell}>Stage</div>
-            <div className={styles.actionCell}>Value</div>
-            <div className={styles.actionCell}>Days Idle</div>
-            <div className={styles.actionCell}>Next Step</div>
-          </div>
-          {actionRequired.map((item, index) => (
-            <div className={styles.actionRow} key={index}>
-              <div className={styles.actionCell}>{item.lead}</div>
-              <div className={styles.actionCell}>{item.stage}</div>
-              <div className={styles.actionCell}>{item.value}</div>
-              <div className={styles.actionCell}>{item.days}</div>
-              <div className={styles.actionCell}>{item.action}</div>
-            </div>
-          ))}
+        <div className="table-container">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th className="col-md">Client</th>
+                <th className="col-md">Action</th>
+                <th className="col-sm">Deadline</th>
+              </tr>
+            </thead>
+            <tbody>
+              {actionRequired.map((item, index) => (
+                <tr key={index}>
+                  <td>{item.lead}</td>
+                  <td>{item.action}</td>
+                  <td>{item.days > 0 ? `${item.days} days` : 'Today'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </DashboardSection>
 
       {/* Company Vitals Section */}
       <DashboardSection title="Company Vitals">
-        <Grid columns={2} mdColumns={2} smColumns={1} gap="md" className={styles.metricsGrid}>
+        <div className="stats-grid">
           {metrics.map((metric, index) => (
-            <div className={styles.metricCard} key={index}>
-              <div className={styles.metricLabel}>{metric.label}</div>
-              <div className={styles.metricValue}>{metric.value}</div>
-              <div className={`${styles.metricChange} ${metric.positive ? styles.positive : styles.negative}`}>
-                {metric.change}
+            <div className="stat-card" key={index}>
+              <div className="stat-icon">
+                <FaChartBar />
+              </div>
+              <div className="stat-content">
+                <h3>{metric.label}</h3>
+                <p className="stat-value">{metric.value}</p>
+                <div className={`${metric.positive ? 'positive' : 'negative'}`}>
+                  {metric.change}
+                </div>
               </div>
             </div>
           ))}
-        </Grid>
+        </div>
       </DashboardSection>
 
       {/* Sales Goal Section */}
@@ -277,14 +288,19 @@ const SalesDashboard = () => {
       <DashboardSection title="Lead Analytics">
         <div className={styles.leadAnalyticsContainer}>
           {/* Top-Level KPIs */}
-          <Grid columns={3} mdColumns={3} smColumns={1} gap="md" className={styles.leadStats}>
+          <div className="stats-grid">
             {leadStats.map((stat, index) => (
-              <div className={styles.leadStat} key={index}>
-                <div className={styles.leadStatValue}>{stat.value}</div>
-                <div className={styles.leadStatLabel}>{stat.label}</div>
+              <div className="stat-card" key={index}>
+                <div className="stat-icon">
+                  <FaChartBar />
+                </div>
+                <div className="stat-content">
+                  <h3>{stat.label}</h3>
+                  <p className="stat-value">{stat.value}</p>
+                </div>
               </div>
             ))}
-          </Grid>
+          </div>
 
           {/* Stage Timing Analysis */}
           <div className={styles.stageTimingSection}>
@@ -341,7 +357,7 @@ const SalesDashboard = () => {
           ))}
         </Grid>
       </DashboardSection>
-    </Container>
+    </div>
   );
 };
 

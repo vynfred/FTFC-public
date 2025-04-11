@@ -4,7 +4,7 @@ import {
 } from 'chart.js';
 import React, { useEffect, useState } from 'react';
 import { FaSort, FaSortDown, FaSortUp } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDateRange } from '../../context/DateRangeContext';
 import { useStatsView } from '../../context/StatsViewContext';
 import DashboardSection from '../shared/DashboardSection';
@@ -1086,13 +1086,13 @@ const MarketingDashboard = () => {
   };
 
   return (
-    <div className={styles.marketingDashboard}>
-      <div className={styles.marketingHeader}>
+    <div className="dashboard-container">
+      <div className="dashboard-header">
         <h1>Marketing</h1>
       </div>
 
       {/* Marketing Summary Section */}
-      <DashboardSection>
+      <DashboardSection title="Marketing Summary">
         <p className={styles.summaryText}>
           Your marketing efforts have generated {websiteVisitors.toLocaleString()} website visitors and {leadsGenerated} new leads in the {getDateRangeText().toLowerCase()}.
           The average conversion rate is {conversionRate}%, with a cost per lead of ${costPerLead}.
@@ -1102,25 +1102,45 @@ const MarketingDashboard = () => {
 
       {/* Marketing Statistics Section */}
       <DashboardSection title="Marketing Statistics">
-        <div className={styles.statsGrid}>
-          <div className={styles.statCard}>
-            <h3>WEBSITE VISITORS</h3>
-            <div className={styles.value}>{websiteVisitors.toLocaleString()}</div>
-            <div className={`${styles.change} ${trafficTrend === 'up' ? styles.positive : styles.negative}`}>
-              {trafficTrend === 'up' ? '+' : '-'}{trafficChangePercent}%
+        <div className="stats-grid">
+          <div className="stat-card">
+            <div className="stat-icon">
+              <FaChartBar />
+            </div>
+            <div className="stat-content">
+              <h3>Website Visitors</h3>
+              <p className="stat-value">{websiteVisitors.toLocaleString()}</p>
+              <div className={`${trafficTrend === 'up' ? 'positive' : 'negative'}`}>
+                {trafficTrend === 'up' ? '+' : '-'}{trafficChangePercent}%
+              </div>
             </div>
           </div>
-          <div className={styles.statCard}>
-            <h3>CONVERSION RATE</h3>
-            <div className={styles.value}>{conversionRate}%</div>
+          <div className="stat-card">
+            <div className="stat-icon">
+              <FaChartBar />
+            </div>
+            <div className="stat-content">
+              <h3>Conversion Rate</h3>
+              <p className="stat-value">{conversionRate}%</p>
+            </div>
           </div>
-          <div className={styles.statCard}>
-            <h3>LEADS GENERATED</h3>
-            <div className={styles.value}>{leadsGenerated}</div>
+          <div className="stat-card">
+            <div className="stat-icon">
+              <FaChartBar />
+            </div>
+            <div className="stat-content">
+              <h3>Leads Generated</h3>
+              <p className="stat-value">{leadsGenerated}</p>
+            </div>
           </div>
-          <div className={styles.statCard}>
-            <h3>COST PER LEAD</h3>
-            <div className={styles.value}>${costPerLead}</div>
+          <div className="stat-card">
+            <div className="stat-icon">
+              <FaChartBar />
+            </div>
+            <div className="stat-content">
+              <h3>Cost Per Lead</h3>
+              <p className="stat-value">${costPerLead}</p>
+            </div>
           </div>
         </div>
       </DashboardSection>
@@ -1230,43 +1250,70 @@ const MarketingDashboard = () => {
 
       {/* Content Performance Section */}
       <DashboardSection title="Content Performance">
-        <div className={styles.tableContainer}>
-          <table className={styles.contentTable}>
+        <div className={styles.sectionHeader}>
+          <div className={styles.sectionTitle}>Blog Content</div>
+          <Link to="/dashboard/marketing/create-blog" className={styles.createButton}>
+            + Create New Blog Post
+          </Link>
+        </div>
+        <div className="table-container">
+          <table className="data-table">
             <thead>
               <tr>
-                <th onClick={() => requestContentSort('title')}>
-                  Title
+                <th className="col-lg" onClick={() => requestContentSort('title')}>
+                  Title {getContentSortIcon('title')}
                 </th>
-                <th onClick={() => requestContentSort('type')}>
-                  Type
+                <th className="col-sm" onClick={() => requestContentSort('type')}>
+                  Type {getContentSortIcon('type')}
                 </th>
-                <th onClick={() => requestContentSort('views')}>
-                  Views
+                <th className="col-sm" onClick={() => requestContentSort('views')}>
+                  Views {getContentSortIcon('views')}
                 </th>
-                <th onClick={() => requestContentSort('conversions')}>
-                  Conversions
+                <th className="col-sm" onClick={() => requestContentSort('conversions')}>
+                  Conversions {getContentSortIcon('conversions')}
                 </th>
-                <th onClick={() => requestContentSort('conversionRate')}>
-                  Conv. Rate
+                <th className="col-sm" onClick={() => requestContentSort('conversionRate')}>
+                  Conv. Rate {getContentSortIcon('conversionRate')}
                 </th>
-                <th onClick={() => requestContentSort('publishDate')}>
-                  Published
+                <th className="col-md" onClick={() => requestContentSort('publishDate')}>
+                  Published {getContentSortIcon('publishDate')}
                 </th>
+                <th className="col-md">Actions</th>
               </tr>
             </thead>
             <tbody>
               {allContent.map(content => (
-                <tr key={content.id} onClick={() => handleContentClick(content.id)}>
-                  <td className={styles.contentTitle}>{content.title}</td>
+                <tr key={content.id}>
+                  <td className={styles.contentTitle}>
+                    <a href="#" onClick={(e) => { e.preventDefault(); handleContentClick(content.id); }} className={styles.contentTitleLink}>
+                      {content.title}
+                    </a>
+                  </td>
                   <td>
-                    <span className={`${styles.contentType} ${styles[`type${content.type}`]}`}>
+                    <span className={`${styles.contentType} ${styles[`type${content.type.replace(/\s+/g, '')}`]}`}>
                       {content.type}
                     </span>
                   </td>
                   <td>{content.views ? content.views.toLocaleString() : '0'}</td>
                   <td>{content.conversions || 0}</td>
                   <td>{content.views && content.conversions ? ((content.conversions / content.views) * 100).toFixed(1) : '0'}%</td>
-                  <td>{new Date(content.publishDate).toLocaleDateString()}</td>
+                  <td>{new Date(content.date).toLocaleDateString()}</td>
+                  <td>
+                    <div className={styles.actionButtons}>
+                      <button
+                        className={styles.viewButton}
+                        onClick={() => handleContentClick(content.id)}
+                      >
+                        View
+                      </button>
+                      <button
+                        className={styles.editButton}
+                        onClick={() => navigate(`/dashboard/marketing/edit-content/${content.id}`)}
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
