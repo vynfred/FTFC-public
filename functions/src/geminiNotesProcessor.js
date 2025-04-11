@@ -71,22 +71,21 @@ class GeminiNotesProcessor {
 
   /**
    * Extract content from a Google Doc
-   * @param {string} fileId - Google Doc ID
-   * @returns {Promise<string>} - Document content
+   * @param {String} docId - Google Doc ID
+   * @returns {Promise<String>} - Document content
    */
-  async extractDocContent(fileId) {
+  async extractDocContent(docId) {
     try {
       const response = await this.docs.documents.get({
-        documentId: fileId
+        documentId: docId
       });
 
-      // Extract text content from the document
       let content = '';
       const document = response.data;
 
-      if (document.body && document.body.content) {
+      if (document && document.body && document.body.content) {
         document.body.content.forEach(element => {
-          if (element.paragraph) {
+          if (element.paragraph && element.paragraph.elements) {
             element.paragraph.elements.forEach(paraElement => {
               if (paraElement.textRun && paraElement.textRun.content) {
                 content += paraElement.textRun.content;
@@ -98,399 +97,434 @@ class GeminiNotesProcessor {
 
       return content;
     } catch (error) {
-      console.error('Error extracting document content:', error);
+      console.error(`Error extracting content from doc ${docId}:`, error);
+      return '';
+    }
+  }
+
+  /**
+   * Extract structured data from a Google Doc
+   * @param {String} docId - Google Doc ID
+   * @returns {Promise<Object>} - Structured document data
+   */
+  async extractStructuredContent(docId) {
+    try {
+      const response = await this.docs.documents.get({
+        documentId: docId
+      });
+
+      const document = response.data;
+      const result = {
+        textContent: '',
+        summary: '',
+        keyPoints: [],
+        actionItems: [],
+        participants: []
+      };
+
+      if (document && document.body && document.body.content) {
+        // Process document sections
+        let currentSection = '';
+
+        document.body.content.forEach(element => {
+          // Check for headings to identify sections
+          if (element.paragraph && element.paragraph.paragraphStyle && 
+              element.paragraph.paragraphStyle.namedStyleType && 
+              element.paragraph.paragraphStyle.namedStyleType.includes('HEADING')) {
+            
+            // Extract heading text
+            let headingText = '';
+            if (element.paragraph.elements) {
+              element.paragraph.elements.forEach(el => {
+                if (el.textRun && el.textRun.content) {
+                  headingText += el.textRun.content.trim();
+                }
+              });
+            }
+            
+            // Set current section based on heading
+            if (headingText.toLowerCase().includes('summary')) {
+              currentSection = 'summary';
+            } else if (headingText.toLowerCase().includes('key point') || 
+                       headingText.toLowerCase().includes('main point')) {
+              currentSection = 'keyPoints';
+            } else if (headingText.toLowerCase().includes('action item') || 
+                       headingText.toLowerCase().includes('next step')) {
+              currentSection = 'actionItems';
+            } else if (headingText.toLowerCase().includes('participant') || 
+                       headingText.toLowerCase().includes('attendee')) {
+              currentSection = 'participants';
+            } else if (headingText.toLowerCase().includes('transcript')) {
+              currentSection = 'transcript';
+            } else {
+              currentSection = 'other';
+            }
+          }
+          
+          // Extract text content based on current section
+          if (element.paragraph && element.paragraph.elements) {
+            let paragraphText = '';
+            
+            element.paragraph.elements.forEach(paraElement => {
+              if (paraElement.textRun && paraElement.textRun.content) {
+                paragraphText += paraElement.textRun.content;
+              }
+            });
+            
+            // Add to appropriate section
+            if (currentSection === 'summary') {
+              result.summary += paragraphText;
+            } else if (currentSection === 'keyPoints') {
+              // Extract bullet points
+              if (paragraphText.trim().startsWith('•') || paragraphText.trim().startsWith('-')) {
+                result.keyPoints.push(paragraphText.trim().replace(/^[•\-]\s*/, ''));
+              }
+            } else if (currentSection === 'actionItems') {
+              // Extract bullet points
+              if (paragraphText.trim().startsWith('•') || paragraphText.trim().startsWith('-')) {
+                result.actionItems.push(paragraphText.trim().replace(/^[•\-]\s*/, ''));
+              }
+            } else if (currentSection === 'participants') {
+              // Extract email addresses
+              const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+              const emails = paragraphText.match(emailRegex);
+              if (emails) {
+                result.participants = result.participants.concat(emails);
+              }
+            }
+            
+            // Add to full text content
+            result.textContent += paragraphText;
+          }
+        });
+      }
+
+      // Remove duplicates from participants
+      result.participants = [...new Set(result.participants)];
+
+      return result;
+    } catch (error) {
+      console.error(`Error extracting structured content from doc ${docId}:`, error);
+      return {
+        textContent: '',
+        summary: '',
+        keyPoints: [],
+        actionItems: [],
+        participants: []
+      };
+    }
+  }
+
+  /**
+   * Extract email addresses from text
+   * @param {String} text - Text to extract emails from
+   * @returns {Array} - List of email addresses
+   */
+  extractEmailAddresses(text) {
+    const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+    return text.match(emailRegex) || [];
+  }
+
+  /**
+   * Find entity associated with emails
+   * @param {Array} emails - List of email addresses
+   * @returns {Promise<Object|null>} - Entity information or null if not found
+   */
+  async findEntityByEmails(emails) {
+    if (!emails || emails.length === 0) {
+      return null;
+    }
+
+    try {
+      // Check clients
+      const clientsQuery = db.collection('clients')
+        .where('email', 'in', emails.slice(0, 10)); // Firestore 'in' query limited to 10 values
+      
+      const clientsSnapshot = await clientsQuery.get();
+      if (!clientsSnapshot.empty) {
+        const client = clientsSnapshot.docs[0];
+        return {
+          type: 'client',
+          id: client.id,
+          name: client.data().name
+        };
+      }
+
+      // Check investors
+      const investorsQuery = db.collection('investors')
+        .where('email', 'in', emails.slice(0, 10));
+      
+      const investorsSnapshot = await investorsQuery.get();
+      if (!investorsSnapshot.empty) {
+        const investor = investorsSnapshot.docs[0];
+        return {
+          type: 'investor',
+          id: investor.id,
+          name: investor.data().name
+        };
+      }
+
+      // Check partners
+      const partnersQuery = db.collection('partners')
+        .where('email', 'in', emails.slice(0, 10));
+      
+      const partnersSnapshot = await partnersQuery.get();
+      if (!partnersSnapshot.empty) {
+        const partner = partnersSnapshot.docs[0];
+        return {
+          type: 'partner',
+          id: partner.id,
+          name: partner.data().name
+        };
+      }
+
+      // No entity found
+      return null;
+    } catch (error) {
+      console.error('Error finding entity by emails:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Save transcript to database
+   * @param {Object} transcriptData - Transcript data
+   * @param {String} entityType - Entity type
+   * @param {String} entityId - Entity ID
+   * @returns {Promise<String>} - Transcript ID
+   */
+  async saveTranscript(transcriptData, entityType, entityId) {
+    try {
+      // Add entity information
+      const transcriptWithEntity = {
+        ...transcriptData,
+        entityType,
+        entityId,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      };
+      
+      // Save to Firestore
+      const transcriptRef = await db.collection('transcripts').add(transcriptWithEntity);
+      
+      // Update the transcript with its ID
+      await transcriptRef.update({
+        id: transcriptRef.id
+      });
+      
+      // Update the entity with reference to the transcript
+      const entityRef = db.collection(`${entityType}s`).doc(entityId);
+      const entityDoc = await entityRef.get();
+      
+      if (entityDoc.exists) {
+        const entityData = entityDoc.data();
+        const transcripts = entityData.transcripts || [];
+        
+        await entityRef.update({
+          transcripts: [...transcripts, {
+            id: transcriptRef.id,
+            title: transcriptData.title,
+            date: transcriptData.date,
+            meetingId: transcriptData.meetingId
+          }],
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+      }
+      
+      // Create activity log entry
+      await db.collection('activity').add({
+        type: 'transcript',
+        action: 'created',
+        transcriptId: transcriptRef.id,
+        entityType,
+        entityId,
+        title: transcriptData.title,
+        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+        description: `New meeting transcript added: ${transcriptData.title}`
+      });
+      
+      return transcriptRef.id;
+    } catch (error) {
+      console.error('Error saving transcript:', error);
       throw error;
     }
   }
 
   /**
-   * Extract email addresses from document content
-   * @param {string} content - Document content
-   * @returns {Array<string>} - List of email addresses
+   * Check if a note has already been processed
+   * @param {String} fileId - Google Drive file ID
+   * @returns {Promise<Boolean>} - Whether the note has been processed
    */
-  extractEmailAddresses(content) {
-    const emailPattern = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
-    const emails = content.match(emailPattern) || [];
-    return [...new Set(emails)]; // Remove duplicates
+  async isNoteProcessed(fileId) {
+    try {
+      const processedQuery = db.collection('processedNotes')
+        .where('fileId', '==', fileId);
+      
+      const processedSnapshot = await processedQuery.get();
+      return !processedSnapshot.empty;
+    } catch (error) {
+      console.error('Error checking if note is processed:', error);
+      return false;
+    }
   }
 
   /**
-   * Determine entity type and ID from participants
-   * @param {Array<string>} emails - List of participant email addresses
-   * @returns {Promise<Object|null>} - Entity information or null if not found
+   * Mark a note as processed
+   * @param {String} fileId - Google Drive file ID
+   * @param {String} transcriptId - Transcript ID
+   * @returns {Promise<void>}
    */
-  async determineEntity(emails) {
-    // Check if any of the emails belong to a client, investor, or partner
-    const entityTypes = ['clients', 'investors', 'partners'];
-
-    for (const entityType of entityTypes) {
-      // First try to find a direct match in the entity collection
-      const entityQuery = db.collection(entityType)
-        .where('email', 'in', emails);
-
-      let snapshot = await entityQuery.get();
-
-      // If no direct match, check the contacts collection
-      if (snapshot.empty) {
-        const contactsQuery = db.collection('contacts')
-          .where('email', 'in', emails);
-
-        const contactsSnapshot = await contactsQuery.get();
-
-        if (!contactsSnapshot.empty) {
-          // Found a contact, now check their associations
-          for (const contactDoc of contactsSnapshot.docs) {
-            const contact = contactDoc.data();
-
-            // Check if this contact is associated with any entity
-            if (entityType === 'clients' && contact.associations?.companies?.length > 0) {
-              // Get the primary company for this contact
-              const primaryCompany = contact.associations.companies.find(c => c.isPrimary);
-              if (primaryCompany) {
-                const companyDoc = await db.collection('companies').doc(primaryCompany.companyId).get();
-                if (companyDoc.exists) {
-                  return {
-                    type: 'client',
-                    id: companyDoc.id,
-                    data: companyDoc.data()
-                  };
-                }
-              }
-            } else if (entityType === 'investors' && contact.associations?.investmentFirms?.length > 0) {
-              // Get the primary investment firm for this contact
-              const primaryFirm = contact.associations.investmentFirms.find(f => f.isPrimary);
-              if (primaryFirm) {
-                const investorQuery = db.collection('investors')
-                  .where('contactId', '==', contactDoc.id);
-
-                const investorSnapshot = await investorQuery.get();
-                if (!investorSnapshot.empty) {
-                  return {
-                    type: 'investor',
-                    id: investorSnapshot.docs[0].id,
-                    data: investorSnapshot.docs[0].data()
-                  };
-                }
-              }
-            } else if (entityType === 'partners' && contact.associations?.partnerFirms?.length > 0) {
-              // Get the primary partner firm for this contact
-              const primaryFirm = contact.associations.partnerFirms.find(f => f.isPrimary);
-              if (primaryFirm) {
-                const partnerQuery = db.collection('partners')
-                  .where('contactId', '==', contactDoc.id);
-
-                const partnerSnapshot = await partnerQuery.get();
-                if (!partnerSnapshot.empty) {
-                  return {
-                    type: 'partner',
-                    id: partnerSnapshot.docs[0].id,
-                    data: partnerSnapshot.docs[0].data()
-                  };
-                }
-              }
-            }
-          }
-        }
-      } else {
-        // Found a direct match in the entity collection
-        return {
-          type: entityType.slice(0, -1), // Remove 's' to get singular form
-          id: snapshot.docs[0].id,
-          data: snapshot.docs[0].data()
-        };
-      }
+  async markNoteAsProcessed(fileId, transcriptId) {
+    try {
+      await db.collection('processedNotes').add({
+        fileId,
+        transcriptId,
+        processedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    } catch (error) {
+      console.error('Error marking note as processed:', error);
+      throw error;
     }
-
-    return null;
   }
 }
 
 /**
- * Cloud Function that runs periodically to process Gemini notes
+ * Process Gemini Notes
+ * This function runs on a schedule to process Gemini Notes from team members' Google Drive
  */
 exports.processGeminiNotes = async (context) => {
-  // Get all team members with Google Drive access
-  const usersSnapshot = await db.collection('users')
-    .where('role', '==', 'team_member')
-    .where('googleDriveEnabled', '==', true)
-    .get();
-
-  if (usersSnapshot.empty) {
-    console.log('No team members with Google Drive access found');
-    return null;
-  }
-
-  const processor = new GeminiNotesProcessor();
-  let processedCount = 0;
-
-  for (const userDoc of usersSnapshot.docs) {
-    const userData = userDoc.data();
-    
-    if (!userData.tokens) {
-      console.log(`User ${userData.email} has no Google tokens`);
-      continue;
-    }
-    
-    try {
-      // Scan for new Gemini notes
-      const notes = await processor.scanForGeminiNotes(userData.tokens);
-      
-      if (notes.length === 0) {
-        console.log(`No new Gemini notes found for user ${userData.email}`);
-        continue;
-      }
-      
-      console.log(`Found ${notes.length} Gemini notes for user ${userData.email}`);
-      
-      // Process each note
-      for (const note of notes) {
-        // Check if this note has already been processed
-        const processedQuery = db.collection('processedNotes')
-          .where('fileId', '==', note.id);
-        
-        const processedSnapshot = await processedQuery.get();
-        if (!processedSnapshot.empty) {
-          console.log(`Note ${note.id} has already been processed`);
-          continue;
-        }
-        
-        // Extract document content
-        const content = await processor.extractDocContent(note.id);
-        
-        // Extract email addresses
-        const emails = processor.extractEmailAddresses(content);
-        
-        if (emails.length === 0) {
-          console.log(`No email addresses found in note ${note.id}`);
-          continue;
-        }
-        
-        // Determine entity
-        const entity = await processor.determineEntity(emails);
-        
-        if (!entity) {
-          console.log(`No matching entity found for emails in note ${note.id}`);
-          continue;
-        }
-        
-        // Create transcript record
-        const transcriptData = {
-          title: note.name,
-          date: new Date(note.createdTime),
-          participants: emails,
-          transcript: content,
-          summary: "Generated from Gemini meeting notes",
-          keyPoints: [],
-          actionItems: [],
-          entityType: entity.type,
-          entityId: entity.id,
-          sourceType: 'gemini',
-          sourceId: note.id,
-          sourceLink: note.webViewLink,
-          createdAt: admin.firestore.FieldValue.serverTimestamp(),
-          updatedAt: admin.firestore.FieldValue.serverTimestamp()
-        };
-        
-        // Save transcript to database
-        const transcriptRef = await db.collection('transcripts').add(transcriptData);
-        
-        // Update entity with reference to transcript
-        const entityRef = db.collection(`${entity.type}s`).doc(entity.id);
-        const entityDoc = await entityRef.get();
-        
-        if (entityDoc.exists) {
-          const entityData = entityDoc.data();
-          const transcripts = entityData.transcripts || [];
-          
-          await entityRef.update({
-            transcripts: [...transcripts, {
-              id: transcriptRef.id,
-              title: note.name,
-              date: new Date(note.createdTime),
-              sourceType: 'gemini',
-              sourceId: note.id
-            }],
-            updatedAt: admin.firestore.FieldValue.serverTimestamp()
-          });
-        }
-        
-        // Create activity log entry
-        await db.collection('activity').add({
-          type: 'transcript',
-          action: 'created',
-          transcriptId: transcriptRef.id,
-          entityType: entity.type,
-          entityId: entity.id,
-          title: note.name,
-          timestamp: admin.firestore.FieldValue.serverTimestamp(),
-          description: `New meeting transcript added from Gemini: ${note.name}`
-        });
-        
-        // Mark note as processed
-        await db.collection('processedNotes').add({
-          fileId: note.id,
-          processedAt: admin.firestore.FieldValue.serverTimestamp(),
-          entityType: entity.type,
-          entityId: entity.id,
-          transcriptId: transcriptRef.id
-        });
-        
-        processedCount++;
-        console.log(`Processed note ${note.id} for entity ${entity.type}/${entity.id}`);
-      }
-    } catch (error) {
-      console.error(`Error processing notes for user ${userData.email}:`, error);
-    }
-  }
-
-  console.log(`Processed ${processedCount} Gemini notes`);
-  return null;
-};
-
-/**
- * HTTP endpoint to manually trigger Gemini notes processing
- */
-exports.triggerGeminiNotesProcessing = functions.https.onRequest(async (req, res) => {
   try {
-    // Get all team members with Google Drive access
+    console.log('Processing Gemini Notes...');
+    
+    // Get team members with Google Drive connected
     const usersSnapshot = await db.collection('users')
-      .where('role', '==', 'team_member')
-      .where('googleDriveEnabled', '==', true)
+      .where('googleDriveConnected', '==', true)
       .get();
-
+    
     if (usersSnapshot.empty) {
-      return res.status(200).json({ message: 'No team members with Google Drive access found' });
+      console.log('No team members with Google Drive connected');
+      return null;
     }
-
+    
     const processor = new GeminiNotesProcessor();
     let processedCount = 0;
-
+    
+    // Process each team member's Drive
     for (const userDoc of usersSnapshot.docs) {
       const userData = userDoc.data();
       
-      if (!userData.tokens) {
-        console.log(`User ${userData.email} has no Google tokens`);
+      if (!userData.googleTokens) {
+        console.log(`User ${userDoc.id} has no Google tokens`);
         continue;
       }
       
       try {
-        // Scan for new Gemini notes
-        const notes = await processor.scanForGeminiNotes(userData.tokens);
+        console.log(`Processing Drive for user ${userData.email}`);
+        
+        // Scan for Gemini notes
+        const notes = await processor.scanForGeminiNotes(userData.googleTokens);
         
         if (notes.length === 0) {
-          console.log(`No new Gemini notes found for user ${userData.email}`);
+          console.log(`No Gemini notes found for user ${userData.email}`);
           continue;
         }
         
         console.log(`Found ${notes.length} Gemini notes for user ${userData.email}`);
         
-        // Process each note (same logic as in the scheduled function)
+        // Process each note
         for (const note of notes) {
           // Check if this note has already been processed
-          const processedQuery = db.collection('processedNotes')
-            .where('fileId', '==', note.id);
+          const isProcessed = await processor.isNoteProcessed(note.id);
           
-          const processedSnapshot = await processedQuery.get();
-          if (!processedSnapshot.empty) {
+          if (isProcessed) {
             console.log(`Note ${note.id} has already been processed`);
             continue;
           }
           
-          // Extract document content
-          const content = await processor.extractDocContent(note.id);
+          // Extract structured content from the document
+          const content = await processor.extractStructuredContent(note.id);
           
-          // Extract email addresses
-          const emails = processor.extractEmailAddresses(content);
+          // Extract email addresses from participants
+          const emails = content.participants;
           
           if (emails.length === 0) {
             console.log(`No email addresses found in note ${note.id}`);
             continue;
           }
           
-          // Determine entity
-          const entity = await processor.determineEntity(emails);
+          // Find entity associated with emails
+          const entity = await processor.findEntityByEmails(emails);
           
           if (!entity) {
-            console.log(`No matching entity found for emails in note ${note.id}`);
+            console.log(`No entity found for emails in note ${note.id}`);
             continue;
           }
           
-          // Create transcript record
+          console.log(`Found entity ${entity.type}/${entity.id} for note ${note.id}`);
+          
+          // Create transcript data
           const transcriptData = {
+            meetingId: note.id, // Use note ID as meeting ID
             title: note.name,
             date: new Date(note.createdTime),
             participants: emails,
-            transcript: content,
-            summary: "Generated from Gemini meeting notes",
-            keyPoints: [],
-            actionItems: [],
-            entityType: entity.type,
-            entityId: entity.id,
-            sourceType: 'gemini',
-            sourceId: note.id,
-            sourceLink: note.webViewLink,
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
-            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+            transcriptUrl: note.webViewLink,
+            transcript: content.textContent,
+            summary: content.summary,
+            keyPoints: content.keyPoints,
+            actionItems: content.actionItems.map(item => ({
+              description: item,
+              assignee: null,
+              dueDate: null
+            })),
+            sourceType: 'gemini'
           };
           
           // Save transcript to database
-          const transcriptRef = await db.collection('transcripts').add(transcriptData);
-          
-          // Update entity with reference to transcript
-          const entityRef = db.collection(`${entity.type}s`).doc(entity.id);
-          const entityDoc = await entityRef.get();
-          
-          if (entityDoc.exists) {
-            const entityData = entityDoc.data();
-            const transcripts = entityData.transcripts || [];
-            
-            await entityRef.update({
-              transcripts: [...transcripts, {
-                id: transcriptRef.id,
-                title: note.name,
-                date: new Date(note.createdTime),
-                sourceType: 'gemini',
-                sourceId: note.id
-              }],
-              updatedAt: admin.firestore.FieldValue.serverTimestamp()
-            });
-          }
-          
-          // Create activity log entry
-          await db.collection('activity').add({
-            type: 'transcript',
-            action: 'created',
-            transcriptId: transcriptRef.id,
-            entityType: entity.type,
-            entityId: entity.id,
-            title: note.name,
-            timestamp: admin.firestore.FieldValue.serverTimestamp(),
-            description: `New meeting transcript added from Gemini: ${note.name}`
-          });
+          const transcriptId = await processor.saveTranscript(
+            transcriptData,
+            entity.type,
+            entity.id
+          );
           
           // Mark note as processed
-          await db.collection('processedNotes').add({
-            fileId: note.id,
-            processedAt: admin.firestore.FieldValue.serverTimestamp(),
-            entityType: entity.type,
-            entityId: entity.id,
-            transcriptId: transcriptRef.id
-          });
+          await processor.markNoteAsProcessed(note.id, transcriptId);
           
           processedCount++;
-          console.log(`Processed note ${note.id} for entity ${entity.type}/${entity.id}`);
+          console.log(`Processed note ${note.id} as transcript ${transcriptId}`);
         }
-      } catch (error) {
-        console.error(`Error processing notes for user ${userData.email}:`, error);
+      } catch (userError) {
+        console.error(`Error processing Drive for user ${userData.email}:`, userError);
+        // Continue with next user
       }
     }
-
-    return res.status(200).json({ 
-      message: `Processed ${processedCount} Gemini notes`,
-      processedCount
-    });
+    
+    console.log(`Processed ${processedCount} Gemini notes`);
+    return null;
   } catch (error) {
-    console.error('Error processing Gemini notes:', error);
-    return res.status(500).json({ error: 'Error processing Gemini notes' });
+    console.error('Error processing Gemini Notes:', error);
+    return null;
   }
-});
+};
+
+/**
+ * Trigger Gemini Notes Processing
+ * This function can be called via HTTP to trigger processing of Gemini Notes
+ */
+exports.triggerGeminiNotesProcessing = async (req, res) => {
+  try {
+    // Verify API key
+    const apiKey = req.headers['x-api-key'];
+    if (apiKey !== config.google.webhook_key) {
+      return res.status(401).send('Unauthorized');
+    }
+    
+    // Process Gemini Notes
+    await exports.processGeminiNotes({});
+    
+    return res.status(200).send('Processing triggered');
+  } catch (error) {
+    console.error('Error triggering Gemini Notes processing:', error);
+    return res.status(500).send('Internal server error');
+  }
+};

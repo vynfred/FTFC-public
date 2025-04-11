@@ -159,3 +159,105 @@
   border-radius: 8px;
   border: 1px dashed #e0e0e0;
 }
+
+/* Gemini Notes specific styling */
+.transcript-item.gemini-source {
+  border-left: 4px solid #1a73e8;
+}
+
+.transcript-item.gemini-source .transcript-header {
+  background-color: #e8f0fe;
+}
+
+.transcript-item.gemini-source.expanded .transcript-header {
+  background-color: #d2e3fc;
+}
+
+.transcripts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.transcripts-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #0a1950;
+}
+
+.refresh-button {
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.refresh-button:hover {
+  background-color: #1765cc;
+}
+
+.refresh-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.no-transcripts {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px dashed #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.transcript-participants {
+  margin-bottom: 20px;
+}
+
+.transcript-participants h5 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+  color: #0a1950;
+}
+
+.transcript-participants ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.transcript-participants li {
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.transcript-link {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.view-original-button {
+  display: inline-block;
+  background-color: #f8f9fa;
+  color: #1a73e8;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.view-original-button:hover {
+  background-color: #e8f0fe;
+}

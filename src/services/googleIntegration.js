@@ -285,12 +285,12 @@ export const listUpcomingEvents = async (tokens, maxResults = 10, includePast = 
 };
 
 /**
- * Get meeting recordings from Google Drive
+ * Get meeting transcripts from Google Drive (Gemini Notes)
  * @param {Object} tokens - OAuth tokens
  * @param {String} meetingId - Google Meet meeting ID or meeting title
- * @returns {Array} - List of recording files with metadata
+ * @returns {Array} - List of transcript documents with metadata
  */
-export const getMeetingRecordings = async (tokens, meetingId) => {
+export const getMeetingTranscripts = async (tokens, meetingId) => {
   try {
     // Ensure tokens are valid
     const validTokens = await ensureValidTokens(tokens);
@@ -306,75 +306,145 @@ export const getMeetingRecordings = async (tokens, meetingId) => {
       }
     }
 
-    // First, search for recordings in 'My recordings' folder
-    // This is where Gemini stores recordings by default
-    const folderResponse = await drive.files.list({
-      q: "name = 'My recordings' and mimeType = 'application/vnd.google-apps.folder'",
-      fields: 'files(id)'
+    // Search for Gemini Notes documents
+    // Gemini Notes typically have "Meeting notes" or "Meeting transcript" in the title
+    const geminiNotesQuery = `(name contains 'Meeting notes' or name contains 'Meeting transcript') and mimeType='application/vnd.google-apps.document'`;
+
+    // Add meeting-specific search if we have a meeting ID
+    const meetingQuery = searchQuery ?
+      `${geminiNotesQuery} and (name contains '${searchQuery}' or fullText contains '${searchQuery}')` :
+      geminiNotesQuery;
+
+    // Search for Gemini Notes documents
+    const response = await drive.files.list({
+      q: meetingQuery,
+      fields: 'files(id, name, webViewLink, createdTime, mimeType, description, thumbnailLink)',
+      orderBy: 'createdTime desc',
+      pageSize: 10
     });
 
-    let recordingFiles = [];
+    const transcriptFiles = response.data.files || [];
 
-    // If we found the My recordings folder
-    if (folderResponse.data.files && folderResponse.data.files.length > 0) {
-      const recordingsFolderId = folderResponse.data.files[0].id;
+    // For each Google Doc, extract the content
+    for (const file of transcriptFiles) {
+      try {
+        const docs = google.docs({ version: 'v1', auth });
+        const docContent = await docs.documents.get({ documentId: file.id });
 
-      // Search for recordings in this folder
-      const filesInFolderResponse = await drive.files.list({
-        q: `'${recordingsFolderId}' in parents and (name contains '${searchQuery}' or fullText contains '${searchQuery}') and (mimeType contains 'video/' or mimeType = 'application/vnd.google-apps.document')`,
-        fields: 'files(id, name, webViewLink, createdTime, mimeType, description, thumbnailLink)',
-        orderBy: 'createdTime desc'
-      });
+        // Extract text content from the document
+        let textContent = '';
+        let summary = '';
+        let keyPoints = [];
+        let actionItems = [];
+        let participants = [];
 
-      recordingFiles = filesInFolderResponse.data.files || [];
-    }
+        if (docContent.data && docContent.data.body && docContent.data.body.content) {
+          // Process document sections
+          let currentSection = '';
 
-    // If no recordings found in the folder, try a broader search
-    if (recordingFiles.length === 0) {
-      const broadSearchResponse = await drive.files.list({
-        q: `(name contains '${searchQuery}' or fullText contains '${searchQuery}') and (mimeType contains 'video/' or mimeType = 'application/vnd.google-apps.document')`,
-        fields: 'files(id, name, webViewLink, createdTime, mimeType, description, thumbnailLink)',
-        orderBy: 'createdTime desc',
-        pageSize: 10
-      });
+          docContent.data.body.content.forEach(element => {
+            // Check for headings to identify sections
+            if (element.paragraph && element.paragraph.paragraphStyle &&
+                element.paragraph.paragraphStyle.namedStyleType &&
+                element.paragraph.paragraphStyle.namedStyleType.includes('HEADING')) {
 
-      recordingFiles = broadSearchResponse.data.files || [];
-    }
-
-    // For each Google Doc (which might be a transcript), get its content
-    for (const file of recordingFiles) {
-      if (file.mimeType === 'application/vnd.google-apps.document') {
-        try {
-          const docs = google.docs({ version: 'v1', auth });
-          const docContent = await docs.documents.get({ documentId: file.id });
-
-          // Extract text content from the document
-          let textContent = '';
-          if (docContent.data && docContent.data.body && docContent.data.body.content) {
-            docContent.data.body.content.forEach(element => {
-              if (element.paragraph && element.paragraph.elements) {
-                element.paragraph.elements.forEach(paraElement => {
-                  if (paraElement.textRun && paraElement.textRun.content) {
-                    textContent += paraElement.textRun.content;
+              // Extract heading text
+              let headingText = '';
+              if (element.paragraph.elements) {
+                element.paragraph.elements.forEach(el => {
+                  if (el.textRun && el.textRun.content) {
+                    headingText += el.textRun.content.trim();
                   }
                 });
               }
-            });
-          }
 
-          file.textContent = textContent;
-        } catch (docError) {
-          console.error('Error getting document content:', docError);
-          file.textContent = 'Error retrieving transcript content';
+              // Set current section based on heading
+              if (headingText.toLowerCase().includes('summary')) {
+                currentSection = 'summary';
+              } else if (headingText.toLowerCase().includes('key point') ||
+                         headingText.toLowerCase().includes('main point')) {
+                currentSection = 'keyPoints';
+              } else if (headingText.toLowerCase().includes('action item') ||
+                         headingText.toLowerCase().includes('next step')) {
+                currentSection = 'actionItems';
+              } else if (headingText.toLowerCase().includes('participant') ||
+                         headingText.toLowerCase().includes('attendee')) {
+                currentSection = 'participants';
+              } else if (headingText.toLowerCase().includes('transcript')) {
+                currentSection = 'transcript';
+              } else {
+                currentSection = 'other';
+              }
+            }
+
+            // Extract text content based on current section
+            if (element.paragraph && element.paragraph.elements) {
+              let paragraphText = '';
+
+              element.paragraph.elements.forEach(paraElement => {
+                if (paraElement.textRun && paraElement.textRun.content) {
+                  paragraphText += paraElement.textRun.content;
+                }
+              });
+
+              // Add to appropriate section
+              if (currentSection === 'summary') {
+                summary += paragraphText;
+              } else if (currentSection === 'keyPoints') {
+                // Extract bullet points
+                if (paragraphText.trim().startsWith('•') || paragraphText.trim().startsWith('-')) {
+                  keyPoints.push(paragraphText.trim().replace(/^[•\-]\s*/, ''));
+                }
+              } else if (currentSection === 'actionItems') {
+                // Extract bullet points
+                if (paragraphText.trim().startsWith('•') || paragraphText.trim().startsWith('-')) {
+                  actionItems.push(paragraphText.trim().replace(/^[•\-]\s*/, ''));
+                }
+              } else if (currentSection === 'participants') {
+                // Extract email addresses
+                const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+                const emails = paragraphText.match(emailRegex);
+                if (emails) {
+                  participants = participants.concat(emails);
+                }
+              }
+
+              // Add to full text content
+              textContent += paragraphText;
+            }
+          });
         }
+
+        // Store extracted content
+        file.textContent = textContent;
+        file.summary = summary.trim();
+        file.keyPoints = keyPoints;
+        file.actionItems = actionItems;
+        file.participants = [...new Set(participants)]; // Remove duplicates
+        file.sourceType = 'gemini';
+      } catch (docError) {
+        console.error('Error getting document content:', docError);
+        file.textContent = 'Error retrieving transcript content';
+        file.sourceType = 'gemini';
       }
     }
 
-    return recordingFiles;
+    return transcriptFiles;
   } catch (error) {
-    console.error('Error getting meeting recordings:', error);
+    console.error('Error getting meeting transcripts:', error);
     return []; // Return empty array instead of throwing to prevent cascading errors
   }
+};
+
+/**
+ * Get meeting recordings from Google Drive (legacy function, now redirects to getMeetingTranscripts)
+ * @param {Object} tokens - OAuth tokens
+ * @param {String} meetingId - Google Meet meeting ID or meeting title
+ * @returns {Array} - List of transcript documents with metadata
+ */
+export const getMeetingRecordings = async (tokens, meetingId) => {
+  // Redirect to the new function
+  return getMeetingTranscripts(tokens, meetingId);
 };
 
 /**

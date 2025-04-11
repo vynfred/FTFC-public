@@ -1,72 +1,60 @@
 /**
  * Meeting Transcript Service
- * 
+ *
  * This service handles the processing and storage of meeting transcripts:
  * - Retrieves recordings and transcripts from Google Meet
  * - Processes and stores transcripts in the database
  * - Associates transcripts with clients/investors/partners
  */
 
-import { db } from '../firebase-config';
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  doc, 
-  getDoc, 
-  getDocs, 
-  query, 
-  where, 
-  serverTimestamp 
+import {
+    addDoc, collection, doc,
+    getDoc,
+    getDocs,
+    query, serverTimestamp, updateDoc, where
 } from 'firebase/firestore';
-import { getMeetingRecordings } from './googleIntegration';
+import { db } from '../firebase-config';
+import { getMeetingTranscripts } from './googleIntegration';
 
 /**
- * Process a meeting recording and extract transcript
+ * Process a meeting transcript from Gemini Notes
  * @param {Object} meetingData - Meeting data including meetingId, title, date, etc.
  * @param {Object} tokens - Google OAuth tokens
  * @returns {Promise<Object>} - Processed transcript data
  */
-export const processMeetingRecording = async (meetingData, tokens) => {
+export const processMeetingTranscript = async (meetingData, tokens) => {
   try {
-    // Get recordings for the meeting
-    const recordings = await getMeetingRecordings(tokens, meetingData.meetingId);
-    
-    if (!recordings || recordings.length === 0) {
-      console.log('No recordings found for meeting:', meetingData.meetingId);
+    // Get transcripts for the meeting
+    const transcripts = await getMeetingTranscripts(tokens, meetingData.meetingId);
+
+    if (!transcripts || transcripts.length === 0) {
+      console.log('No transcripts found for meeting:', meetingData.meetingId);
       return null;
     }
-    
-    // In a real implementation, you would:
-    // 1. Download the recording
-    // 2. Use a transcription service (like Google Speech-to-Text) to transcribe the recording
-    // 3. Process and format the transcript
-    
-    // For now, we'll create a placeholder transcript
+
+    // Use the first transcript (most recent)
+    const transcript = transcripts[0];
+
+    // Extract data from the Gemini Notes transcript
     const transcriptData = {
       meetingId: meetingData.meetingId,
-      title: meetingData.title,
-      date: meetingData.date,
-      participants: meetingData.attendees || [],
-      recordingUrls: recordings.map(rec => rec.webViewLink),
-      transcript: "This is a placeholder transcript. In a real implementation, this would be the actual transcript from the meeting recording.",
-      summary: "This is a placeholder summary. In a real implementation, this would be an AI-generated summary of the meeting.",
-      keyPoints: [
-        "Key point 1",
-        "Key point 2",
-        "Key point 3"
-      ],
-      actionItems: [
-        {
-          description: "Action item 1",
-          assignee: meetingData.attendees ? meetingData.attendees[0] : null,
-          dueDate: null
-        }
-      ],
+      title: transcript.name || meetingData.title,
+      date: meetingData.date || new Date(transcript.createdTime),
+      participants: transcript.participants || meetingData.attendees || [],
+      transcriptUrl: transcript.webViewLink,
+      transcript: transcript.textContent || '',
+      summary: transcript.summary || '',
+      keyPoints: transcript.keyPoints || [],
+      actionItems: transcript.actionItems?.map(item => ({
+        description: item,
+        assignee: null,
+        dueDate: null
+      })) || [],
+      sourceType: 'gemini',
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     };
-    
+
     return transcriptData;
   } catch (error) {
     console.error('Error processing meeting recording:', error);
@@ -89,15 +77,15 @@ export const saveTranscript = async (transcriptData, entityType, entityId) => {
       entityType,
       entityId
     });
-    
+
     // Update the entity with reference to the transcript
     const entityRef = doc(db, entityType + 's', entityId);
     const entityDoc = await getDoc(entityRef);
-    
+
     if (entityDoc.exists()) {
       const entityData = entityDoc.data();
       const transcripts = entityData.transcripts || [];
-      
+
       await updateDoc(entityRef, {
         transcripts: [...transcripts, {
           id: transcriptRef.id,
@@ -108,7 +96,7 @@ export const saveTranscript = async (transcriptData, entityType, entityId) => {
         updatedAt: serverTimestamp()
       });
     }
-    
+
     // Create activity log entry
     await addDoc(collection(db, 'activity'), {
       type: 'transcript',
@@ -120,7 +108,7 @@ export const saveTranscript = async (transcriptData, entityType, entityId) => {
       timestamp: serverTimestamp(),
       description: `New meeting transcript added: ${transcriptData.title}`
     });
-    
+
     return transcriptRef.id;
   } catch (error) {
     console.error('Error saving transcript:', error);
@@ -136,26 +124,33 @@ export const saveTranscript = async (transcriptData, entityType, entityId) => {
  */
 export const getTranscriptsForEntity = async (entityType, entityId) => {
   try {
+    // Query transcripts for this entity with ordering by date (newest first)
     const q = query(
       collection(db, 'transcripts'),
       where('entityType', '==', entityType),
-      where('entityId', '==', entityId)
+      where('entityId', '==', entityId),
+      orderBy('date', 'desc')
     );
-    
+
     const querySnapshot = await getDocs(q);
     const transcripts = [];
-    
+
     querySnapshot.forEach((doc) => {
+      const data = doc.data();
       transcripts.push({
         id: doc.id,
-        ...doc.data()
+        ...data,
+        // Convert Firestore timestamps to JavaScript Date objects
+        date: data.date?.toDate() || new Date(),
+        createdAt: data.createdAt?.toDate() || new Date(),
+        updatedAt: data.updatedAt?.toDate() || new Date()
       });
     });
-    
+
     return transcripts;
   } catch (error) {
     console.error('Error getting transcripts:', error);
-    throw error;
+    return []; // Return empty array instead of throwing
   }
 };
 
@@ -167,19 +162,137 @@ export const getTranscriptsForEntity = async (entityType, entityId) => {
 export const getTranscriptById = async (transcriptId) => {
   try {
     const transcriptDoc = await getDoc(doc(db, 'transcripts', transcriptId));
-    
+
     if (!transcriptDoc.exists()) {
       throw new Error('Transcript not found');
     }
-    
+
+    const data = transcriptDoc.data();
     return {
       id: transcriptDoc.id,
-      ...transcriptDoc.data()
+      ...data,
+      // Convert Firestore timestamps to JavaScript Date objects
+      date: data.date?.toDate() || new Date(),
+      createdAt: data.createdAt?.toDate() || new Date(),
+      updatedAt: data.updatedAt?.toDate() || new Date()
     };
   } catch (error) {
     console.error('Error getting transcript:', error);
-    throw error;
+    return null; // Return null instead of throwing
   }
+};
+
+/**
+ * Process Gemini Notes transcripts for a specific entity
+ * @param {String} entityType - Type of entity (client, investor, partner)
+ * @param {String} entityId - ID of the entity
+ * @param {Object} tokens - Google OAuth tokens
+ * @returns {Promise<Array>} - Array of processed transcripts
+ */
+export const processGeminiNotesForEntity = async (entityType, entityId, tokens) => {
+  try {
+    // Get all Gemini Notes transcripts (without specific meeting ID)
+    const transcripts = await getMeetingTranscripts(tokens);
+
+    if (!transcripts || transcripts.length === 0) {
+      console.log('No Gemini Notes transcripts found');
+      return [];
+    }
+
+    // Filter transcripts that might be related to this entity
+    // We'll check for entity ID or name in the transcript content
+    const entityTranscripts = transcripts.filter(transcript => {
+      // Check if this entity's ID or emails are mentioned in the transcript
+      const textContent = transcript.textContent?.toLowerCase() || '';
+      const participants = transcript.participants || [];
+
+      // If we have entity ID, check if it's mentioned in the transcript
+      if (entityId && textContent.includes(entityId.toLowerCase())) {
+        return true;
+      }
+
+      // If we have entity emails, check if any are in the participants
+      if (participants.length > 0) {
+        // Get entity emails from database
+        // This is a placeholder - in a real implementation, you would query the database
+        // for the entity's associated emails
+        const entityEmails = getEntityEmails(entityType, entityId);
+
+        // Check if any entity emails are in the participants
+        return participants.some(participant =>
+          entityEmails.includes(participant.toLowerCase())
+        );
+      }
+
+      return false;
+    });
+
+    // Process each transcript and save to database
+    const savedTranscripts = [];
+
+    for (const transcript of entityTranscripts) {
+      // Create transcript data
+      const transcriptData = {
+        meetingId: extractMeetingIdFromTitle(transcript.name) || 'unknown',
+        title: transcript.name || 'Gemini Notes Transcript',
+        date: new Date(transcript.createdTime),
+        participants: transcript.participants || [],
+        transcriptUrl: transcript.webViewLink,
+        transcript: transcript.textContent || '',
+        summary: transcript.summary || '',
+        keyPoints: transcript.keyPoints || [],
+        actionItems: transcript.actionItems?.map(item => ({
+          description: item,
+          assignee: null,
+          dueDate: null
+        })) || [],
+        sourceType: 'gemini',
+        entityType,
+        entityId
+      };
+
+      // Save transcript to database
+      const savedTranscript = await saveTranscript(transcriptData, entityType, entityId);
+      savedTranscripts.push(savedTranscript);
+    }
+
+    return savedTranscripts;
+  } catch (error) {
+    console.error('Error processing Gemini Notes for entity:', error);
+    return [];
+  }
+};
+
+/**
+ * Extract meeting ID from transcript title
+ * @param {String} title - Transcript title
+ * @returns {String|null} - Meeting ID if found, null otherwise
+ */
+const extractMeetingIdFromTitle = (title) => {
+  if (!title) return null;
+
+  // Pattern for Google Meet IDs in titles
+  const meetPattern = /(?:meet_|meeting_|recording_)([-a-z0-9]{10,})/i;
+
+  // Try to extract from title
+  const match = title.match(meetPattern);
+  if (match && match[1]) {
+    return match[1];
+  }
+
+  return null;
+};
+
+/**
+ * Get entity emails (placeholder function)
+ * @param {String} entityType - Type of entity
+ * @param {String} entityId - ID of the entity
+ * @returns {Array} - Array of email addresses
+ */
+const getEntityEmails = (entityType, entityId) => {
+  // This is a placeholder - in a real implementation, you would query the database
+  // for the entity's associated emails
+  return [];
 };
 
 /**
@@ -191,7 +304,7 @@ export const getTranscriptById = async (transcriptId) => {
 export const updateTranscript = async (transcriptId, updates) => {
   try {
     const transcriptRef = doc(db, 'transcripts', transcriptId);
-    
+
     await updateDoc(transcriptRef, {
       ...updates,
       updatedAt: serverTimestamp()

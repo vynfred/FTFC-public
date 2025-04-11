@@ -2,43 +2,35 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase-config';
+import { getTranscriptsForEntity, processGeminiNotesForEntity } from '../../services/meetingTranscriptService';
+import { getStoredTokens } from '../../services/googleIntegration';
+import { useStatsView } from '../../context/StatsViewContext';
 import './MeetingTranscriptList.css';
 
 /**
  * Component to display a list of meeting transcripts for an entity
  */
-const MeetingTranscriptList = ({ entityId, entityType }) => {
+const MeetingTranscriptList = ({ entityId, entityType, readOnly = false }) => {
   const [transcripts, setTranscripts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedTranscript, setExpandedTranscript] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const { viewCompanyStats } = useStatsView();
 
+  // Fetch transcripts when component mounts or when entityId/entityType changes
   useEffect(() => {
     const fetchTranscripts = async () => {
       try {
         setLoading(true);
         
-        // Query transcripts for this entity
-        const transcriptsQuery = query(
-          collection(db, 'transcripts'),
-          where('entityId', '==', entityId),
-          where('entityType', '==', entityType),
-          orderBy('date', 'desc')
-        );
-        
-        const querySnapshot = await getDocs(transcriptsQuery);
-        
-        const transcriptData = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          date: doc.data().date?.toDate() || new Date()
-        }));
-        
+        // Use the service function to get transcripts
+        const transcriptData = await getTranscriptsForEntity(entityType, entityId);
         setTranscripts(transcriptData);
-        setLoading(false);
       } catch (err) {
         console.error('Error fetching transcripts:', err);
         setError('Failed to load meeting transcripts. Please try again later.');
+      } finally {
         setLoading(false);
       }
     };
@@ -48,39 +40,85 @@ const MeetingTranscriptList = ({ entityId, entityType }) => {
     }
   }, [entityId, entityType]);
 
-  const toggleTranscript = (id) => {
-    if (expandedTranscript === id) {
-      setExpandedTranscript(null);
-    } else {
-      setExpandedTranscript(id);
+  // Handle transcript expansion
+  const toggleTranscript = (transcriptId) => {
+    setExpandedTranscript(expandedTranscript === transcriptId ? null : transcriptId);
+  };
+
+  // Handle refresh from Gemini Notes
+  const handleRefreshFromGemini = async () => {
+    try {
+      setRefreshing(true);
+      
+      // Get Google tokens
+      const tokens = getStoredTokens();
+      
+      if (!tokens) {
+        setError('Not connected to Google. Please connect your Google account first.');
+        setRefreshing(false);
+        return;
+      }
+      
+      // Process Gemini Notes for this entity
+      await processGeminiNotesForEntity(entityType, entityId, tokens);
+      
+      // Refresh transcripts
+      const transcriptData = await getTranscriptsForEntity(entityType, entityId);
+      setTranscripts(transcriptData);
+      
+      setRefreshing(false);
+    } catch (err) {
+      console.error('Error refreshing from Gemini Notes:', err);
+      setError('Failed to refresh from Gemini Notes. Please try again later.');
+      setRefreshing(false);
     }
   };
 
   if (loading) {
-    return <div className="transcript-loading">Loading meeting transcripts...</div>;
+    return <div className="loading">Loading transcripts...</div>;
   }
 
   if (error) {
-    return <div className="transcript-error">{error}</div>;
+    return <div className="error-message">{error}</div>;
   }
 
   if (transcripts.length === 0) {
     return (
-      <div className="transcript-empty">
-        <p>No meeting transcripts available.</p>
+      <div className="no-transcripts">
+        <p>No meeting transcripts found</p>
+        {!readOnly && (
+          <button 
+            className="refresh-button"
+            onClick={handleRefreshFromGemini}
+            disabled={refreshing}
+          >
+            {refreshing ? 'Checking Gemini Notes...' : 'Check Gemini Notes'}
+          </button>
+        )}
       </div>
     );
   }
 
   return (
     <div className="meeting-transcripts">
-      <h3 className="transcripts-title">Meeting Transcripts</h3>
+      <div className="transcripts-header">
+        <h3>Meeting Transcripts</h3>
+        {!readOnly && (
+          <button 
+            className="refresh-button"
+            onClick={handleRefreshFromGemini}
+            disabled={refreshing}
+          >
+            {refreshing ? 'Checking Gemini Notes...' : 'Check Gemini Notes'}
+          </button>
+        )}
+      </div>
       
       <div className="transcripts-list">
         {transcripts.map(transcript => (
           <div 
             key={transcript.id} 
-            className={`transcript-item ${expandedTranscript === transcript.id ? 'expanded' : ''}`}
+            className={`transcript-item ${expandedTranscript === transcript.id ? 'expanded' : ''} ${transcript.sourceType === 'gemini' ? 'gemini-source' : ''}`}
           >
             <div 
               className="transcript-header" 
@@ -124,7 +162,21 @@ const MeetingTranscriptList = ({ entityId, entityType }) => {
                     <h5>Action Items</h5>
                     <ul>
                       {transcript.actionItems.map((item, index) => (
-                        <li key={index}>{item}</li>
+                        <li key={index}>
+                          {item.description}
+                          {item.assignee && <span className="assignee"> ({item.assignee})</span>}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                {transcript.participants && transcript.participants.length > 0 && (
+                  <div className="transcript-participants">
+                    <h5>Participants</h5>
+                    <ul>
+                      {transcript.participants.map((participant, index) => (
+                        <li key={index}>{participant}</li>
                       ))}
                     </ul>
                   </div>
@@ -139,8 +191,21 @@ const MeetingTranscriptList = ({ entityId, entityType }) => {
                   </div>
                 )}
                 
+                {transcript.transcriptUrl && (
+                  <div className="transcript-link">
+                    <a 
+                      href={transcript.transcriptUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="view-original-button"
+                    >
+                      View Original in Google Docs
+                    </a>
+                  </div>
+                )}
+                
                 <div className="transcript-source">
-                  <p>Source: {transcript.sourceType === 'gemini' ? 'Google Meet (Gemini)' : transcript.sourceType}</p>
+                  <p>Source: {transcript.sourceType === 'gemini' ? 'Google Meet (Gemini)' : transcript.sourceType || 'Unknown'}</p>
                 </div>
               </div>
             )}
@@ -153,7 +218,8 @@ const MeetingTranscriptList = ({ entityId, entityType }) => {
 
 MeetingTranscriptList.propTypes = {
   entityId: PropTypes.string.isRequired,
-  entityType: PropTypes.oneOf(['client', 'investor', 'partner', 'lead']).isRequired
+  entityType: PropTypes.oneOf(['client', 'investor', 'partner', 'lead']).isRequired,
+  readOnly: PropTypes.bool
 };
 
 export default MeetingTranscriptList;
