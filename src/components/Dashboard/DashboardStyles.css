@@ -17,6 +17,14 @@
   margin: 0 0 var(--spacing-xs) 0;
 }
 
+/* Section subtitle */
+.section-subtitle {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
 /* Stats Grid Standardization */
 .stats-grid {
   display: grid;

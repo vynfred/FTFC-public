@@ -3,7 +3,7 @@ import {
     Tooltip
 } from 'chart.js';
 import React, { useEffect, useState } from 'react';
-import { FaSort, FaSortDown, FaSortUp } from 'react-icons/fa';
+import { FaChartBar, FaSort, FaSortDown, FaSortUp } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDateRange } from '../../context/DateRangeContext';
 import { useStatsView } from '../../context/StatsViewContext';
@@ -1204,43 +1204,49 @@ const MarketingDashboard = () => {
 
       {/* Campaign Performance Section */}
       <DashboardSection title="Campaign Performance">
-        <div className={styles.tableContainer}>
-          <table className={styles.campaignTable}>
+        <div className="filter-container">
+          <h3 className="section-subtitle">Active Campaigns</h3>
+          <Link to="/dashboard/marketing/create-campaign" className="action-button primary-button">
+            + Create New Campaign
+          </Link>
+        </div>
+        <div className="table-container">
+          <table className="data-table">
             <thead>
               <tr>
-                <th onClick={() => requestCampaignSort('name')}>
-                  Campaign Name
+                <th className="col-lg" onClick={() => requestCampaignSort('name')}>
+                  Campaign Name {getCampaignSortIcon('name')}
                 </th>
-                <th onClick={() => requestCampaignSort('status')}>
-                  Status
+                <th className="col-sm" onClick={() => requestCampaignSort('status')}>
+                  Status {getCampaignSortIcon('status')}
                 </th>
-                <th onClick={() => requestCampaignSort('leads')}>
-                  Leads
+                <th className="col-sm" onClick={() => requestCampaignSort('leads')}>
+                  Leads {getCampaignSortIcon('leads')}
                 </th>
-                <th onClick={() => requestCampaignSort('conversion')}>
-                  Conversion
+                <th className="col-sm" onClick={() => requestCampaignSort('conversion')}>
+                  Conversion {getCampaignSortIcon('conversion')}
                 </th>
-                <th onClick={() => requestCampaignSort('cost')}>
-                  Cost
+                <th className="col-sm" onClick={() => requestCampaignSort('cost')}>
+                  Cost {getCampaignSortIcon('cost')}
                 </th>
-                <th onClick={() => requestCampaignSort('roi')}>
-                  ROI
+                <th className="col-sm" onClick={() => requestCampaignSort('roi')}>
+                  ROI {getCampaignSortIcon('roi')}
                 </th>
               </tr>
             </thead>
             <tbody>
               {allCampaigns.map(campaign => (
                 <tr key={campaign.id} onClick={() => handleCampaignClick(campaign.id)}>
-                  <td className={styles.campaignName}>{campaign.name}</td>
-                  <td>
-                    <span className={`${styles.campaignStatus} ${styles[`status${campaign.status.replace(' ', '')}`]}`}>
+                  <td className="col-lg">{campaign.name}</td>
+                  <td className="col-sm">
+                    <span className={`status-badge ${campaign.status === 'Active' ? 'status-new' : campaign.status === 'Completed' ? 'status-qualified' : 'status-negotiation'}`}>
                       {campaign.status}
                     </span>
                   </td>
-                  <td>{campaign.leads || 0}</td>
-                  <td>{campaign.conversion || 0}%</td>
-                  <td>${campaign.cost ? campaign.cost.toLocaleString() : '0'}</td>
-                  <td>{campaign.roi || 0}%</td>
+                  <td className="col-sm">{campaign.leads || 0}</td>
+                  <td className="col-sm">{campaign.conversion || 0}%</td>
+                  <td className="col-sm">${campaign.cost ? campaign.cost.toLocaleString() : '0'}</td>
+                  <td className="col-sm">{campaign.roi || 0}%</td>
                 </tr>
               ))}
             </tbody>
@@ -1250,9 +1256,9 @@ const MarketingDashboard = () => {
 
       {/* Content Performance Section */}
       <DashboardSection title="Content Performance">
-        <div className={styles.sectionHeader}>
-          <div className={styles.sectionTitle}>Blog Content</div>
-          <Link to="/dashboard/marketing/create-blog" className={styles.createButton}>
+        <div className="filter-container">
+          <h3 className="section-subtitle">Blog Content</h3>
+          <Link to="/dashboard/marketing/create-blog" className="action-button primary-button">
             + Create New Blog Post
           </Link>
         </div>
@@ -1299,15 +1305,15 @@ const MarketingDashboard = () => {
                   <td>{content.views && content.conversions ? ((content.conversions / content.views) * 100).toFixed(1) : '0'}%</td>
                   <td>{new Date(content.date).toLocaleDateString()}</td>
                   <td>
-                    <div className={styles.actionButtons}>
+                    <div className="filter-actions">
                       <button
-                        className={styles.viewButton}
+                        className="action-button"
                         onClick={() => handleContentClick(content.id)}
                       >
                         View
                       </button>
                       <button
-                        className={styles.editButton}
+                        className="action-button primary-button"
                         onClick={() => navigate(`/dashboard/marketing/edit-content/${content.id}`)}
                       >
                         Edit
