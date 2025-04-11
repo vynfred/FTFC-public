@@ -54,5 +54,10 @@ const googleapisCommon = {
 // Export as default
 export default googleapisCommon;
 
-// Also export as CommonJS for compatibility
-module.exports = googleapisCommon;
+// Named exports for direct imports
+export {
+    OAuth2Client,
+    // Re-export other classes
+    OAuth2Client as GoogleAuth,
+};
+

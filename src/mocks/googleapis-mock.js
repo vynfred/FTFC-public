@@ -112,5 +112,5 @@ const googleapis = { google };
 
 export default googleapis;
 
-// Also export as CommonJS for compatibility
-module.exports = googleapis;
+// Named exports for direct imports
+export { google };

@@ -101,9 +101,10 @@ export default {
   Logger
 };
 
-// Also export as CommonJS for compatibility
-module.exports = {
-  createLogger,
-  colours,
-  Logger
+// Named exports for direct imports
+export {
+    createLogger,
+    colours,
+    Logger
 };
+
