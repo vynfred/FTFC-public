@@ -213,6 +213,133 @@
   margin-bottom: var(--spacing-md);
 }
 
+/* Password Reset Specific Styles */
+.content {
+  padding: var(--spacing-lg);
+}
+
+.errorMessage {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #EF4444;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.successMessage {
+  background-color: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: #10B981;
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.formActions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.linkButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
+  background-color: transparent;
+  border: none;
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition-default);
+}
+
+.linkButton:hover {
+  text-decoration: underline;
+}
+
+.buttonIcon {
+  font-size: 0.875rem;
+}
+
+.inputWrapper {
+  position: relative;
+}
+
+.inputIcon {
+  position: absolute;
+  left: var(--spacing-sm);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+}
+
+.input {
+  padding-left: calc(var(--spacing-md) + 1rem);
+}
+
+.passwordRequirements {
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.passwordRequirements p {
+  margin: var(--spacing-xs) 0;
+  font-weight: var(--font-weight-medium);
+}
+
+.passwordRequirements ul {
+  list-style: none;
+  padding-left: var(--spacing-sm);
+  margin: 0;
+}
+
+.passwordRequirements li {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+}
+
+.valid {
+  color: #10B981;
+}
+
+.fieldError {
+  color: #EF4444;
+  font-size: var(--font-size-xs);
+  margin-top: var(--spacing-xs);
+}
+
+.loadingSpinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  border-top-color: var(--color-primary);
+  animation: spin 1s ease-in-out infinite;
+  margin: var(--spacing-lg) auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.errorContainer {
+  text-align: center;
+  padding: var(--spacing-md) 0;
+}
+
 /* Responsive adjustments */
 @media (max-width: var(--breakpoint-sm)) {
   .card {
@@ -221,8 +348,12 @@
     border: none;
     background-color: transparent;
   }
-  
-  .header, .body, .footer {
+
+  .header, .content, .footer {
     padding: var(--spacing-md);
+  }
+
+  .formActions {
+    flex-direction: column;
   }
 }

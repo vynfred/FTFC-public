@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { FaCog, FaEnvelope, FaFileAlt, FaGlobe, FaPhone, FaUser, FaUsers } from 'react-icons/fa';
+import { FaCog, FaEnvelope, FaFileAlt, FaGlobe, FaPhone, FaSlack, FaUser, FaUsers } from 'react-icons/fa';
 import { useStatsView } from '../../context/StatsViewContext';
+import SlackIntegrationSettings from '../settings/SlackIntegrationSettings';
 import PublicPagesManager from './PublicPagesManager';
 
 const CompanySettings = () => {
@@ -68,6 +69,14 @@ const CompanySettings = () => {
             >
               <FaFileAlt className="tab-icon" />
               <span>Public Pages</span>
+            </button>
+
+            <button
+              className={`tab-button ${activeTab === 'integrations' ? 'active' : ''}`}
+              onClick={() => setActiveTab('integrations')}
+            >
+              <FaSlack className="tab-icon" />
+              <span>Integrations</span>
             </button>
           </div>
 
@@ -184,6 +193,12 @@ const CompanySettings = () => {
 
             {activeTab === 'public-pages' && (
               <PublicPagesManager />
+            )}
+
+            {activeTab === 'integrations' && (
+              <div className="integrations-container">
+                <SlackIntegrationSettings />
+              </div>
             )}
           </div>
         </div>
@@ -399,6 +414,10 @@ const CompanySettings = () => {
 
         .button-icon {
           margin-right: 8px;
+        }
+
+        .integrations-container {
+          width: 100%;
         }
       `}</style>
     </div>

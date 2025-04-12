@@ -4,7 +4,7 @@ import styles from './MilestoneList.module.css';
 
 /**
  * MilestoneList component for displaying a list of milestones with completion status
- * 
+ *
  * @param {Object} props
  * @param {Array} props.milestones - Array of milestone objects with title and completed properties
  */

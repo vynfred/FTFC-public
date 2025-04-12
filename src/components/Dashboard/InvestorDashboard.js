@@ -7,39 +7,39 @@ import styles from './InvestorDashboard.module.css';
 
 const InvestorDashboard = () => {
   const navigate = useNavigate();
-  
+
   // State for investors data
   const [investors, setInvestors] = useState(investorsData);
   const [filteredInvestors, setFilteredInvestors] = useState(investorsData);
-  
+
   // State for sorting
   const [sortConfig, setSortConfig] = useState({
     key: 'name',
     direction: 'asc'
   });
-  
+
   // State for filtering
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
-  
+
   // Effect to filter and sort investors
   useEffect(() => {
     let result = [...investors];
-    
+
     // Apply search filter
     if (searchTerm) {
-      result = result.filter(investor => 
+      result = result.filter(investor =>
         investor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         investor.firm.toLowerCase().includes(searchTerm.toLowerCase()) ||
         investor.preferredStage.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
+
     // Apply status filter
     if (filterStatus !== 'all') {
       result = result.filter(investor => investor.status === filterStatus);
     }
-    
+
     // Apply sorting
     if (sortConfig.key) {
       result.sort((a, b) => {
@@ -52,10 +52,10 @@ const InvestorDashboard = () => {
         return 0;
       });
     }
-    
+
     setFilteredInvestors(result);
   }, [investors, searchTerm, filterStatus, sortConfig]);
-  
+
   // Function to request sorting
   const requestSort = (key) => {
     let direction = 'asc';
@@ -64,17 +64,17 @@ const InvestorDashboard = () => {
     }
     setSortConfig({ key, direction });
   };
-  
+
   // Function to get sort icon
   const getSortIcon = (key) => {
     if (sortConfig.key !== key) {
       return <FaSort className={styles.sortIcon} />;
     }
-    return sortConfig.direction === 'asc' 
-      ? <FaSortUp className={styles.sortIcon} /> 
+    return sortConfig.direction === 'asc'
+      ? <FaSortUp className={styles.sortIcon} />
       : <FaSortDown className={styles.sortIcon} />;
   };
-  
+
   // Function to get status color class
   const getStatusColorClass = (status) => {
     switch (status) {
@@ -88,107 +88,110 @@ const InvestorDashboard = () => {
         return styles.statusNeutral;
     }
   };
-  
+
   // Function to handle investor click
   const handleInvestorClick = (id) => {
     navigate(`/dashboard/investors/${id}`);
   };
-  
+
   // Function to handle create investor
   const handleCreateInvestor = () => {
     navigate('/dashboard/investors/create');
   };
-  
+
   // Table actions component for the investors table
   const investorsTableActions = (
     <>
-      <div className={styles.searchFilterContainer}>
-        <input
-          type="text"
-          placeholder="Search investors..."
-          className={styles.searchInput}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-          className={styles.statusFilter}
-        >
-          <option value="all">All Statuses</option>
-          <option value="Active">Active</option>
-          <option value="Interested">Interested</option>
-          <option value="Not Interested">Not Interested</option>
-        </select>
-      </div>
-      <div className={styles.actionButtonContainer}>
-        <button className={styles.createButton} onClick={handleCreateInvestor}>
-          <FaUserPlus /> Add Investor
-        </button>
+      <div className="filter-container">
+        <div className="search-container">
+          <FaSearch className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search investors..."
+            className="search-input"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="filter-actions">
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="filter-button"
+          >
+            <option value="all">All Statuses</option>
+            <option value="Active">Active</option>
+            <option value="Interested">Interested</option>
+            <option value="Not Interested">Not Interested</option>
+          </select>
+          <button className="action-button primary-button" onClick={handleCreateInvestor}>
+            <FaUserPlus /> Add Investor
+          </button>
+        </div>
       </div>
     </>
   );
-  
+
   // Calculate investor statistics
   const totalInvestors = investors.length;
   const activeInvestors = investors.filter(investor => investor.status === 'Active').length;
   const totalInvested = investors.reduce((sum, investor) => sum + investor.totalInvested, 0);
   const totalDeals = investors.reduce((sum, investor) => sum + investor.deals, 0);
-  
+
   return (
-    <div className={styles.investorDashboard}>
+    <div className="dashboard-container">
       {/* Investor Statistics Section */}
       <DashboardSection title="Investor Overview">
-        <div className={styles.statsGrid}>
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
+        <div className="stats-grid">
+          <div className="stat-card">
+            <div className="stat-icon">
               <FaUserPlus />
             </div>
-            <div className={styles.statContent}>
+            <div className="stat-content">
               <h3>Total Investors</h3>
-              <p className={styles.statValue}>{totalInvestors}</p>
+              <p className="stat-value">{totalInvestors}</p>
             </div>
           </div>
-          
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
+
+          <div className="stat-card">
+            <div className="stat-icon">
               <FaChartBar />
             </div>
-            <div className={styles.statContent}>
+            <div className="stat-content">
               <h3>Active Investors</h3>
-              <p className={styles.statValue}>{activeInvestors}</p>
+              <p className="stat-value">{activeInvestors}</p>
             </div>
           </div>
-          
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
+
+          <div className="stat-card">
+            <div className="stat-icon">
               <FaMoneyBillWave />
             </div>
-            <div className={styles.statContent}>
+            <div className="stat-content">
               <h3>Total Invested</h3>
-              <p className={styles.statValue}>${(totalInvested / 1000000).toFixed(1)}M</p>
+              <p className="stat-value">${(totalInvested / 1000000).toFixed(1)}M</p>
             </div>
           </div>
-          
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
+
+          <div className="stat-card">
+            <div className="stat-icon">
               <FaHandshake />
             </div>
-            <div className={styles.statContent}>
+            <div className="stat-content">
               <h3>Total Deals</h3>
-              <p className={styles.statValue}>{totalDeals}</p>
+              <p className="stat-value">{totalDeals}</p>
             </div>
           </div>
         </div>
       </DashboardSection>
-      
+
       {/* Investors Table Section */}
       <DashboardSection
         title="Investors"
         actions={investorsTableActions}
       >
-        <div className={styles.tableContainer}>
-          <table className={styles.dataTable}>
+        <div className="table-container">
+          <table className="data-table">
             <thead>
               <tr>
                 <th onClick={() => requestSort('name')}>

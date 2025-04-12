@@ -73,13 +73,17 @@
 .dataTable {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .dataTable th,
 .dataTable td {
-  padding: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
   text-align: left;
   border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dataTable th {
@@ -250,7 +254,7 @@
   .statsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .shortcutsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -260,11 +264,11 @@
   .statsGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .shortcutsGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .actionButtonContainer {
     flex-direction: column;
   }

@@ -1,0 +1,406 @@
+.integrationSettings {
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.integrationHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.integrationIcon {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+}
+
+.integrationHeader h2 {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xl);
+}
+
+.integrationDescription {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.5;
+}
+
+.formSection {
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.formSection h3 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+}
+
+.sectionDescription {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-sm);
+}
+
+.formGroup {
+  margin-bottom: var(--spacing-md);
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.toggleLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.toggleSwitch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.toggleSwitch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleSlider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-background-dark);
+  transition: .4s;
+  border-radius: 24px;
+}
+
+.toggleSlider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .toggleSlider {
+  background-color: var(--color-primary);
+}
+
+input:focus + .toggleSlider {
+  box-shadow: 0 0 1px var(--color-primary);
+}
+
+input:checked + .toggleSlider:before {
+  transform: translateX(26px);
+}
+
+.formGroup input[type="text"],
+.formGroup input[type="password"],
+.formGroup input[type="url"],
+.formGroup select {
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--color-background-light);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.formGroup input[type="text"]:focus,
+.formGroup input[type="password"]:focus,
+.formGroup input[type="url"]:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.formGroup input[type="text"]:disabled,
+.formGroup input[type="password"]:disabled,
+.formGroup input[type="url"]:disabled,
+.formGroup select:disabled {
+  background-color: var(--color-background);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+.fieldHint {
+  margin-top: var(--spacing-xs);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-style: italic;
+}
+
+.webhookInputGroup {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.webhookInputGroup input {
+  flex: 1;
+}
+
+.testButton {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-background-dark);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+}
+
+.testButton:hover:not(:disabled) {
+  background-color: var(--color-background-darker);
+}
+
+.testButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.testResult {
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+}
+
+.testSuccess {
+  background-color: rgba(var(--color-success-rgb), 0.1);
+  color: var(--color-success);
+}
+
+.testError {
+  background-color: rgba(var(--color-danger-rgb), 0.1);
+  color: var(--color-danger);
+}
+
+.testResultIcon {
+  font-size: 1rem;
+}
+
+.notificationGrid {
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+}
+
+.notificationHeader {
+  display: grid;
+  grid-template-columns: 1fr 100px 150px;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background-color: var(--color-background-dark);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.notificationRow {
+  display: grid;
+  grid-template-columns: 1fr 100px 150px;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border-top: 1px solid var(--color-border);
+  align-items: center;
+}
+
+.notificationRow:nth-child(even) {
+  background-color: var(--color-background);
+}
+
+.notificationLabel {
+  font-size: var(--font-size-sm);
+}
+
+.notificationToggle {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.notificationToggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.notificationToggle .toggleSlider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-background-dark);
+  transition: .4s;
+  border-radius: 20px;
+}
+
+.notificationToggle .toggleSlider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+.notificationToggle input:checked + .toggleSlider {
+  background-color: var(--color-primary);
+}
+
+.notificationToggle input:focus + .toggleSlider {
+  box-shadow: 0 0 1px var(--color-primary);
+}
+
+.notificationToggle input:checked + .toggleSlider:before {
+  transform: translateX(20px);
+}
+
+.notificationChannel input {
+  width: 100%;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--color-background-light);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.notificationChannel input:disabled {
+  background-color: var(--color-background);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--spacing-lg);
+}
+
+.saveButton {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.saveButton:hover:not(:disabled) {
+  background-color: var(--color-primary-dark);
+}
+
+.saveButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.errorMessage,
+.successMessage {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.errorMessage {
+  background-color: rgba(var(--color-danger-rgb), 0.1);
+  color: var(--color-danger);
+}
+
+.successMessage {
+  background-color: rgba(var(--color-success-rgb), 0.1);
+  color: var(--color-success);
+}
+
+.errorIcon,
+.successIcon {
+  font-size: 1rem;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  color: var(--color-text-secondary);
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+  font-size: 1.5rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .notificationHeader,
+  .notificationRow {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xs);
+  }
+  
+  .notificationHeader span:not(:first-child),
+  .notificationToggle,
+  .notificationChannel {
+    margin-top: var(--spacing-xs);
+  }
+  
+  .webhookInputGroup {
+    flex-direction: column;
+  }
+  
+  .testButton {
+    align-self: flex-end;
+  }
+}

@@ -42,42 +42,42 @@ const customCanvasBackgroundColor = {
 const ClientsDashboard = () => {
   const navigate = useNavigate();
   const { statsView } = useStatsView();
-  
+
   // State for clients data
   const [clients, setClients] = useState(clientsData);
   const [filteredClients, setFilteredClients] = useState(clientsData);
-  
+
   // State for sorting
   const [sortConfig, setSortConfig] = useState({
     key: 'name',
     direction: 'asc'
   });
-  
+
   // State for filtering
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
-  
+
   // State for file uploader
   const [showUploader, setShowUploader] = useState(false);
-  
+
   // Effect to filter and sort clients
   useEffect(() => {
     let result = [...clients];
-    
+
     // Apply search filter
     if (searchTerm) {
-      result = result.filter(client => 
+      result = result.filter(client =>
         client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         client.industry.toLowerCase().includes(searchTerm.toLowerCase()) ||
         client.contactName.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
+
     // Apply status filter
     if (filterStatus !== 'all') {
       result = result.filter(client => client.status === filterStatus);
     }
-    
+
     // Apply sorting
     if (sortConfig.key) {
       result.sort((a, b) => {
@@ -90,10 +90,10 @@ const ClientsDashboard = () => {
         return 0;
       });
     }
-    
+
     setFilteredClients(result);
   }, [clients, searchTerm, filterStatus, sortConfig]);
-  
+
   // Function to request sorting
   const requestSort = (key) => {
     let direction = 'asc';
@@ -102,17 +102,17 @@ const ClientsDashboard = () => {
     }
     setSortConfig({ key, direction });
   };
-  
+
   // Function to get sort icon
   const getSortIcon = (key) => {
     if (sortConfig.key !== key) {
       return <FaSort className={styles.sortIcon} />;
     }
-    return sortConfig.direction === 'asc' 
-      ? <FaSortUp className={styles.sortIcon} /> 
+    return sortConfig.direction === 'asc'
+      ? <FaSortUp className={styles.sortIcon} />
       : <FaSortDown className={styles.sortIcon} />;
   };
-  
+
   // Function to get status color class
   const getStatusColor = (status) => {
     switch (status) {
@@ -124,127 +124,130 @@ const ClientsDashboard = () => {
         return styles.statusInactive;
     }
   };
-  
+
   // Function to handle client click
   const handleClientClick = (id) => {
     navigate(`/dashboard/clients/${id}`);
   };
-  
+
   // Function to handle create client
   const handleCreateClient = () => {
     navigate('/dashboard/clients/create');
   };
-  
+
   // Function to handle toggle uploader
   const handleToggleUploader = () => {
     setShowUploader(!showUploader);
   };
-  
+
   // Function to handle file upload
   const handleFileUpload = (file) => {
     // In a real app, this would process the file and update the database
     console.log('File uploaded:', file);
-    
+
     // For demo purposes, we'll just close the uploader
     setShowUploader(false);
   };
-  
+
   // Function to handle download template
   const handleDownloadTemplate = () => {
     generateClientsCSVTemplate();
   };
-  
+
   // Table actions component for the clients table
   const clientsTableActions = (
     <>
-      <div className={styles.searchFilterContainer}>
-        <input
-          type="text"
-          placeholder="Search clients..."
-          className={styles.searchInput}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-          className={styles.statusFilter}
-        >
-          <option value="all">All Statuses</option>
-          <option value="Active">Active</option>
-          <option value="At Risk">At Risk</option>
-        </select>
-      </div>
-      <div className={styles.actionButtonContainer}>
-        <button className={styles.createButton} onClick={handleCreateClient}>
-          <FaUserPlus /> Create Client
-        </button>
-        <button className={styles.createButton} onClick={handleToggleUploader}>
-          <FaUpload /> Import
-        </button>
+      <div className="filter-container">
+        <div className="search-container">
+          <FaSearch className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search clients..."
+            className="search-input"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="filter-actions">
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="filter-button"
+          >
+            <option value="all">All Statuses</option>
+            <option value="Active">Active</option>
+            <option value="At Risk">At Risk</option>
+          </select>
+          <button className="action-button primary-button" onClick={handleCreateClient}>
+            <FaUserPlus /> Create Client
+          </button>
+          <button className="action-button" onClick={handleToggleUploader}>
+            <FaUpload /> Import
+          </button>
+        </div>
       </div>
     </>
   );
-  
+
   // Calculate client statistics
   const totalClients = clients.length;
   const activeClients = clients.filter(client => client.status === 'Active').length;
   const atRiskClients = clients.filter(client => client.status === 'At Risk').length;
-  
+
   return (
-    <div className={styles.clientsDashboard}>
+    <div className="dashboard-container">
       {/* Client Statistics Section */}
       <DashboardSection title="Client Overview">
-        <div className={styles.statsGrid}>
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
+        <div className="stats-grid">
+          <div className="stat-card">
+            <div className="stat-icon">
               <FaUserPlus />
             </div>
-            <div className={styles.statContent}>
+            <div className="stat-content">
               <h3>Total Clients</h3>
-              <p className={styles.statValue}>{totalClients}</p>
+              <p className="stat-value">{totalClients}</p>
             </div>
           </div>
-          
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
+
+          <div className="stat-card">
+            <div className="stat-icon">
               <FaChartBar />
             </div>
-            <div className={styles.statContent}>
+            <div className="stat-content">
               <h3>Active Clients</h3>
-              <p className={styles.statValue}>{activeClients}</p>
+              <p className="stat-value">{activeClients}</p>
             </div>
           </div>
-          
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
+
+          <div className="stat-card">
+            <div className="stat-icon">
               <FaBullseye />
             </div>
-            <div className={styles.statContent}>
+            <div className="stat-content">
               <h3>At Risk Clients</h3>
-              <p className={styles.statValue}>{atRiskClients}</p>
+              <p className="stat-value">{atRiskClients}</p>
             </div>
           </div>
-          
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
+
+          <div className="stat-card">
+            <div className="stat-icon">
               <FaFileAlt />
             </div>
-            <div className={styles.statContent}>
+            <div className="stat-content">
               <h3>Documents</h3>
-              <p className={styles.statValue}>{totalClients * 3}</p>
+              <p className="stat-value">{totalClients * 3}</p>
             </div>
           </div>
         </div>
       </DashboardSection>
-      
+
       {/* Clients Table Section */}
       <DashboardSection
         title="Clients"
         actions={clientsTableActions}
       >
-        <div className={styles.tableContainer}>
-          <table className={styles.dataTable}>
+        <div className="table-container">
+          <table className="data-table">
             <thead>
               <tr>
                 <th onClick={() => requestSort('name')}>
@@ -280,8 +283,8 @@ const ClientsDashboard = () => {
                   <td>{new Date(client.lastContact).toLocaleDateString()}</td>
                   <td>
                     <div className={styles.progressContainer}>
-                      <div 
-                        className={styles.progressBar} 
+                      <div
+                        className={styles.progressBar}
                         style={{ width: client.milestoneStatus }}
                       ></div>
                       <span className={styles.progressText}>{client.milestoneStatus}</span>
@@ -294,7 +297,7 @@ const ClientsDashboard = () => {
           </table>
         </div>
       </DashboardSection>
-      
+
       {/* File Uploader Modal */}
       {showUploader && (
         <FileUploader

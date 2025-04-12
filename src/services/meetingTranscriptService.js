@@ -14,18 +14,20 @@ import {
     query, serverTimestamp, updateDoc, where
 } from 'firebase/firestore';
 import { db } from '../firebase-config';
-import { getMeetingTranscripts } from './googleIntegration';
+import { getMeetingTranscripts, getStoredTokens } from './googleIntegration';
 
 /**
  * Process a meeting transcript from Gemini Notes
  * @param {Object} meetingData - Meeting data including meetingId, title, date, etc.
- * @param {Object} tokens - Google OAuth tokens
+ * @param {Object} tokens - Google OAuth tokens (optional, will use stored tokens if not provided)
  * @returns {Promise<Object>} - Processed transcript data
  */
-export const processMeetingTranscript = async (meetingData, tokens) => {
+export const processMeetingTranscript = async (meetingData, tokens = null) => {
+  // Use provided tokens or get stored tokens
+  const authTokens = tokens || getStoredTokens();
   try {
     // Get transcripts for the meeting
-    const transcripts = await getMeetingTranscripts(tokens, meetingData.meetingId);
+    const transcripts = await getMeetingTranscripts(authTokens, meetingData.meetingId);
 
     if (!transcripts || transcripts.length === 0) {
       console.log('No transcripts found for meeting:', meetingData.meetingId);
@@ -186,13 +188,15 @@ export const getTranscriptById = async (transcriptId) => {
  * Process Gemini Notes transcripts for a specific entity
  * @param {String} entityType - Type of entity (client, investor, partner)
  * @param {String} entityId - ID of the entity
- * @param {Object} tokens - Google OAuth tokens
+ * @param {Object} tokens - Google OAuth tokens (optional, will use stored tokens if not provided)
  * @returns {Promise<Array>} - Array of processed transcripts
  */
-export const processGeminiNotesForEntity = async (entityType, entityId, tokens) => {
+export const processGeminiNotesForEntity = async (entityType, entityId, tokens = null) => {
+  // Use provided tokens or get stored tokens
+  const authTokens = tokens || getStoredTokens();
   try {
     // Get all Gemini Notes transcripts (without specific meeting ID)
-    const transcripts = await getMeetingTranscripts(tokens);
+    const transcripts = await getMeetingTranscripts(authTokens);
 
     if (!transcripts || transcripts.length === 0) {
       console.log('No Gemini Notes transcripts found');
@@ -214,9 +218,7 @@ export const processGeminiNotesForEntity = async (entityType, entityId, tokens) 
       // If we have entity emails, check if any are in the participants
       if (participants.length > 0) {
         // Get entity emails from database
-        // This is a placeholder - in a real implementation, you would query the database
-        // for the entity's associated emails
-        const entityEmails = getEntityEmails(entityType, entityId);
+        const entityEmails = await getEntityEmails(entityType, entityId);
 
         // Check if any entity emails are in the participants
         return participants.some(participant =>
@@ -284,15 +286,55 @@ const extractMeetingIdFromTitle = (title) => {
 };
 
 /**
- * Get entity emails (placeholder function)
+ * Get entity emails
  * @param {String} entityType - Type of entity
  * @param {String} entityId - ID of the entity
- * @returns {Array} - Array of email addresses
+ * @returns {Promise<Array>} - Array of email addresses
  */
-const getEntityEmails = (entityType, entityId) => {
-  // This is a placeholder - in a real implementation, you would query the database
-  // for the entity's associated emails
-  return [];
+const getEntityEmails = async (entityType, entityId) => {
+  try {
+    // Get the entity document
+    const entityRef = doc(db, entityType + 's', entityId);
+    const entityDoc = await getDoc(entityRef);
+
+    if (!entityDoc.exists()) {
+      return [];
+    }
+
+    const entityData = entityDoc.data();
+    const emails = [];
+
+    // Add the entity's primary email if it exists
+    if (entityData.email) {
+      emails.push(entityData.email.toLowerCase());
+    }
+
+    // Add emails from contacts if they exist
+    if (entityData.contacts && Array.isArray(entityData.contacts)) {
+      for (const contactRef of entityData.contacts) {
+        try {
+          // If it's a reference, get the contact document
+          if (contactRef.id) {
+            const contactDoc = await getDoc(doc(db, 'contacts', contactRef.id));
+            if (contactDoc.exists() && contactDoc.data().email) {
+              emails.push(contactDoc.data().email.toLowerCase());
+            }
+          }
+          // If it's an embedded contact object
+          else if (contactRef.email) {
+            emails.push(contactRef.email.toLowerCase());
+          }
+        } catch (contactError) {
+          console.error('Error getting contact:', contactError);
+        }
+      }
+    }
+
+    return [...new Set(emails)]; // Remove duplicates
+  } catch (error) {
+    console.error('Error getting entity emails:', error);
+    return [];
+  }
 };
 
 /**
@@ -303,6 +345,12 @@ const getEntityEmails = (entityType, entityId) => {
  */
 export const updateTranscript = async (transcriptId, updates) => {
   try {
+    // Remove any undefined or null values from updates
+    Object.keys(updates).forEach(key => {
+      if (updates[key] === undefined || updates[key] === null) {
+        delete updates[key];
+      }
+    });
     const transcriptRef = doc(db, 'transcripts', transcriptId);
 
     await updateDoc(transcriptRef, {

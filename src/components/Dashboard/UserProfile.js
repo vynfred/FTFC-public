@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { FaCalendarAlt, FaCamera, FaEnvelope, FaPhone, FaUser, FaGoogleDrive } from 'react-icons/fa';
-import styles from './UserProfile.module.css';
-import { useAuth } from '../../context/AuthContext';
 import { doc, getDoc } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
+import { FaCalendarAlt, FaCamera, FaEnvelope, FaGoogleDrive, FaPhone, FaUser } from 'react-icons/fa';
+import { useAuth } from '../../context/AuthContext';
 import { db } from '../../firebase-config';
 import GoogleDriveConnect from '../integrations/GoogleDriveConnect';
+import styles from './UserProfile.module.css';
 
 const UserProfile = () => {
   const { user } = useAuth();
@@ -235,7 +235,7 @@ const UserProfile = () => {
             Connect your Google Drive to enable automatic processing of Gemini meeting notes
           </p>
 
-          <GoogleDriveConnect 
+          <GoogleDriveConnect
             onConnect={(tokens, profile) => {
               console.log('Google Drive connected', profile);
             }}
@@ -255,12 +255,14 @@ const UserProfile = () => {
             Connect your Google Calendar to schedule and manage client meetings
           </p>
 
-          {/* Replace with your CalendarIntegration component */}
-          <div className={styles.placeholderIntegration}>
-            <button className={styles.connectButton}>
-              Connect Google Calendar
-            </button>
-          </div>
+          <GoogleCalendarConnect
+            onConnect={(tokens, profile) => {
+              console.log('Google Calendar connected', profile);
+            }}
+            onDisconnect={() => {
+              console.log('Google Calendar disconnected');
+            }}
+          />
         </div>
       </div>
     </div>

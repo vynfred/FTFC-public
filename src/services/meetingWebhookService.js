@@ -72,7 +72,9 @@ export const registerMeetingWebhook = async (meetingData, entityType, entityId) 
           action: 'register',
           meetingId: meetingData.id,
           conferenceId: meetingData.conferenceData?.conferenceId,
-          webhookId: webhookRef.id
+          webhookId: webhookRef.id,
+          entityType,
+          entityId
         })
       });
 
@@ -178,7 +180,9 @@ export const configureAutoRecording = async (meetingData) => {
           conferenceId: meetingData.conferenceData?.conferenceId,
           configId: configRef.id,
           autoRecord: true,
-          autoTranscribe: true
+          autoTranscribe: true,
+          entityType,
+          entityId
         })
       });
 

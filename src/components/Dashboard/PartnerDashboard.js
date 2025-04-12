@@ -7,39 +7,39 @@ import styles from './PartnerDashboard.module.css';
 
 const PartnerDashboard = () => {
   const navigate = useNavigate();
-  
+
   // State for partners data
   const [partners, setPartners] = useState(partnersData);
   const [filteredPartners, setFilteredPartners] = useState(partnersData);
-  
+
   // State for sorting
   const [sortConfig, setSortConfig] = useState({
     key: 'referrals',
     direction: 'desc'
   });
-  
+
   // State for filtering
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
-  
+
   // Effect to filter and sort partners
   useEffect(() => {
     let result = [...partners];
-    
+
     // Apply search filter
     if (searchTerm) {
-      result = result.filter(partner => 
+      result = result.filter(partner =>
         partner.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         partner.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
         partner.contactName.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
+
     // Apply status filter
     if (filterStatus !== 'all') {
       result = result.filter(partner => partner.status === filterStatus);
     }
-    
+
     // Apply sorting
     if (sortConfig.key) {
       result.sort((a, b) => {
@@ -52,10 +52,10 @@ const PartnerDashboard = () => {
         return 0;
       });
     }
-    
+
     setFilteredPartners(result);
   }, [partners, searchTerm, filterStatus, sortConfig]);
-  
+
   // Function to request sorting
   const requestSort = (key) => {
     let direction = 'asc';
@@ -64,17 +64,17 @@ const PartnerDashboard = () => {
     }
     setSortConfig({ key, direction });
   };
-  
+
   // Function to get sort icon
   const getSortIcon = (key) => {
     if (sortConfig.key !== key) {
       return <FaSort className={styles.sortIcon} />;
     }
-    return sortConfig.direction === 'asc' 
-      ? <FaSortUp className={styles.sortIcon} /> 
+    return sortConfig.direction === 'asc'
+      ? <FaSortUp className={styles.sortIcon} />
       : <FaSortDown className={styles.sortIcon} />;
   };
-  
+
   // Function to get status color class
   const getStatusColorClass = (status) => {
     switch (status) {
@@ -86,46 +86,49 @@ const PartnerDashboard = () => {
         return styles.statusNeutral;
     }
   };
-  
+
   // Function to handle partner click
   const handlePartnerClick = (id) => {
     navigate(`/dashboard/partners/${id}`);
   };
-  
+
   // Function to handle create partner
   const handleCreatePartner = () => {
     navigate('/dashboard/partners/create');
   };
-  
+
   // Table actions component for the partners table
   const partnersTableActions = (
     <>
-      <div className={styles.searchFilterContainer}>
-        <input
-          type="text"
-          placeholder="Search partners..."
-          className={styles.searchInput}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-          className={styles.statusFilter}
-        >
-          <option value="all">All Statuses</option>
-          <option value="Active">Active</option>
-          <option value="Inactive">Inactive</option>
-        </select>
-      </div>
-      <div className={styles.actionButtonContainer}>
-        <button className={styles.createButton} onClick={handleCreatePartner}>
-          <FaUserPlus /> Add Partner
-        </button>
+      <div className="filter-container">
+        <div className="search-container">
+          <FaSearch className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search partners..."
+            className="search-input"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="filter-actions">
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="filter-button"
+          >
+            <option value="all">All Statuses</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+          <button className="action-button primary-button" onClick={handleCreatePartner}>
+            <FaUserPlus /> Add Partner
+          </button>
+        </div>
       </div>
     </>
   );
-  
+
   // Calculate partner statistics
   const totalPartners = partners.length;
   const activePartners = partners.filter(partner => partner.status === 'Active').length;
@@ -134,61 +137,61 @@ const PartnerDashboard = () => {
     const commissionValue = parseFloat(partner.commission.replace(/[^0-9.-]+/g, ''));
     return sum + commissionValue;
   }, 0);
-  
+
   return (
-    <div className={styles.partnerDashboard}>
+    <div className="dashboard-container">
       {/* Partner Statistics Section */}
       <DashboardSection title="Partner Overview">
-        <div className={styles.statsGrid}>
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
+        <div className="stats-grid">
+          <div className="stat-card">
+            <div className="stat-icon">
               <FaUserPlus />
             </div>
-            <div className={styles.statContent}>
+            <div className="stat-content">
               <h3>Total Partners</h3>
-              <p className={styles.statValue}>{totalPartners}</p>
+              <p className="stat-value">{totalPartners}</p>
             </div>
           </div>
-          
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
+
+          <div className="stat-card">
+            <div className="stat-icon">
               <FaChartBar />
             </div>
-            <div className={styles.statContent}>
+            <div className="stat-content">
               <h3>Active Partners</h3>
-              <p className={styles.statValue}>{activePartners}</p>
+              <p className="stat-value">{activePartners}</p>
             </div>
           </div>
-          
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
+
+          <div className="stat-card">
+            <div className="stat-icon">
               <FaHandshake />
             </div>
-            <div className={styles.statContent}>
+            <div className="stat-content">
               <h3>Total Referrals</h3>
-              <p className={styles.statValue}>{totalReferrals}</p>
+              <p className="stat-value">{totalReferrals}</p>
             </div>
           </div>
-          
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
+
+          <div className="stat-card">
+            <div className="stat-icon">
               <FaMoneyBillWave />
             </div>
-            <div className={styles.statContent}>
+            <div className="stat-content">
               <h3>Total Commission</h3>
-              <p className={styles.statValue}>${totalCommission.toLocaleString()}</p>
+              <p className="stat-value">${totalCommission.toLocaleString()}</p>
             </div>
           </div>
         </div>
       </DashboardSection>
-      
+
       {/* Partners Table Section */}
       <DashboardSection
         title="Partners"
         actions={partnersTableActions}
       >
-        <div className={styles.tableContainer}>
-          <table className={styles.dataTable}>
+        <div className="table-container">
+          <table className="data-table">
             <thead>
               <tr>
                 <th onClick={() => requestSort('name')}>

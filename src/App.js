@@ -1,9 +1,11 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import ClientLogin from './components/auth/ClientLogin';
+import ForgotPassword from './components/auth/ForgotPassword';
 import InvestorLogin from './components/auth/InvestorLogin';
 import PartnerLogin from './components/auth/PartnerLogin';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import ResetPassword from './components/auth/ResetPassword';
 import TeamLogin from './components/auth/TeamLogin';
 import BlogCreate from './components/blog/BlogCreate';
 import BlogEdit from './components/blog/BlogEdit';
@@ -16,6 +18,7 @@ import Analytics from './components/Dashboard/Analytics';
 import BlogDetail from './components/Dashboard/BlogDetail';
 import Calendar from './components/Dashboard/Calendar';
 import CampaignDetail from './components/Dashboard/CampaignDetail';
+import ClientCreate from './components/Dashboard/ClientCreate';
 import ClientDetail from './components/Dashboard/ClientDetail';
 import ClientsDashboard from './components/Dashboard/ClientsDashboard';
 import CompanySettings from './components/Dashboard/CompanySettings';
@@ -38,6 +41,7 @@ import ReferralIntakeForm from './components/forms/ReferralIntakeForm';
 import GoogleDriveCallback from './components/integrations/GoogleDriveCallback';
 import GoogleOAuthCallback from './components/integrations/GoogleOAuthCallback';
 import Layout from './components/layout/Layout';
+import LeadFormTest from './components/LeadFormTest';
 import NotFound from './components/NotFound';
 import About from './components/public/About';
 import BlogList from './components/public/BlogList';
@@ -82,11 +86,16 @@ function App() {
           <Route path="/client-login" element={<ClientLogin />} />
           <Route path="/investor-login" element={<InvestorLogin />} />
           <Route path="/partner-login" element={<PartnerLogin />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* Referral Intake Form Routes */}
           <Route path="/intake" element={<ReferralIntakeForm />} />
           <Route path="/intake/:type" element={<ReferralIntakeForm />} />
           <Route path="/intake/:type/:referrerId" element={<ReferralIntakeForm />} />
+
+          {/* Lead Form Test Route */}
+          <Route path="/lead-form-test" element={<LeadFormTest />} />
 
           {/* Google OAuth Callback Routes */}
           <Route path="/api/google/oauth-callback" element={<GoogleOAuthCallback />} />

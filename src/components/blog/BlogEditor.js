@@ -1,12 +1,12 @@
-import React, { useState, useRef } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { FaImage, FaCalendarAlt, FaTimes, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+import React, { useRef, useState } from 'react';
+import { FaCalendarAlt, FaEye, FaEyeSlash, FaImage, FaTimes } from 'react-icons/fa';
 import styles from './BlogEditor.module.css';
 
 /**
  * BlogEditor component for creating and editing blog posts
- * 
+ *
  * @param {Object} props
  * @param {Object} props.post - The blog post data
  * @param {Function} props.onChange - Function called when post data changes
@@ -42,8 +42,21 @@ const BlogEditor = ({ post, onChange, isSubmitting = false }) => {
   const handleMainImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Validate file size (max 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Image size should be less than 2MB');
+        return;
+      }
+
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        alert('Please upload a valid image file (JPEG, PNG, or WEBP)');
+        return;
+      }
+
       onChange({ ...post, mainImage: file });
-      
+
       // Create a preview URL
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -57,12 +70,33 @@ const BlogEditor = ({ post, onChange, isSubmitting = false }) => {
   const handleSocialImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      onChange({ ...post, socialImage: file });
-      
+      // Validate file size (max 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Image size should be less than 2MB');
+        return;
+      }
+
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        alert('Please upload a valid image file (JPEG, PNG, or WEBP)');
+        return;
+      }
+
+      // Validate dimensions for social sharing (ideal: 1200x630)
+      const img = new Image();
+      img.onload = () => {
+        if (img.width < 1200 || img.height < 630) {
+          alert('For best results on social media, image should be at least 1200x630 pixels');
+        }
+
+        onChange({ ...post, socialImage: file, socialImagePreview: img.src });
+      };
+
       // Create a preview URL
       const reader = new FileReader();
       reader.onloadend = () => {
-        onChange({ ...post, socialImage: file, socialImagePreview: reader.result });
+        img.src = reader.result;
       };
       reader.readAsDataURL(file);
     }
@@ -125,13 +159,17 @@ const BlogEditor = ({ post, onChange, isSubmitting = false }) => {
           value={post.description}
           onChange={(e) => onChange({ ...post, description: e.target.value })}
           placeholder="Enter meta description (max 160 characters)"
-          className={styles.formTextarea}
+          className={`${styles.formTextarea} ${post.description.length > 155 ? styles.warningLength : ''}`}
           maxLength="160"
           disabled={isSubmitting}
           required
         />
-        <span className={styles.helperText}>
+        <span className={`${styles.helperText} ${post.description.length > 155 ? styles.warningText : ''}`}>
           {post.description.length}/160 characters (for SEO)
+          {post.description.length > 155 && <span> - Approaching limit</span>}
+        </span>
+        <span className={styles.seoTip}>
+          A good meta description summarizes the content and includes relevant keywords.
         </span>
       </div>
 

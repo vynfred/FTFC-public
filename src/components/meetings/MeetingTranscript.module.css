@@ -1,0 +1,378 @@
+.transcriptViewer {
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  position: relative;
+}
+
+.transcriptHeader {
+  margin-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--spacing-sm);
+}
+
+.transcriptHeader h3 {
+  margin: 0 0 var(--spacing-xs) 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+}
+
+.transcriptMeta {
+  display: flex;
+  gap: var(--spacing-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.transcriptDate,
+.transcriptSource {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.transcriptTabs {
+  display: flex;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--spacing-md);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.transcriptTab {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.transcriptTab:hover {
+  color: var(--color-primary);
+  background-color: rgba(var(--color-primary-rgb), 0.05);
+}
+
+.activeTab {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.transcriptBody {
+  min-height: 300px;
+}
+
+.transcriptSection {
+  margin-bottom: var(--spacing-md);
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.sectionHeader h4 {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-md);
+}
+
+.actionButtons {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.copyButton,
+.copyItemButton,
+.manageButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.copyButton:hover,
+.copyItemButton:hover {
+  background-color: var(--color-background-dark);
+  color: var(--color-text-primary);
+}
+
+.manageButton {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+}
+
+.manageButton:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.copyItemButton {
+  padding: var(--spacing-xs);
+  background: none;
+  border: none;
+}
+
+.transcriptTextContainer {
+  max-height: 500px;
+  overflow-y: auto;
+  padding: var(--spacing-md);
+  background-color: var(--color-background);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+}
+
+.transcriptContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.transcriptEntry {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+}
+
+.speaker {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
+.speakerIcon {
+  font-size: 1.2rem;
+}
+
+.speech {
+  padding-left: var(--spacing-lg);
+  color: var(--color-text-primary);
+}
+
+.transcriptText {
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.summaryContainer {
+  padding: var(--spacing-md);
+  background-color: var(--color-background);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+}
+
+.summaryText {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.keyPointsContainer,
+.actionItemsContainer {
+  padding: var(--spacing-md);
+  background-color: var(--color-background);
+  border-radius: var(--border-radius-sm);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.keyPointsList,
+.actionItemsList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.keyPoint,
+.actionItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--spacing-sm);
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-sm);
+  border-left: 3px solid var(--color-primary);
+}
+
+.keyPointText,
+.actionItemText {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+.completedItem .actionItemText {
+  text-decoration: line-through;
+  color: var(--color-text-secondary);
+}
+
+.completedItem {
+  border-left-color: var(--color-success);
+  background-color: rgba(var(--color-success-rgb), 0.05);
+}
+
+.actionItemContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.actionItemAssignee,
+.actionItemDueDate {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.actionItemActions {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.noContentMessage {
+  color: var(--color-text-secondary);
+  font-style: italic;
+  text-align: center;
+  padding: var(--spacing-md);
+}
+
+.transcriptFooter {
+  margin-top: var(--spacing-md);
+  text-align: center;
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--spacing-sm);
+}
+
+.viewOriginalLink {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.viewOriginalLink:hover {
+  text-decoration: underline;
+}
+
+.loadingContainer,
+.errorContainer,
+.noTranscriptContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.spinner {
+  font-size: 2rem;
+  color: var(--color-primary);
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--spacing-md);
+}
+
+.errorIcon,
+.noTranscriptIcon {
+  font-size: 2rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.errorIcon {
+  color: var(--color-danger);
+}
+
+.noTranscriptIcon {
+  color: var(--color-text-secondary);
+}
+
+.copiedMessage {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: var(--color-success);
+  color: white;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  box-shadow: var(--shadow-md);
+  z-index: 1000;
+  animation: fadeIn 0.3s, fadeOut 0.3s 1.7s;
+}
+
+.copiedIcon {
+  font-size: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-10px); }
+}
+
+@media (max-width: 768px) {
+  .transcriptTabs {
+    flex-wrap: wrap;
+  }
+
+  .transcriptTab {
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+  }
+
+  .sectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+
+  .copyButton {
+    align-self: flex-end;
+  }
+
+  .keyPoint,
+  .actionItem {
+    flex-direction: column;
+  }
+
+  .actionItemActions {
+    align-self: flex-end;
+    margin-top: var(--spacing-xs);
+  }
+}

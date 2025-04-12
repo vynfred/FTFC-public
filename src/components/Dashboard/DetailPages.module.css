@@ -64,6 +64,24 @@
   background-color: var(--color-success-dark);
 }
 
+.createLeadButton {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.createLeadButton:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.createLeadFormContainer {
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--spacing-lg);
+  overflow: hidden;
+}
+
 .deleteButton {
   background-color: var(--color-danger);
   color: white;
@@ -72,6 +90,37 @@
 
 .deleteButton:hover {
   background-color: var(--color-danger-dark);
+}
+
+/* Transcript Tab Styles */
+.transcriptTab {
+  margin-top: var(--spacing-md);
+}
+
+.noTranscriptMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  text-align: center;
+  color: var(--color-text-secondary);
+  background-color: var(--color-background);
+  border-radius: var(--border-radius);
+  margin: var(--spacing-md) 0;
+}
+
+.noTranscriptIcon {
+  font-size: 2.5rem;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-secondary);
+  opacity: 0.5;
+}
+
+.transcriptNote {
+  font-size: var(--font-size-sm);
+  font-style: italic;
+  margin-top: var(--spacing-sm);
 }
 
 .loading, .error {

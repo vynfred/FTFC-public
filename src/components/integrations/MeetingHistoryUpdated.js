@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { FaCalendarAlt, FaChevronDown, FaChevronUp, FaFileAlt, FaVideo } from 'react-icons/fa';
-import { getMeetingRecordings, getStoredTokens, listUpcomingEvents } from '../../services/googleIntegration';
-import { getTranscriptsForEntity } from '../../services/meetingTranscriptService';
 import { useStatsView } from '../../context/StatsViewContext';
-import MeetingTranscriptList from './MeetingTranscriptList';
+import { getMeetingRecordings, getStoredTokens, listUpcomingEvents } from '../../services/googleIntegration';
 import styles from './Integrations.module.css';
+import MeetingTranscriptList from './MeetingTranscriptList';
 
 /**
  * Meeting History Component
@@ -12,7 +11,7 @@ import styles from './Integrations.module.css';
  * This component displays a list of past and upcoming meetings,
  * along with their recordings and transcripts if available.
  */
-const MeetingHistory = ({ 
+const MeetingHistory = ({
   entityType, // 'client', 'investor', or 'partner'
   entityId    // ID of the entity
 }) => {
@@ -29,11 +28,11 @@ const MeetingHistory = ({
       try {
         setIsLoading(true);
         const tokens = getStoredTokens();
-        
+
         if (!tokens) {
           throw new Error('Not connected to Google Calendar');
         }
-        
+
         // Get upcoming and past events, respecting the company/user toggle
         const events = await listUpcomingEvents(
           tokens,
@@ -43,13 +42,13 @@ const MeetingHistory = ({
           entityType,
           entityId
         );
-        
+
         // Process events
         const processedMeetings = await Promise.all(events.map(async (event) => {
           // Check if event has a Google Meet link
-          const isMeetEvent = event.conferenceData?.conferenceId && 
+          const isMeetEvent = event.conferenceData?.conferenceId &&
                              event.conferenceData?.conferenceSolution?.name === 'Google Meet';
-          
+
           // Get recordings if it's a Meet event
           let recordings = [];
           if (isMeetEvent) {
@@ -59,12 +58,12 @@ const MeetingHistory = ({
               console.log('No recordings found for meeting:', event.conferenceData.conferenceId);
             }
           }
-          
+
           // Determine if the meeting is in the past
           const now = new Date();
           const endTime = new Date(event.end.dateTime || event.end.date);
           const isPast = endTime < now;
-          
+
           return {
             id: event.id,
             title: event.summary,
@@ -78,18 +77,18 @@ const MeetingHistory = ({
             isPast
           };
         }));
-        
+
         // Sort meetings: upcoming first, then past
         const sortedMeetings = processedMeetings.sort((a, b) => {
           if (a.isPast === b.isPast) {
             // If both are past or both are upcoming, sort by date (newest first for past, soonest first for upcoming)
-            return a.isPast 
+            return a.isPast
               ? new Date(b.startTime) - new Date(a.startTime) // Past meetings: newest first
               : new Date(a.startTime) - new Date(b.startTime); // Upcoming meetings: soonest first
           }
           return a.isPast ? 1 : -1; // Upcoming meetings first
         });
-        
+
         setMeetings(sortedMeetings);
       } catch (error) {
         console.error('Error fetching meetings:', error);
@@ -98,15 +97,15 @@ const MeetingHistory = ({
         setIsLoading(false);
       }
     };
-    
+
     fetchMeetings();
   }, [entityType, entityId, viewCompanyStats]); // Re-fetch when viewCompanyStats changes
-  
+
   // Toggle meeting expansion
   const toggleMeeting = (meetingId) => {
     setExpandedMeetingId(expandedMeetingId === meetingId ? null : meetingId);
   };
-  
+
   // Format date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -117,7 +116,7 @@ const MeetingHistory = ({
       year: 'numeric'
     });
   };
-  
+
   // Format time
   const formatTime = (dateString) => {
     const date = new Date(dateString);
@@ -127,15 +126,15 @@ const MeetingHistory = ({
       hour12: true
     });
   };
-  
+
   if (isLoading) {
     return <div className={styles.loading}>Loading meetings...</div>;
   }
-  
+
   if (error) {
     return <div className={styles.error}>Error: {error}</div>;
   }
-  
+
   if (meetings.length === 0) {
     return (
       <div className={styles.noMeetings}>
@@ -143,33 +142,39 @@ const MeetingHistory = ({
       </div>
     );
   }
-  
+
   return (
     <div className={styles.meetingHistory}>
-      {entityType && entityId && (
-        <div className={styles.transcriptsToggle}>
-          <button 
-            className={styles.toggleButton}
-            onClick={() => setShowTranscripts(!showTranscripts)}
-          >
-            {showTranscripts ? 'Show Meetings' : 'Show Transcripts'}
-          </button>
+      <div className={styles.meetingHistoryHeader}>
+        {entityType && entityId && (
+          <div className={styles.transcriptsToggle}>
+            <button
+              className={styles.toggleButton}
+              onClick={() => setShowTranscripts(!showTranscripts)}
+            >
+              {showTranscripts ? 'Show Meetings' : 'Show Transcripts'}
+            </button>
+          </div>
+        )}
+
+        <div className={styles.dataSourceIndicator}>
+          Showing {viewCompanyStats ? 'all company' : 'your'} meetings
         </div>
-      )}
-      
+      </div>
+
       {showTranscripts && entityType && entityId ? (
-        <MeetingTranscriptList 
+        <MeetingTranscriptList
           entityType={entityType}
           entityId={entityId}
         />
       ) : (
         <div className={styles.meetingsList}>
           {meetings.map((meeting) => (
-            <div 
-              key={meeting.id} 
+            <div
+              key={meeting.id}
               className={`${styles.meetingItem} ${meeting.isPast ? styles.past : styles.upcoming}`}
             >
-              <div 
+              <div
                 className={styles.meetingHeader}
                 onClick={() => toggleMeeting(meeting.id)}
               >
@@ -187,7 +192,7 @@ const MeetingHistory = ({
                   {expandedMeetingId === meeting.id ? <FaChevronUp /> : <FaChevronDown />}
                 </div>
               </div>
-              
+
               {expandedMeetingId === meeting.id && (
                 <div className={styles.meetingDetails}>
                   {meeting.description && (
@@ -196,7 +201,7 @@ const MeetingHistory = ({
                       <p>{meeting.description}</p>
                     </div>
                   )}
-                  
+
                   {meeting.attendees.length > 0 && (
                     <div className={styles.meetingAttendees}>
                       <h4>Attendees</h4>
@@ -207,16 +212,16 @@ const MeetingHistory = ({
                       </ul>
                     </div>
                   )}
-                  
+
                   {meeting.recordings.length > 0 && (
                     <div className={styles.meetingRecordings}>
                       <h4>Recordings</h4>
                       <ul>
                         {meeting.recordings.map((recording, index) => (
                           <li key={index}>
-                            <a 
-                              href={recording.webViewLink} 
-                              target="_blank" 
+                            <a
+                              href={recording.webViewLink}
+                              target="_blank"
                               rel="noopener noreferrer"
                             >
                               <FaFileAlt /> Recording {index + 1}
@@ -229,13 +234,13 @@ const MeetingHistory = ({
                       </ul>
                     </div>
                   )}
-                  
+
                   {!meeting.isPast && meeting.meetLink && (
                     <div className={styles.meetingJoin}>
                       <h4>Join Meeting</h4>
-                      <a 
-                        href={meeting.meetLink} 
-                        target="_blank" 
+                      <a
+                        href={meeting.meetLink}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className={styles.joinButton}
                       >

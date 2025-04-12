@@ -368,3 +368,61 @@
   color: var(--color-text-secondary);
   line-height: 1.8;
 }
+
+/* SEO Helpers */
+.helperText {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.warningText {
+  color: #f59e0b;
+}
+
+.warningLength {
+  border-color: #f59e0b;
+}
+
+.seoTip {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+.formLabel {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formInput,
+.formTextarea {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--color-background-light);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.formInput:focus,
+.formTextarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.formTextarea {
+  min-height: 6.25rem;
+  resize: vertical;
+}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FaEnvelope, FaLock } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import styles from './Auth.module.css';
 
@@ -137,7 +137,7 @@ const InvestorLogin = () => {
               <input type="checkbox" id="remember" />
               <label htmlFor="remember">Remember me</label>
             </div>
-            <a href="/forgot-password" className={styles.forgotPassword}>Forgot password?</a>
+            <Link to="/forgot-password" className={styles.forgotPassword}>Forgot password?</Link>
           </div>
 
           <button

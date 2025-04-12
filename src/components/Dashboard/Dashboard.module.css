@@ -6,6 +6,17 @@
   padding: var(--spacing-md);
 }
 
+.dashboardHeader {
+  margin-bottom: var(--spacing-md);
+}
+
+.dashboardHeader h1 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
 /* AI Summary Section */
 .summarySection {
   margin-bottom: var(--spacing-lg);

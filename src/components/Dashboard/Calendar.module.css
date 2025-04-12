@@ -1,0 +1,379 @@
+/* Calendar Module Styles */
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.notConnectedContainer {
+  padding: 2rem;
+  text-align: center;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.connectButton {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #0a1950;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.connectButton:hover {
+  background-color: #0d2166;
+}
+
+.calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.calendarHeader h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #0a1950;
+}
+
+.newEventButton {
+  padding: 0.5rem 1rem;
+  background-color: #0a1950;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.newEventButton:hover {
+  background-color: #0d2166;
+}
+
+.errorMessage {
+  background-color: #ffebee;
+  border-left: 4px solid #f44336;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 4px;
+}
+
+.errorMessage p {
+  margin: 0;
+  color: #d32f2f;
+}
+
+.errorMessage button {
+  background: none;
+  border: none;
+  color: #d32f2f;
+  cursor: pointer;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+}
+
+.successMessage {
+  background-color: #e8f5e9;
+  border-left: 4px solid #4caf50;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+}
+
+.successMessage p {
+  margin: 0;
+  color: #2e7d32;
+}
+
+.newEventFormContainer {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.newEventFormContainer h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #0a1950;
+}
+
+.newEventForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.formGroup input,
+.formGroup textarea {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.formRow {
+  display: flex;
+  gap: 1rem;
+}
+
+.formRow .formGroup {
+  flex: 1;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.cancelButton {
+  padding: 0.75rem 1.5rem;
+  background-color: #f1f1f1;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cancelButton:hover {
+  background-color: #e0e0e0;
+}
+
+.submitButton {
+  padding: 0.75rem 1.5rem;
+  background-color: #0a1950;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submitButton:hover {
+  background-color: #0d2166;
+}
+
+.submitButton:disabled {
+  background-color: #9e9e9e;
+  cursor: not-allowed;
+}
+
+.eventsContainer {
+  margin-top: 1rem;
+}
+
+.noEvents {
+  text-align: center;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  color: #666;
+}
+
+.eventsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.eventCard {
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.eventHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.eventTitle {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #0a1950;
+}
+
+.meetLink {
+  padding: 0.5rem 1rem;
+  background-color: #0a1950;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.meetLink:hover {
+  background-color: #0d2166;
+}
+
+.eventTime {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.eventTimeItem {
+  display: flex;
+  align-items: center;
+}
+
+.eventTimeLabel {
+  font-weight: 500;
+  width: 60px;
+  color: #666;
+}
+
+.eventDescription {
+  margin-bottom: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.eventDescription p {
+  margin: 0;
+  color: #333;
+}
+
+.eventAttendees {
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.eventAttendees h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  color: #666;
+}
+
+.eventAttendees ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.attendeeItem {
+  padding: 0.5rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.attendeeItem:last-child {
+  border-bottom: none;
+}
+
+.statusAccepted {
+  color: #4caf50;
+  font-weight: bold;
+  margin-left: 0.5rem;
+}
+
+.statusDeclined {
+  color: #f44336;
+  font-weight: bold;
+  margin-left: 0.5rem;
+}
+
+.statusTentative {
+  color: #ff9800;
+  font-weight: bold;
+  margin-left: 0.5rem;
+}
+
+.contactsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 1rem;
+}
+
+.contactsSection {
+  flex: 1;
+  min-width: 200px;
+}
+
+.contactsSection h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  color: #0a1950;
+}
+
+.contactsList {
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.contactItem {
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 0.875rem;
+}
+
+.contactItem:hover {
+  background-color: #e3f2fd;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .formRow {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .contactsContainer {
+    flex-direction: column;
+  }
+  
+  .eventHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}

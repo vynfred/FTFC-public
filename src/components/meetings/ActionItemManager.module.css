@@ -1,0 +1,307 @@
+.actionItemManager {
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.actionItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--spacing-sm);
+}
+
+.actionItemHeader h3 {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+}
+
+.addButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.addButton:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.addButton:disabled {
+  background-color: var(--color-background-dark);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+.actionItemForm {
+  background-color: var(--color-background);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  border: 1px solid var(--color-border);
+}
+
+.formGroup {
+  margin-bottom: var(--spacing-md);
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.formGroup input,
+.formGroup textarea {
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  background-color: var(--color-background-light);
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.cancelButton,
+.saveButton {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.cancelButton {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.cancelButton:hover {
+  background-color: var(--color-background-dark);
+}
+
+.saveButton {
+  background-color: var(--color-success);
+  color: white;
+  border: none;
+}
+
+.saveButton:hover {
+  background-color: var(--color-success-dark);
+}
+
+.cancelButton:disabled,
+.saveButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.actionItemList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.actionItem {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background-color: var(--color-background);
+  border-radius: var(--border-radius-sm);
+  border-left: 3px solid var(--color-primary);
+  transition: all 0.2s ease;
+}
+
+.actionItem.completed {
+  border-left-color: var(--color-success);
+  background-color: rgba(var(--color-success-rgb), 0.05);
+}
+
+.actionItem.completed .actionItemDescription {
+  text-decoration: line-through;
+  color: var(--color-text-secondary);
+}
+
+.actionItemCheckbox {
+  margin-top: 2px;
+}
+
+.actionItemCheckbox input[type="checkbox"] {
+  display: none;
+}
+
+.checkboxLabel {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--color-border);
+  border-radius: 3px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.actionItemCheckbox input[type="checkbox"]:checked + .checkboxLabel {
+  background-color: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.actionItemCheckbox input[type="checkbox"]:checked + .checkboxLabel::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.actionItemContent {
+  flex: 1;
+}
+
+.actionItemDescription {
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+.actionItemMeta {
+  display: flex;
+  gap: var(--spacing-md);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.actionItemAssignee {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.metaIcon {
+  font-size: 0.8rem;
+}
+
+.actionItemActions {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.editButton,
+.deleteButton {
+  background: none;
+  border: none;
+  padding: var(--spacing-xs);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  border-radius: var(--border-radius-sm);
+  transition: all 0.2s ease;
+}
+
+.editButton {
+  color: var(--color-primary);
+}
+
+.editButton:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+}
+
+.deleteButton {
+  color: var(--color-danger);
+}
+
+.deleteButton:hover {
+  background-color: rgba(var(--color-danger-rgb), 0.1);
+}
+
+.editButton:disabled,
+.deleteButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.emptyMessage {
+  text-align: center;
+  padding: var(--spacing-lg);
+  color: var(--color-text-secondary);
+  font-style: italic;
+  background-color: var(--color-background);
+  border-radius: var(--border-radius-sm);
+}
+
+.errorMessage {
+  background-color: rgba(var(--color-danger-rgb), 0.1);
+  color: var(--color-danger);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-sm);
+}
+
+.successMessage {
+  background-color: rgba(var(--color-success-rgb), 0.1);
+  color: var(--color-success);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.successIcon {
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .formRow {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+  
+  .actionItemMeta {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+}

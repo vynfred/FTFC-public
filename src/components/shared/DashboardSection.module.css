@@ -4,7 +4,7 @@
 .section {
   background-color: var(--color-background-dark);
   border-radius: var(--border-radius);
-  margin-bottom: var(--section-spacing);
+  margin-bottom: var(--spacing-md);
   box-shadow: var(--shadow-md);
   color: var(--color-text-primary);
   overflow: visible;
@@ -34,7 +34,7 @@
 
 .title {
   font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   margin: 0;
   color: var(--color-text-primary);
 }
@@ -51,6 +51,7 @@
   width: 100%;
   box-sizing: border-box;
   overflow: visible;
+  min-height: 100px;
 }
 
 /* Section width variants */
@@ -81,11 +82,11 @@
   .half, .third, .twoThirds {
     grid-column: span 12;
   }
-  
+
   .header {
     padding: var(--spacing-sm) var(--spacing-md);
   }
-  
+
   .content {
     padding: var(--spacing-md);
   }
