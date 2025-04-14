@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaEnvelope, FaLock } from 'react-icons/fa';
+import { FaEnvelope, FaGoogle, FaLock } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
@@ -13,7 +13,7 @@ const TeamLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, googleSignIn } = useAuth();
 
   // Force scroll to top when component mounts
   useEffect(() => {
@@ -71,14 +71,49 @@ const TeamLogin = () => {
     setIsLoading(true);
 
     try {
-      // Call login function from AuthContext with TEAM role
-      // For testing, we'll accept any credentials
-      login(formData, 'team');
+      // Call login function from AuthContext with Firebase Authentication
+      await login({
+        email: formData.email,
+        password: formData.password
+      });
 
       // Redirect to dashboard
       navigate('/dashboard');
     } catch (error) {
-      setErrors({ general: 'Login failed. Please check your credentials and try again.' });
+      console.error('Login error:', error);
+
+      // Handle specific Firebase Auth errors
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+        setErrors({ general: 'Invalid email or password' });
+      } else if (error.code === 'auth/user-not-found') {
+        setErrors({ general: 'No account found with this email address' });
+      } else if (error.code === 'auth/too-many-requests') {
+        setErrors({ general: 'Too many failed login attempts. Please try again later.' });
+      } else {
+        setErrors({ general: 'Login failed. Please check your credentials and try again.' });
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      // Attempt Google sign-in with Firebase Authentication
+      await googleSignIn();
+
+      // Redirect to dashboard on success
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Google sign-in error:', error);
+
+      // Only show error if it's not the user closing the popup
+      if (error.code !== 'auth/popup-closed-by-user') {
+        setErrors({ general: 'Google sign-in failed. Please try again.' });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -142,6 +177,34 @@ const TeamLogin = () => {
             </button>
           </div>
         </form>
+
+        <div style={{ margin: '20px 0', textAlign: 'center' }}>
+          <p style={{ margin: '10px 0', color: '#94a3b8' }}>- OR -</p>
+          <button 
+            type="button" 
+            onClick={handleGoogleSignIn} 
+            disabled={isLoading}
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              gap: '10px',
+              width: '100%',
+              padding: '12px',
+              backgroundColor: '#ffffff',
+              color: '#333333',
+              border: '1px solid #d1d5db',
+              borderRadius: '4px',
+              fontSize: '16px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <FaGoogle style={{ color: '#DB4437' }} />
+            {isLoading ? 'Signing in...' : 'Sign in with Google'}
+          </button>
+        </div>
 
         <div className="login-footer">
           <p>Are you a client? <Link to="/client-login" className="client-login-link">Client Login</Link></p>

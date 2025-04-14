@@ -1,4 +1,7 @@
+import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { auth, db } from '../firebase-config';
 
 // Create context
 const AuthContext = createContext();
@@ -20,132 +23,142 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Check for existing session on mount
+  // Check for existing session on mount using Firebase Auth
   useEffect(() => {
-    const checkAuth = () => {
-      const storedUser = localStorage.getItem('ftfc_user');
-      if (storedUser) {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
         try {
-          const parsedUser = JSON.parse(storedUser);
-          setUser(parsedUser);
+          // Get user data from Firestore
+          const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+
+          if (userDoc.exists()) {
+            // User exists in Firestore, use that data
+            const userData = userDoc.data();
+            setUser({
+              ...userData,
+              id: firebaseUser.uid,
+              email: firebaseUser.email,
+              displayName: firebaseUser.displayName || userData.name,
+              photoURL: firebaseUser.photoURL
+            });
+          } else {
+            // User doesn't exist in Firestore yet, create a new record
+            // Default to team role for new users
+            const newUserData = {
+              name: firebaseUser.displayName || 'User',
+              email: firebaseUser.email,
+              role: USER_ROLES.TEAM,
+              permissions: ['view_all', 'edit_all', 'admin'],
+              createdAt: new Date().toISOString(),
+              photoURL: firebaseUser.photoURL || ''
+            };
+
+            // Save to Firestore
+            await setDoc(doc(db, 'users', firebaseUser.uid), newUserData);
+
+            setUser({
+              ...newUserData,
+              id: firebaseUser.uid
+            });
+          }
+
           setIsAuthenticated(true);
         } catch (error) {
-          console.error('Error parsing stored user:', error);
-          localStorage.removeItem('ftfc_user');
+          console.error('Error getting user data:', error);
+          setIsAuthenticated(false);
+          setUser(null);
         }
+      } else {
+        // No user is signed in
+        setIsAuthenticated(false);
+        setUser(null);
       }
-      setLoading(false);
-    };
 
-    checkAuth();
+      setLoading(false);
+    });
+
+    // Cleanup subscription
+    return () => unsubscribe();
   }, []);
 
-  // Login function with role-based access
-  const login = (credentials, role) => {
+  // Login function with Firebase Authentication
+  const login = async (credentials, role) => {
     setLoading(true);
 
-    // In a real app, this would make an API call to validate credentials
-    // and return user data with the appropriate role
+    try {
+      // Sign in with Firebase Authentication
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        credentials.email,
+        credentials.password
+      );
 
-    // For demo purposes, we'll simulate different users based on role or email
-    let userData;
-
-    // Special case for the test credentials
-    const isTestCredentials = credentials.email === 'hellovynfred@gmail.com' && credentials.password === 'Test123';
-
-    // If using test credentials, use the provided role or default to TEAM
-    if (isTestCredentials) {
-      console.log('Using test credentials with role:', role || USER_ROLES.TEAM);
-      // Continue with the provided role or default to TEAM
-      role = role || USER_ROLES.TEAM;
-    } else {
-      // For testing purposes, allow specific email addresses to map to roles
-      if (credentials.email === 'team@ftfc.com' || credentials.email.includes('admin') || credentials.email.includes('john')) {
-        role = USER_ROLES.TEAM;
-      } else if (credentials.email === 'client@ftfc.com' || credentials.email.includes('client')) {
-        role = USER_ROLES.CLIENT;
-      } else if (credentials.email === 'investor@ftfc.com' || credentials.email.includes('investor')) {
-        role = USER_ROLES.INVESTOR;
-      } else if (credentials.email === 'partner@ftfc.com' || credentials.email.includes('partner')) {
-        role = USER_ROLES.PARTNER;
-      }
-
-      // If no role is specified or detected, default to TEAM for testing
-      if (!role) {
-        role = USER_ROLES.TEAM;
-      }
+      // Firebase Auth successful, user state will be updated by the onAuthStateChanged listener
+      return userCredential.user;
+    } catch (error) {
+      console.error('Login error:', error);
+      setLoading(false);
+      throw error;
     }
+  };
 
-    switch (role) {
-      case USER_ROLES.TEAM:
-        userData = {
-          id: 'team-1',
-          name: 'Team Member',
-          email: credentials.email || 'team@ftfc.com',
-          role: USER_ROLES.TEAM,
-          permissions: ['view_all', 'edit_all', 'admin']
-        };
-        break;
+  // Google Sign-In function
+  const googleSignIn = async () => {
+    setLoading(true);
 
-      case USER_ROLES.CLIENT:
-        userData = {
-          id: 'client-1',
-          name: 'Client User',
-          email: credentials.email || 'client@ftfc.com',
-          role: USER_ROLES.CLIENT,
-          companyId: 'company-1',
-          permissions: ['view_own_data']
-        };
-        break;
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
 
-      case USER_ROLES.INVESTOR:
-        userData = {
-          id: 'investor-1',
-          name: 'Investor User',
-          email: credentials.email || 'investor@ftfc.com',
-          role: USER_ROLES.INVESTOR,
-          investorId: 'investor-1',
-          permissions: ['view_investments']
-        };
-        break;
-
-      case USER_ROLES.PARTNER:
-        userData = {
-          id: 'partner-1',
-          name: 'Partner User',
-          email: credentials.email || 'partner@ftfc.com',
-          role: USER_ROLES.PARTNER,
-          partnerId: 'partner-1',
-          permissions: ['view_referrals']
-        };
-        break;
-
-      default:
-        // Default to team role for any unrecognized role
-        userData = {
-          id: 'team-1',
-          name: 'Team Member',
-          email: credentials.email || 'team@ftfc.com',
-          role: USER_ROLES.TEAM,
-          permissions: ['view_all', 'edit_all', 'admin']
-        };
+      // Firebase Auth successful, user state will be updated by the onAuthStateChanged listener
+      return result.user;
+    } catch (error) {
+      console.error('Google Sign-In error:', error);
+      setLoading(false);
+      throw error;
     }
+  };
 
-    // Store user in localStorage for session persistence
-    localStorage.setItem('ftfc_user', JSON.stringify(userData));
+  // Register function
+  const register = async (userData, password) => {
+    setLoading(true);
 
-    setUser(userData);
-    setIsAuthenticated(true);
-    setLoading(false);
+    try {
+      // Create user with Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        userData.email,
+        password
+      );
 
-    return userData;
+      // Add additional user data to Firestore
+      const newUserData = {
+        name: userData.name || 'User',
+        email: userData.email,
+        role: userData.role || USER_ROLES.TEAM,
+        permissions: userData.permissions || ['view_all'],
+        createdAt: new Date().toISOString()
+      };
+
+      await setDoc(doc(db, 'users', userCredential.user.uid), newUserData);
+
+      // Firebase Auth successful, user state will be updated by the onAuthStateChanged listener
+      return userCredential.user;
+    } catch (error) {
+      console.error('Registration error:', error);
+      setLoading(false);
+      throw error;
+    }
   };
 
   // Logout function
-  const logout = () => {
-    localStorage.removeItem('ftfc_user');
-    setIsAuthenticated(false);
-    setUser(null);
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      // Auth state will be updated by the onAuthStateChanged listener
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   // Check if user has a specific permission
@@ -168,6 +181,8 @@ export const AuthProvider = ({ children }) => {
         loading,
         login,
         logout,
+        googleSignIn,
+        register,
         hasPermission,
         hasRole,
         USER_ROLES
