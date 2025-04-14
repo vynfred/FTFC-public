@@ -76,12 +76,30 @@ export const AuthProvider = ({ children }) => {
           setIsAuthenticated(true);
 
           // Check if we need to redirect after successful authentication
-          const redirectInProgress = sessionStorage.getItem('googleRedirectInProgress');
+          const redirectInProgress = localStorage.getItem('googleRedirectInProgress');
+          const redirectTimestamp = localStorage.getItem('googleRedirectTimestamp');
           const googleSignInSuccess = sessionStorage.getItem('googleSignInSuccess');
 
-          if (redirectInProgress || googleSignInSuccess) {
+          if (redirectInProgress) {
+            console.log('Detected redirect in progress, clearing flags');
             // Clear the flags
-            sessionStorage.removeItem('googleRedirectInProgress');
+            localStorage.removeItem('googleRedirectInProgress');
+            localStorage.removeItem('googleRedirectTimestamp');
+
+            // If the redirect was recent (within the last 5 minutes), this is likely a successful redirect
+            if (redirectTimestamp) {
+              const timestamp = parseInt(redirectTimestamp, 10);
+              const now = Date.now();
+              const fiveMinutesInMs = 5 * 60 * 1000;
+
+              if (now - timestamp < fiveMinutesInMs) {
+                console.log('Recent redirect detected, likely successful');
+              }
+            }
+          }
+
+          if (googleSignInSuccess) {
+            // Clear the flag
             sessionStorage.removeItem('googleSignInSuccess');
           }
         } catch (error) {

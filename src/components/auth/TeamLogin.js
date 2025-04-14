@@ -17,19 +17,28 @@ const TeamLogin = () => {
   const { login, googleSignIn } = useAuth();
 
   // Alternative method for Google sign-in using redirect
-  const handleGoogleSignInRedirect = () => {
+  const handleGoogleSignInRedirect = async () => {
     setIsLoading(true);
     setErrors({});
 
     try {
       console.log('TeamLogin: Starting Google sign-in with redirect...');
-      // Set a flag in sessionStorage to indicate we're doing a redirect
-      sessionStorage.setItem('googleRedirectInProgress', 'true');
-      auth.signInWithGoogleRedirect();
-      // Note: This will redirect the page, so no need for further handling here
+      // Set a flag in localStorage to indicate we're doing a redirect
+      // Using localStorage instead of sessionStorage because it persists across redirects
+      localStorage.setItem('googleRedirectInProgress', 'true');
+
+      // Add a timestamp to track when the redirect was initiated
+      localStorage.setItem('googleRedirectTimestamp', Date.now().toString());
+
+      // Use the redirect method
+      await auth.signInWithGoogleRedirect();
+
+      // Note: This will redirect the page, so the code below will only run if the redirect fails
+      console.log('Redirect did not happen as expected');
     } catch (error) {
       console.error('TeamLogin: Google sign-in redirect error:', error);
-      sessionStorage.removeItem('googleRedirectInProgress');
+      localStorage.removeItem('googleRedirectInProgress');
+      localStorage.removeItem('googleRedirectTimestamp');
       setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });
       setIsLoading(false);
     }
@@ -38,40 +47,57 @@ const TeamLogin = () => {
   // Check for redirect result when component mounts
   useEffect(() => {
     const checkRedirectResult = async () => {
-      // Check if we have a redirect in progress or just completed
-      const redirectInProgress = sessionStorage.getItem('googleRedirectInProgress');
-      const googleSignInSuccess = sessionStorage.getItem('googleSignInSuccess');
+      try {
+        setIsLoading(true);
+        console.log('Checking for redirect result...');
 
-      if (redirectInProgress || googleSignInSuccess) {
-        try {
-          setIsLoading(true);
-          console.log('Checking for redirect result...');
+        // Get the redirect result
+        const result = await auth.getRedirectResult();
 
+        if (result && result.user) {
+          console.log('Redirect sign-in successful:', result.user.email);
+          // Redirect to dashboard
+          navigate('/dashboard');
+          return;
+        }
+
+        // Check if we have a redirect in progress or just completed
+        const redirectInProgress = localStorage.getItem('googleRedirectInProgress');
+        const redirectTimestamp = localStorage.getItem('googleRedirectTimestamp');
+        const googleSignInSuccess = sessionStorage.getItem('googleSignInSuccess');
+
+        if (redirectInProgress || googleSignInSuccess) {
           // Clear the flags
-          sessionStorage.removeItem('googleRedirectInProgress');
+          localStorage.removeItem('googleRedirectInProgress');
+          localStorage.removeItem('googleRedirectTimestamp');
           sessionStorage.removeItem('googleSignInSuccess');
 
-          // Get the redirect result
-          const result = await auth.getRedirectResult();
+          // If the redirect was recent (within the last 5 minutes), this is likely a successful redirect
+          if (redirectTimestamp) {
+            const timestamp = parseInt(redirectTimestamp, 10);
+            const now = Date.now();
+            const fiveMinutesInMs = 5 * 60 * 1000;
 
-          if (result && result.user) {
-            console.log('Redirect sign-in successful:', result.user.email);
-            // Redirect to dashboard
-            navigate('/dashboard');
-            return;
-          } else if (googleSignInSuccess) {
+            if (now - timestamp < fiveMinutesInMs) {
+              console.log('Recent redirect detected, likely successful');
+              navigate('/dashboard');
+              return;
+            }
+          }
+
+          if (googleSignInSuccess) {
             // If we have a success flag but no redirect result, it was a popup success
             navigate('/dashboard');
             return;
           }
-        } catch (error) {
-          console.error('Redirect sign-in error:', error);
-          if (error.code !== 'auth/credential-already-in-use') {
-            setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });
-          }
-        } finally {
-          setIsLoading(false);
         }
+      } catch (error) {
+        console.error('Redirect sign-in error:', error);
+        if (error.code !== 'auth/credential-already-in-use') {
+          setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });
+        }
+      } finally {
+        setIsLoading(false);
       }
     };
 

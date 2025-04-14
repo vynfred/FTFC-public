@@ -22,6 +22,9 @@ const firebaseDb = getFirestore(app);
 const firebaseStorage = getStorage(app);
 const firebaseFunctions = getFunctions(app);
 
+// Export services
+export { db, auth, storage, handleFirebaseError, functions, app };
+
 // Development mode check
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -201,5 +204,4 @@ export const callFunction = (name, data) => {
   }
 };
 
-// Export services
-export { db, auth, storage, handleFirebaseError, functions, app };
+

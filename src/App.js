@@ -1,5 +1,6 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
+import AuthTest from './components/auth/AuthTest';
 import ClientLogin from './components/auth/ClientLogin';
 import ForgotPassword from './components/auth/ForgotPassword';
 import InvestorLogin from './components/auth/InvestorLogin';
@@ -14,6 +15,14 @@ import DashboardWrapper from './components/common/DashboardWrapper';
 import EmailExample from './components/common/EmailExample';
 import PWAInstallPrompt from './components/common/PWAInstallPrompt';
 import ScrollToTop from './components/common/ScrollToTop';
+
+// Modal Components
+import AddAttendeeModal from './components/modals/AddAttendeeModal';
+import CreateLeadModal from './components/modals/CreateLeadModal';
+import ScheduleMeetingModal from './components/modals/ScheduleMeetingModal';
+import UploadDocumentModal from './components/modals/UploadDocumentModal';
+import { ModalProvider } from './context/ModalContext';
+
 import Analytics from './components/Dashboard/Analytics';
 import BlogDetail from './components/Dashboard/BlogDetail';
 import Calendar from './components/Dashboard/Calendar';
@@ -63,12 +72,13 @@ import { ToastProvider } from './context/ToastContext';
 
 function App() {
   return (
-    <ToastProvider position="bottomRight">
-      {/* ScrollToTop component to handle scrolling on route changes */}
-      <ScrollToTop />
+    <ModalProvider>
+      <ToastProvider position="bottomRight">
+        {/* ScrollToTop component to handle scrolling on route changes */}
+        <ScrollToTop />
 
-      {/* PWA Install Prompt */}
-      <PWAInstallPrompt />
+        {/* PWA Install Prompt */}
+        <PWAInstallPrompt />
 
       <Routes>
         {/* Public Routes */}
@@ -88,6 +98,7 @@ function App() {
           <Route path="/partner-login" element={<PartnerLogin />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/auth-test" element={<AuthTest />} />
 
           {/* Referral Intake Form Routes */}
           <Route path="/intake" element={<ReferralIntakeForm />} />
@@ -177,7 +188,14 @@ function App() {
         {/* 404 Route */}
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </ToastProvider>
+
+        {/* Global Modals */}
+        <ScheduleMeetingModal />
+        <UploadDocumentModal />
+        <CreateLeadModal />
+        <AddAttendeeModal />
+      </ToastProvider>
+    </ModalProvider>
   );
 }
 
