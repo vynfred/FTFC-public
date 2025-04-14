@@ -190,8 +190,8 @@ const TeamLogin = () => {
 
     try {
       console.log('TeamLogin: Starting Google sign-in...');
-      // Attempt Google sign-in with Firebase Authentication
-      const result = await googleSignIn();
+      // Attempt Google sign-in with Firebase Authentication using the popup method
+      const result = await auth.signInWithGoogle();
       console.log('TeamLogin: Google sign-in successful, redirecting...', result);
 
       // Redirect to dashboard on success
@@ -206,14 +206,14 @@ const TeamLogin = () => {
         console.log('TeamLogin: User closed the popup');
         // No need to show an error
       } else if (error.code === 'auth/popup-blocked') {
-        setErrors({ general: 'Popup was blocked by your browser. Please try the redirect method instead.' });
+        setErrors({ general: 'Popup was blocked by your browser. Please allow popups for this site.' });
       } else if (error.code === 'auth/cancelled-popup-request') {
         console.log('TeamLogin: Popup request was cancelled');
         // No need to show an error
       } else if (error.code === 'auth/unauthorized-domain') {
-        setErrors({ general: 'This domain is not authorized for OAuth operations. Please try the redirect method instead.' });
+        setErrors({ general: 'This domain is not authorized for OAuth operations.' });
       } else {
-        setErrors({ general: `Google sign-in failed: ${error.message}. Please try again or use the redirect method.` });
+        setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });
       }
     } finally {
       setIsLoading(false);
@@ -283,7 +283,7 @@ const TeamLogin = () => {
           <p style={{ margin: '10px 0', color: '#94a3b8' }}>- OR -</p>
           <button
             type="button"
-            onClick={handleGoogleSignInRedirect}
+            onClick={handleGoogleSignIn}
             disabled={isLoading}
             style={{
               display: 'flex',
