@@ -1,8 +1,9 @@
-import React from 'react';
-import { FaBars, FaSearch } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { FaBars } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
 import { useDateRange } from '../../context/DateRangeContext';
 import { useStatsView } from '../../context/StatsViewContext';
+import { SearchBar } from '../ui/form';
 import styles from './PrivateTopNav.module.css';
 
 const PrivateTopNav = ({ toggleMobileMenu }) => {
@@ -10,6 +11,7 @@ const PrivateTopNav = ({ toggleMobileMenu }) => {
   const { viewCompanyStats, setViewCompanyStats } = useStatsView();
   const location = useLocation();
   const pathname = location.pathname;
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Define which pages should show date range selector and stats toggle
   const showDateRange = [
@@ -40,10 +42,11 @@ const PrivateTopNav = ({ toggleMobileMenu }) => {
       </div>
 
       <div className={styles.searchBar}>
-        <span className={styles.searchIcon}>
-          <FaSearch />
-        </span>
-        <input type="text" placeholder="Search..." />
+        <SearchBar
+          placeholder="Search..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
       </div>
 
       <div className={styles.navControls}>

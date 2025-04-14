@@ -335,34 +335,74 @@
   min-width: 100px;
 }
 
+/* Search Bar */
+.searchContainer {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+}
+
+.searchIconWrapper {
+  position: absolute;
+  left: var(--spacing-sm);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.searchIcon {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.searchInput {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) calc(var(--spacing-sm) * 3);
+  background-color: var(--color-background-light);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-default);
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.2rem rgba(245, 158, 11, 0.25);
+}
+
 /* Responsive adjustments */
 @media (max-width: 48rem) { /* 768px */
   .formGrid {
     grid-template-columns: repeat(6, 1fr);
   }
-  
+
   .col1, .col2, .col3, .col4, .col5, .col6 {
     grid-column: span 6;
   }
-  
+
   .col7, .col8, .col9, .col10, .col11, .col12 {
     grid-column: span 6;
   }
-  
+
   .formActions {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .formButton {
     width: 100%;
   }
-  
+
   .formGroupInline {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .formGroupInline .formLabel {
     margin-bottom: var(--spacing-xs);
     margin-right: 0;
@@ -373,7 +413,7 @@
   .formGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .col1, .col2, .col3, .col4, .col5, .col6,
   .col7, .col8, .col9, .col10, .col11, .col12 {
     grid-column: 1 / -1;
