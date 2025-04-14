@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { FaSort, FaSortUp, FaSortDown, FaSearch, FaFilter, FaChevronLeft, FaChevronRight, FaInbox } from 'react-icons/fa';
+import React, { useCallback, useEffect, useState } from 'react';
+import { FaChevronLeft, FaChevronRight, FaFilter, FaInbox, FaSort, FaSortDown, FaSortUp } from 'react-icons/fa';
 import { debounce } from '../../../utils/performance';
+import { SearchBar } from '../form';
 import styles from './Table.module.css';
 
 /**
  * Table component for displaying tabular data with sorting, filtering, and pagination
- * 
+ *
  * @param {Object} props
  * @param {Array} props.columns - Array of column definitions [{id, label, sortable, render}]
  * @param {Array} props.data - Array of data objects
@@ -41,30 +42,30 @@ const Table = ({
 }) => {
   // State for sorting
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
-  
+
   // State for pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(defaultPageSize);
-  
+
   // State for filtering
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({});
   const [showFilters, setShowFilters] = useState(false);
-  
+
   // State for selected rows
   const [selectedRows, setSelectedRows] = useState([]);
-  
+
   // Filtered and sorted data
   const [processedData, setProcessedData] = useState([]);
-  
+
   // Total number of pages
   const totalPages = Math.ceil(processedData.length / pageSize);
-  
+
   // Current page data
   const currentData = pagination
     ? processedData.slice((currentPage - 1) * pageSize, currentPage * pageSize)
     : processedData;
-  
+
   // Handle sort request
   const requestSort = (key) => {
     let direction = 'asc';
@@ -73,29 +74,29 @@ const Table = ({
     }
     setSortConfig({ key, direction });
   };
-  
+
   // Get sort icon based on current sort state
   const getSortIcon = (key) => {
     if (sortConfig.key !== key) {
       return <FaSort className={styles.sortIcon} />;
     }
-    return sortConfig.direction === 'asc' 
-      ? <FaSortUp className={styles.sortIcon} /> 
+    return sortConfig.direction === 'asc'
+      ? <FaSortUp className={styles.sortIcon} />
       : <FaSortDown className={styles.sortIcon} />;
   };
-  
+
   // Handle search input change
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1); // Reset to first page when search changes
   };
-  
+
   // Debounced search to avoid too many re-renders
   const debouncedSearch = useCallback(
     debounce(handleSearchChange, 300),
     []
   );
-  
+
   // Handle filter change
   const handleFilterChange = (filterKey, value) => {
     setFilters(prevFilters => ({
@@ -104,25 +105,25 @@ const Table = ({
     }));
     setCurrentPage(1); // Reset to first page when filters change
   };
-  
+
   // Clear all filters
   const clearFilters = () => {
     setFilters({});
     setSearchTerm('');
     setCurrentPage(1);
   };
-  
+
   // Handle page change
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
-  
+
   // Handle page size change
   const handlePageSizeChange = (e) => {
     setPageSize(Number(e.target.value));
     setCurrentPage(1); // Reset to first page when page size changes
   };
-  
+
   // Handle row click
   const handleRowClick = (row, index) => {
     if (selectable) {
@@ -134,16 +135,16 @@ const Table = ({
         setSelectedRows([...selectedRows, row.id]);
       }
     }
-    
+
     if (onRowClick) {
       onRowClick(row, index);
     }
   };
-  
+
   // Process data (filter, sort, etc.)
   useEffect(() => {
     let result = [...data];
-    
+
     // Apply search filter
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
@@ -161,16 +162,16 @@ const Table = ({
         });
       });
     }
-    
+
     // Apply column filters
     if (Object.keys(filters).length > 0) {
       result = result.filter(item => {
         return Object.keys(filters).every(key => {
           const filterValue = filters[key];
           if (!filterValue || filterValue.length === 0) return true;
-          
+
           const itemValue = item[key];
-          
+
           // Handle array filters (multi-select)
           if (Array.isArray(filterValue)) {
             if (Array.isArray(itemValue)) {
@@ -178,87 +179,85 @@ const Table = ({
             }
             return filterValue.includes(itemValue);
           }
-          
+
           // Handle range filters
           if (typeof filterValue === 'object' && (filterValue.min !== undefined || filterValue.max !== undefined)) {
             if (filterValue.min !== undefined && itemValue < filterValue.min) return false;
             if (filterValue.max !== undefined && itemValue > filterValue.max) return false;
             return true;
           }
-          
+
           // Handle string filters
           if (typeof itemValue === 'string') {
             return itemValue.toLowerCase().includes(filterValue.toLowerCase());
           }
-          
+
           // Handle exact match
           return itemValue === filterValue;
         });
       });
     }
-    
+
     // Apply sorting
     if (sortConfig.key) {
       result.sort((a, b) => {
         const aValue = a[sortConfig.key];
         const bValue = b[sortConfig.key];
-        
+
         // Handle undefined or null values
         if (aValue == null) return sortConfig.direction === 'asc' ? -1 : 1;
         if (bValue == null) return sortConfig.direction === 'asc' ? 1 : -1;
-        
+
         // Handle dates
         if (aValue instanceof Date && bValue instanceof Date) {
           return sortConfig.direction === 'asc'
             ? aValue.getTime() - bValue.getTime()
             : bValue.getTime() - aValue.getTime();
         }
-        
+
         // Handle strings
         if (typeof aValue === 'string' && typeof bValue === 'string') {
           return sortConfig.direction === 'asc'
             ? aValue.localeCompare(bValue)
             : bValue.localeCompare(aValue);
         }
-        
+
         // Handle numbers
         return sortConfig.direction === 'asc'
           ? aValue - bValue
           : bValue - aValue;
       });
     }
-    
+
     setProcessedData(result);
   }, [data, searchTerm, filters, sortConfig]);
-  
+
   // Reset pagination when data changes
   useEffect(() => {
     if (currentPage > totalPages && totalPages > 0) {
       setCurrentPage(1);
     }
   }, [totalPages, currentPage]);
-  
+
   return (
     <div className={`${styles.tableContainer} ${className}`} {...rest}>
       {/* Table Toolbar */}
       {(title || actions || filterable) && (
         <div className={styles.tableToolbar}>
           {title && <h3 className={styles.tableTitle}>{title}</h3>}
-          
+
           <div className={styles.tableActions}>
             {filterable && (
               <>
                 <div className={styles.searchContainer}>
-                  <input
-                    type="text"
+                  <SearchBar
                     placeholder="Search..."
-                    className={styles.searchInput}
+                    value={searchTerm}
                     onChange={debouncedSearch}
-                    defaultValue={searchTerm}
+                    className={styles.tableSearch}
                   />
-                  <FaSearch className={styles.searchIcon} />
                 </div>
-                
+
                 <div className={styles.filterContainer}>
                   <button
                     className={`${styles.filterButton} ${Object.keys(filters).length > 0 ? styles.active : ''}`}
@@ -269,14 +268,14 @@ const Table = ({
                       <span>{Object.keys(filters).length}</span>
                     )}
                   </button>
-                  
+
                   <div className={`${styles.filterDropdown} ${showFilters ? styles.open : ''}`}>
                     {columns
                       .filter(column => column.filterable !== false)
                       .map(column => (
                         <div key={column.id} className={styles.filterGroup}>
                           <div className={styles.filterGroupTitle}>{column.label}</div>
-                          
+
                           {/* Render appropriate filter UI based on column type */}
                           {column.filterType === 'select' && column.filterOptions && (
                             column.filterOptions.map(option => (
@@ -307,7 +306,7 @@ const Table = ({
                               </div>
                             ))
                           )}
-                          
+
                           {column.filterType === 'range' && (
                             <div className={styles.filterOption}>
                               <input
@@ -339,7 +338,7 @@ const Table = ({
                               />
                             </div>
                           )}
-                          
+
                           {column.filterType === 'text' && (
                             <div className={styles.filterOption}>
                               <input
@@ -355,7 +354,7 @@ const Table = ({
                           )}
                         </div>
                       ))}
-                    
+
                     <div className={styles.filterActions}>
                       <button
                         className={styles.filterActionButton}
@@ -374,12 +373,12 @@ const Table = ({
                 </div>
               </>
             )}
-            
+
             {actions}
           </div>
         </div>
       )}
-      
+
       {/* Table */}
       <div className={styles.tableWrapper}>
         <table className={styles.table}>
@@ -398,7 +397,7 @@ const Table = ({
               ))}
             </tr>
           </thead>
-          
+
           <tbody className={styles.tableBody}>
             {loading ? (
               <tr>
@@ -444,7 +443,7 @@ const Table = ({
           </tbody>
         </table>
       </div>
-      
+
       {/* Table Footer with Pagination */}
       {pagination && !loading && processedData.length > 0 && (
         <div className={styles.tableFooter}>
@@ -463,7 +462,7 @@ const Table = ({
             >
               <FaChevronLeft />
             </button>
-            
+
             {/* Page numbers */}
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
               let pageNum;
@@ -480,7 +479,7 @@ const Table = ({
                 // In the middle
                 pageNum = currentPage - 2 + i;
               }
-              
+
               return (
                 <button
                   key={pageNum}
@@ -491,7 +490,7 @@ const Table = ({
                 </button>
               );
             })}
-            
+
             <button
               className={styles.paginationButton}
               onClick={() => handlePageChange(currentPage + 1)}
@@ -507,11 +506,11 @@ const Table = ({
               &raquo;
             </button>
           </div>
-          
+
           <div className={styles.paginationInfo}>
             Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, processedData.length)} of {processedData.length} entries
           </div>
-          
+
           <div className={styles.rowSizeSelector}>
             <span>Rows per page:</span>
             <select

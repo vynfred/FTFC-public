@@ -12,6 +12,7 @@ import { db } from '../../firebase-config';
 import { generateClientsCSVTemplate, processClientsData, validateClientsCSV } from '../../utils/csvUtils';
 import FileUploader from '../common/FileUploader';
 import DashboardSection from '../shared/DashboardSection';
+import { SearchBar } from '../ui/form';
 import styles from './ClientsDashboard.module.css';
 
 // Register Chart.js components
@@ -191,13 +192,11 @@ const ClientsDashboard = () => {
     <>
       <div className="filter-container">
         <div className="search-container">
-          <FaSearch className="search-icon" />
-          <input
-            type="text"
+          <SearchBar
             placeholder="Search clients..."
-            className="search-input"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            className="dashboard-search"
           />
         </div>
         <div className="filter-actions">

@@ -214,6 +214,17 @@
   position: relative;
 }
 
+/* Styles for the SearchBar component in table */
+.tableSearch {
+  width: 12rem;
+  transition: all var(--transition-default);
+}
+
+.tableSearch:focus-within {
+  width: 15rem;
+}
+
+/* Legacy styles for backward compatibility */
 .searchInput {
   padding: 0.5rem 0.75rem 0.5rem 2rem;
   border-radius: var(--border-radius-sm);
@@ -359,31 +370,31 @@
     align-items: flex-start;
     gap: var(--spacing-sm);
   }
-  
+
   .tableActions {
     width: 100%;
     justify-content: space-between;
   }
-  
+
   .tableFooter {
     flex-direction: column;
     gap: var(--spacing-sm);
   }
-  
+
   .pagination {
     width: 100%;
     justify-content: center;
   }
-  
+
   .rowSizeSelector {
     width: 100%;
     justify-content: center;
   }
-  
+
   .searchInput {
     width: 100%;
   }
-  
+
   .searchInput:focus {
     width: 100%;
   }

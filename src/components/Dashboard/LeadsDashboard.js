@@ -1,9 +1,10 @@
 import { collection, getDocs, query } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { FaChartBar, FaSearch, FaSort, FaSortDown, FaSortUp, FaUserPlus } from 'react-icons/fa';
+import { FaChartBar, FaSort, FaSortDown, FaSortUp, FaUserPlus } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../../firebase-config';
 import DashboardSection from '../shared/DashboardSection';
+import { SearchBar } from '../ui/form';
 import './DashboardStyles.css';
 import styles from './LeadsDashboard.module.css';
 
@@ -138,13 +139,11 @@ const LeadsDashboard = () => {
     <>
       <div className="filter-container">
         <div className="search-container">
-          <FaSearch className="search-icon" />
-          <input
-            type="text"
+          <SearchBar
             placeholder="Search leads..."
-            className="search-input"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            className="dashboard-search"
           />
         </div>
         <div className="filter-actions">

@@ -4,6 +4,7 @@ import { FaChartBar, FaHandshake, FaMoneyBillWave, FaSort, FaSortDown, FaSortUp,
 import { useNavigate } from 'react-router-dom';
 import { db } from '../../firebase-config';
 import DashboardSection from '../shared/DashboardSection';
+import { SearchBar } from '../ui/form';
 import styles from './InvestorDashboard.module.css';
 
 const InvestorDashboard = () => {
@@ -137,13 +138,11 @@ const InvestorDashboard = () => {
     <>
       <div className="filter-container">
         <div className="search-container">
-          <FaSearch className="search-icon" />
-          <input
-            type="text"
+          <SearchBar
             placeholder="Search investors..."
-            className="search-input"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            className="dashboard-search"
           />
         </div>
         <div className="filter-actions">
