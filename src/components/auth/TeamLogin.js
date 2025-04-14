@@ -283,7 +283,7 @@ const TeamLogin = () => {
           <p style={{ margin: '10px 0', color: '#94a3b8' }}>- OR -</p>
           <button
             type="button"
-            onClick={handleGoogleSignIn}
+            onClick={handleGoogleSignInRedirect}
             disabled={isLoading}
             style={{
               display: 'flex',
@@ -300,43 +300,12 @@ const TeamLogin = () => {
               fontWeight: '500',
               cursor: 'pointer',
               transition: 'all 0.2s ease',
-              marginBottom: '10px'
+              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
             }}
           >
             <FaGoogle style={{ color: '#DB4437' }} />
-            {isLoading ? 'Signing in...' : 'Sign in with Google (Popup)'}
+            {isLoading ? 'Signing in...' : 'Sign in with Google'}
           </button>
-
-          <button
-            type="button"
-            onClick={handleGoogleSignInRedirect}
-            disabled={isLoading}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '10px',
-              width: '100%',
-              padding: '12px',
-              backgroundColor: '#f8fafc',
-              color: '#333333',
-              border: '1px solid #d1d5db',
-              borderRadius: '4px',
-              fontSize: '16px',
-              fontWeight: '500',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            <FaGoogle style={{ color: '#DB4437' }} />
-            {isLoading ? 'Signing in...' : 'Sign in with Google (Redirect)'}
-          </button>
-
-          {errors.general && errors.general.includes('unauthorized-domain') && (
-            <div style={{ marginTop: '10px', fontSize: '14px', color: '#94a3b8' }}>
-              <p>If you're seeing an unauthorized domain error, try the redirect method above.</p>
-            </div>
-          )}
         </div>
 
         <div className="login-footer">
