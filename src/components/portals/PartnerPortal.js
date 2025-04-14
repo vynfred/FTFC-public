@@ -174,7 +174,7 @@ const PartnerPortal = () => {
           <MeetingTranscriptList
             entityType="partner"
             entityId={user?.uid || '123'}
-            readOnly={true}
+            readOnly={true} // Partner portal is read-only (no Google auth needed)
           />
         </div>
 

@@ -175,7 +175,7 @@ const InvestorPortal = () => {
           <MeetingTranscriptList
             entityType="investor"
             entityId={user?.uid || '123'}
-            readOnly={true}
+            readOnly={true} // Investor portal is read-only (no Google auth needed)
           />
         </div>
 

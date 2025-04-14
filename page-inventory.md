@@ -214,6 +214,12 @@ This document provides a comprehensive inventory of all pages and their function
   - Associate notes with the appropriate entity
   - Display meeting transcripts in client/investor/partner portals
   - Allow team members to view and edit transcripts
+- **Authentication Flow:**
+  - Only team members need to sign in to Google (not clients/investors/partners)
+  - Team members' Google Drives are parsed to collect meeting transcripts
+  - Transcripts are stored in the FTFC database
+  - Transcripts are displayed in client/investor/partner portals without requiring Google authentication
+  - The "Check Gemini Notes" button is only visible to team members
 
 ## Authentication Pages
 

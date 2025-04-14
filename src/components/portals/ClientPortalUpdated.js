@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaCalendarAlt, FaChartLine, FaFileAlt } from 'react-icons/fa';
+import { FaChartLine, FaFileAlt } from 'react-icons/fa';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import GoalSection from '../common/GoalSection';
@@ -252,7 +252,7 @@ const ClientPortal = () => {
           <MeetingTranscriptList
             entityType="client"
             entityId={user?.uid || '123'}
-            readOnly={true}
+            readOnly={true} // Client portal is read-only (no Google auth needed)
           />
         </div>
 

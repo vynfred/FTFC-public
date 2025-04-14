@@ -189,7 +189,7 @@ const ClientPortal = () => {
           <MeetingTranscriptList
             entityType="client"
             entityId={user?.uid || '123'}
-            readOnly={true}
+            readOnly={true} // Client portal is read-only (no Google auth needed)
           />
         </div>
 
