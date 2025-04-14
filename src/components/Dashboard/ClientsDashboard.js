@@ -2,18 +2,18 @@ import {
     ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, LineElement, PointElement, Title,
     Tooltip
 } from 'chart.js';
+import { collection, getDocs, query } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { FaBullseye, FaChartBar, FaFileAlt, FaSort, FaSortDown, FaSortUp, FaUpload, FaUserPlus } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useStatsView } from '../../context/StatsViewContext';
-// CSS is now imported globally
-import { collection, getDocs, query } from 'firebase/firestore';
 import { db } from '../../firebase-config';
 import { generateClientsCSVTemplate, processClientsData, validateClientsCSV } from '../../utils/csvUtils';
 import FileUploader from '../common/FileUploader';
 import DashboardSection from '../shared/DashboardSection';
 import { SearchBar } from '../ui/form';
 import styles from './ClientsDashboard.module.css';
+// CSS is now imported globally
 
 // Register Chart.js components
 ChartJS.register(

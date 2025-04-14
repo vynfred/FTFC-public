@@ -204,6 +204,7 @@
 .dashboard-search {
   width: 100%;
   max-width: 300px;
+  display: block !important;
 }
 
 /* Legacy styles for backward compatibility */
