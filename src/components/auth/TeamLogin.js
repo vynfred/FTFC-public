@@ -192,14 +192,34 @@ const TeamLogin = () => {
       console.log('TeamLogin: Starting Google sign-in...');
       // Attempt Google sign-in with Firebase Authentication using the popup method
       const result = await auth.signInWithGoogle();
-      console.log('TeamLogin: Google sign-in successful, redirecting...', result);
+      console.log('TeamLogin: Google sign-in successful:', result);
+      console.log('TeamLogin: User:', result.user);
+      console.log('TeamLogin: User email:', result.user.email);
+      console.log('TeamLogin: User ID:', result.user.uid);
 
+      // Store authentication success in localStorage for debugging
+      localStorage.setItem('authSuccess', 'true');
+      localStorage.setItem('authUser', JSON.stringify({
+        email: result.user.email,
+        uid: result.user.uid,
+        displayName: result.user.displayName,
+        timestamp: new Date().toISOString()
+      }));
+
+      console.log('TeamLogin: Redirecting to dashboard...');
       // Redirect to dashboard on success
       navigate('/dashboard');
     } catch (error) {
       console.error('TeamLogin: Google sign-in error:', error);
       console.error('TeamLogin: Error code:', error.code);
       console.error('TeamLogin: Error message:', error.message);
+
+      // Store authentication error in localStorage for debugging
+      localStorage.setItem('authError', JSON.stringify({
+        code: error.code,
+        message: error.message,
+        timestamp: new Date().toISOString()
+      }));
 
       // Show detailed error message
       if (error.code === 'auth/popup-closed-by-user') {

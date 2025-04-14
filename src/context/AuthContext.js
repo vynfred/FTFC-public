@@ -25,10 +25,23 @@ export const AuthProvider = ({ children }) => {
 
   // Check for existing session on mount using Firebase Auth
   useEffect(() => {
+    console.log('AuthContext: Setting up auth state listener');
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      console.log('Auth state changed:', firebaseUser ? 'User signed in' : 'No user');
-
+      console.log('AuthContext: Auth state changed:', firebaseUser ? 'User signed in' : 'No user');
       if (firebaseUser) {
+        console.log('AuthContext: User details:', {
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName
+        });
+
+        // Store auth state in localStorage for debugging
+        localStorage.setItem('authState', JSON.stringify({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName,
+          timestamp: new Date().toISOString()
+        }));
         try {
           // Get user data from Firestore
           const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));

@@ -21,11 +21,22 @@ const ProtectedRoute = ({
 
   // Show loading spinner while checking authentication
   if (loading) {
+    console.log('ProtectedRoute: Still loading authentication state');
     return <LoadingSpinner />;
   }
 
   // If not authenticated, redirect to login
   if (!user) {
+    console.log('ProtectedRoute: No user found, redirecting to', redirectPath);
+    console.log('ProtectedRoute: Auth state from context:', { isAuthenticated: !!user, loading });
+
+    // Store redirect info in localStorage for debugging
+    localStorage.setItem('protectedRouteRedirect', JSON.stringify({
+      from: location.pathname,
+      to: redirectPath,
+      timestamp: new Date().toISOString()
+    }));
+
     // Redirect to login while saving the attempted private route
     return <Navigate to={redirectPath} state={{ from: location }} replace />;
   }
