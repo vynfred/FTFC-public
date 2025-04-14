@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaCalendarAlt, FaChartBar, FaFileContract, FaLightbulb, FaPencilAlt, FaUserPlus } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useDateRange } from '../../context/DateRangeContext';
 import { useStatsView } from '../../context/StatsViewContext';
+import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
+import { db } from '../../firebase-config';
 import Grid from '../ui/layout/Grid';
 import styles from './Dashboard.module.css';
 import DashboardSection from './DashboardSection';
@@ -12,261 +14,167 @@ const SalesDashboard = () => {
   const { dateRange } = useDateRange();
   const { viewCompanyStats } = useStatsView();
 
-  // Get data based on selected date range
-  const getData = () => {
-    switch(dateRange) {
-      case 'Today':
-        return {
-          meetings: [
-            { id: 'm1', title: 'Client Onboarding - TechStart Inc', time: '10:00 AM', type: 'Video Call' },
-            { id: 'm2', title: 'Investor Pitch - Capital Partners', time: '2:30 PM', type: 'In-Person' },
-            { id: 'm3', title: 'Partner Strategy - Alliance Group', time: '4:00 PM', type: 'Phone Call' },
-          ],
-          metrics: viewCompanyStats
-            ? [
-                { label: 'NEW LEADS', value: '3', change: '+2', positive: true },
-                { label: 'CLOSE RATE', value: '20%', change: '+5%', positive: true },
-                { label: 'POTENTIAL TO ACTUAL', value: '65%', change: '+8%', positive: true },
-                { label: 'REVENUE', value: '$2.5K', change: '+10%', positive: true },
-                { label: 'PIPELINE VALUE', value: '$1.4M', change: '+0.5%', positive: true },
-              ]
-            : [
-                { label: 'NEW LEADS', value: '1', change: '+1', positive: true },
-                { label: 'CLOSE RATE', value: '15%', change: '+3%', positive: true },
-                { label: 'POTENTIAL TO ACTUAL', value: '42%', change: '+5%', positive: true },
-                { label: 'REVENUE', value: '$0.8K', change: '+5%', positive: true },
-                { label: 'PIPELINE VALUE', value: '$320K', change: '+0.2%', positive: true },
-              ],
-          salesGoal: viewCompanyStats
-            ? { current: 2500, target: 8000, progress: 31.25 }
-            : { current: 800, target: 3000, progress: 26.7 }
-        };
-      case 'Last 7 Days':
-        return {
-          meetings: [
-            { id: 'm1', title: 'Client Onboarding - TechStart Inc', time: '10:00 AM', type: 'Video Call' },
-            { id: 'm2', title: 'Investor Pitch - Capital Partners', time: '2:30 PM', type: 'In-Person' },
-            { id: 'm3', title: 'Partner Strategy - Alliance Group', time: '4:00 PM', type: 'Phone Call' },
-          ],
-          metrics: viewCompanyStats
-            ? [
-                { label: 'NEW LEADS', value: '12', change: '+4', positive: true },
-                { label: 'CLOSE RATE', value: '16%', change: '+2%', positive: true },
-                { label: 'POTENTIAL TO ACTUAL', value: '52%', change: '+6%', positive: true },
-                { label: 'REVENUE', value: '$14K', change: '+8%', positive: true },
-                { label: 'PIPELINE VALUE', value: '$1.2M', change: '+3%', positive: true },
-              ]
-            : [
-                { label: 'NEW LEADS', value: '5', change: '+2', positive: true },
-                { label: 'CLOSE RATE', value: '12%', change: '+1%', positive: true },
-                { label: 'POTENTIAL TO ACTUAL', value: '35%', change: '+3%', positive: true },
-                { label: 'REVENUE', value: '$4.5K', change: '+6%', positive: true },
-                { label: 'PIPELINE VALUE', value: '$380K', change: '+2%', positive: true },
-              ],
-          salesGoal: viewCompanyStats
-            ? { current: 14000, target: 40000, progress: 35 }
-            : { current: 4500, target: 15000, progress: 30 }
-        };
-      case 'This Month':
-        return {
-          meetings: [
-            { id: 'm1', title: 'Client Onboarding - TechStart Inc', time: '10:00 AM', type: 'Video Call' },
-            { id: 'm2', title: 'Investor Pitch - Capital Partners', time: '2:30 PM', type: 'In-Person' },
-            { id: 'm3', title: 'Partner Strategy - Alliance Group', time: '4:00 PM', type: 'Phone Call' },
-          ],
-          metrics: viewCompanyStats
-            ? [
-                { label: 'NEW LEADS', value: '20', change: '+15%', positive: true },
-                { label: 'CLOSE RATE', value: '19%', change: '+4%', positive: true },
-                { label: 'POTENTIAL TO ACTUAL', value: '58%', change: '+7%', positive: true },
-                { label: 'REVENUE', value: '$68K', change: '+12%', positive: true },
-                { label: 'PIPELINE VALUE', value: '$1.3M', change: '+6%', positive: true },
-              ]
-            : [
-                { label: 'NEW LEADS', value: '8', change: '+10%', positive: true },
-                { label: 'CLOSE RATE', value: '14%', change: '+2%', positive: true },
-                { label: 'POTENTIAL TO ACTUAL', value: '38%', change: '+4%', positive: true },
-                { label: 'REVENUE', value: '$22K', change: '+8%', positive: true },
-                { label: 'PIPELINE VALUE', value: '$430K', change: '+4%', positive: true },
-              ],
-          salesGoal: viewCompanyStats
-            ? { current: 68000, target: 100000, progress: 68 }
-            : { current: 22000, target: 35000, progress: 62.8 }
-        };
-      case 'Last Month':
-        return {
-          meetings: [
-            { id: 'm1', title: 'Client Onboarding - TechStart Inc', time: '10:00 AM', type: 'Video Call' },
-            { id: 'm2', title: 'Investor Pitch - Capital Partners', time: '2:30 PM', type: 'In-Person' },
-            { id: 'm3', title: 'Partner Strategy - Alliance Group', time: '4:00 PM', type: 'Phone Call' },
-          ],
-          metrics: viewCompanyStats
-            ? [
-                { label: 'NEW LEADS', value: '28', change: '+8%', positive: true },
-                { label: 'CLOSE RATE', value: '17%', change: '+1%', positive: true },
-                { label: 'POTENTIAL TO ACTUAL', value: '70%', change: '+10%', positive: true },
-                { label: 'REVENUE', value: '$95K', change: '+5%', positive: true },
-                { label: 'PIPELINE VALUE', value: '$1.25M', change: '+5%', positive: true },
-              ]
-            : [
-                { label: 'NEW LEADS', value: '10', change: '+5%', positive: true },
-                { label: 'CLOSE RATE', value: '13%', change: '+0.5%', positive: true },
-                { label: 'POTENTIAL TO ACTUAL', value: '45%', change: '+5%', positive: true },
-                { label: 'REVENUE', value: '$32K', change: '+3%', positive: true },
-                { label: 'PIPELINE VALUE', value: '$410K', change: '+3%', positive: true },
-              ],
-          salesGoal: viewCompanyStats
-            ? { current: 95000, target: 95000, progress: 100 }
-            : { current: 32000, target: 32000, progress: 100 }
-        };
-      default: // Last 30 Days or any other
-        return {
-          meetings: [
-    { id: 'm1', title: 'Client Onboarding - TechStart Inc', time: '10:00 AM', type: 'Video Call' },
-    { id: 'm2', title: 'Investor Pitch - Capital Partners', time: '2:30 PM', type: 'In-Person' },
-    { id: 'm3', title: 'Partner Strategy - Alliance Group', time: '4:00 PM', type: 'Phone Call' },
-          ],
-          metrics: viewCompanyStats
-            ? [
-    { label: 'NEW LEADS', value: '24', change: '+12%', positive: true },
-    { label: 'CLOSE RATE', value: '18%', change: '+3%', positive: true },
-                { label: 'POTENTIAL TO ACTUAL', value: '62%', change: '+9%', positive: true },
-    { label: 'REVENUE', value: '$86K', change: '+15%', positive: true },
-    { label: 'PIPELINE VALUE', value: '$1.4M', change: '+8%', positive: true },
-              ]
-            : [
-                { label: 'NEW LEADS', value: '9', change: '+7%', positive: true },
-                { label: 'CLOSE RATE', value: '15%', change: '+2%', positive: true },
-                { label: 'POTENTIAL TO ACTUAL', value: '40%', change: '+6%', positive: true },
-                { label: 'REVENUE', value: '$28K', change: '+10%', positive: true },
-                { label: 'PIPELINE VALUE', value: '$450K', change: '+5%', positive: true },
-              ],
-          salesGoal: viewCompanyStats
-            ? { current: 86000, target: 120000, progress: 71.6 }
-            : { current: 28000, target: 40000, progress: 70 }
-        };
-    }
-  };
+  // State for dashboard data
+  const [meetings, setMeetings] = useState([]);
+  const [metrics, setMetrics] = useState(viewCompanyStats
+    ? [
+        { label: 'NEW LEADS', value: '0', change: '0%', positive: true },
+        { label: 'CLOSE RATE', value: '0%', change: '0%', positive: true },
+        { label: 'POTENTIAL TO ACTUAL', value: '0%', change: '0%', positive: true },
+        { label: 'REVENUE', value: '$0', change: '0%', positive: true },
+        { label: 'PIPELINE VALUE', value: '$0', change: '0%', positive: true },
+      ]
+    : [
+        { label: 'NEW LEADS', value: '0', change: '0%', positive: true },
+        { label: 'CLOSE RATE', value: '0%', change: '0%', positive: true },
+        { label: 'POTENTIAL TO ACTUAL', value: '0%', change: '0%', positive: true },
+        { label: 'REVENUE', value: '$0', change: '0%', positive: true },
+        { label: 'PIPELINE VALUE', value: '$0', change: '0%', positive: true },
+      ]);
+  const [salesGoal, setSalesGoal] = useState(viewCompanyStats
+    ? { current: 0, target: 100000, progress: 0 }
+    : { current: 0, target: 50000, progress: 0 });
+  const [loading, setLoading] = useState(true);
 
-  const data = getData();
-  const { meetings, metrics, salesGoal } = data;
+  // Fetch data from Firebase
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch meetings
+        const meetingsQuery = query(collection(db, 'meetings'), orderBy('date', 'desc'), limit(5));
+        const meetingsSnapshot = await getDocs(meetingsQuery);
+        const meetingsList = meetingsSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          title: doc.data().title || 'Untitled Meeting',
+          time: doc.data().time || 'No time specified',
+          type: doc.data().type || 'No type specified'
+        }));
+        setMeetings(meetingsList.length > 0 ? meetingsList : []);
+        
+        // Fetch leads for metrics
+        const leadsQuery = query(collection(db, 'leads'));
+        const leadsSnapshot = await getDocs(leadsQuery);
+        const leadsList = leadsSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        
+        // Calculate metrics
+        const totalLeads = leadsList.length;
+        const qualifiedLeads = leadsList.filter(lead => lead.status === 'Qualified').length;
+        const conversionRate = totalLeads > 0 ? ((qualifiedLeads / totalLeads) * 100).toFixed(1) : '0';
+        
+        // Update metrics based on viewCompanyStats
+        if (viewCompanyStats) {
+          setMetrics([
+            { label: 'NEW LEADS', value: totalLeads.toString(), change: '+0%', positive: true },
+            { label: 'CLOSE RATE', value: `${conversionRate}%`, change: '+0%', positive: true },
+            { label: 'POTENTIAL TO ACTUAL', value: '0%', change: '+0%', positive: true },
+            { label: 'REVENUE', value: '$0', change: '+0%', positive: true },
+            { label: 'PIPELINE VALUE', value: '$0', change: '+0%', positive: true },
+          ]);
+          setSalesGoal({
+            current: 0,
+            target: 100000,
+            progress: 0
+          });
+        } else {
+          setMetrics([
+            { label: 'NEW LEADS', value: totalLeads.toString(), change: '+0%', positive: true },
+            { label: 'CLOSE RATE', value: `${conversionRate}%`, change: '+0%', positive: true },
+            { label: 'POTENTIAL TO ACTUAL', value: '0%', change: '+0%', positive: true },
+            { label: 'REVENUE', value: '$0', change: '+0%', positive: true },
+            { label: 'PIPELINE VALUE', value: '$0', change: '+0%', positive: true },
+          ]);
+          setSalesGoal({
+            current: 0,
+            target: 50000,
+            progress: 0
+          });
+        }
+        
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        setLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, [dateRange, viewCompanyStats]);
 
   // Static data that doesn't change with date range
   const leadStats = [
-    { label: 'Open Leads', value: '42' },
-    { label: 'Qualified Leads', value: '18' },
-    { label: 'Conversion Rate', value: '22%' },
+    { label: 'Open Leads', value: '0' },
+    { label: 'Qualified Leads', value: '0' },
+    { label: 'Conversion Rate', value: '0%' },
   ];
 
   const stageTimings = [
-    { stage: 'Lead to Consultation', days: 3 },
-    { stage: 'Consultation to Intake', days: 5 },
-    { stage: 'Intake to Evaluation', days: 7 },
-    { stage: 'Evaluation to Proposal', days: 4 },
-    { stage: 'Proposal to Close', days: 5 },
+    { stage: 'Lead to Consultation', days: 0 },
+    { stage: 'Consultation to Intake', days: 0 },
+    { stage: 'Intake to Evaluation', days: 0 },
+    { stage: 'Evaluation to Proposal', days: 0 },
+    { stage: 'Proposal to Close', days: 0 },
   ];
 
   const lossAnalysis = [
-    { reason: 'Budget Constraints', percentage: 35 },
-    { reason: 'Needs Mismatch', percentage: 28 },
-    { reason: 'Chose Competitor', percentage: 18 },
-    { reason: 'No Decision', percentage: 12 },
-    { reason: 'Timing Issues', percentage: 7 },
+    { reason: 'Budget Constraints', percentage: 0 },
+    { reason: 'Needs Mismatch', percentage: 0 },
+    { reason: 'Chose Competitor', percentage: 0 },
+    { reason: 'No Decision', percentage: 0 },
+    { reason: 'Timing Issues', percentage: 0 },
   ];
 
   const actionRequired = [
-    { lead: 'Acme Corp', stage: 'Proposal', value: '$12,500', days: 7, action: 'Follow-up call' },
-    { lead: 'Tech Solutions', stage: 'Intake Form', value: '$8,200', days: 5, action: 'Send reminder' },
-    { lead: 'Global Services', stage: 'Evaluation', value: '$15,000', days: 2, action: 'Complete review' },
+    { lead: '', stage: '', value: '', days: 0, action: '' },
   ];
 
   const leadSources = [
-    { name: 'Website', percentage: 42 },
-    { name: 'Referrals', percentage: 28 },
-    { name: 'Social Media', percentage: 18 },
-    { name: 'Events', percentage: 12 },
+    { name: 'Website', percentage: 0 },
+    { name: 'Referrals', percentage: 0 },
+    { name: 'Social Media', percentage: 0 },
+    { name: 'Events', percentage: 0 },
   ];
 
   const shortcuts = [
-    { title: 'Create Lead', icon: <FaUserPlus />, link: '/dashboard/leads/create' },
-    { title: 'Send SOW', icon: <FaFileContract />, link: '#' },
-    { title: 'Create Blog', icon: <FaPencilAlt />, link: '/dashboard/blog/create' },
-    { title: 'Create Ad', icon: <FaLightbulb />, link: '/dashboard/ads/create' },
+    { title: 'Add Lead', icon: <FaUserPlus />, link: '/dashboard/leads/new' },
+    { title: 'Schedule Meeting', icon: <FaCalendarAlt />, link: '/dashboard/calendar' },
+    { title: 'Create Proposal', icon: <FaFileContract />, link: '/dashboard/proposals/new' },
+    { title: 'Add Note', icon: <FaPencilAlt />, link: '/dashboard/notes/new' },
+    { title: 'Create Campaign', icon: <FaLightbulb />, link: '/dashboard/marketing/campaigns/new' },
   ];
 
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
-        <h1>Sales</h1>
+        <h1>Dashboard</h1>
       </div>
 
-      {/* AI Summary Section */}
-      <DashboardSection>
-        <div className={styles.aiSummaryWrapper}>
-          <p className={styles.aiSummary}>
-          Welcome back! Today you have 3 client meetings scheduled. TechStart Inc is ready to sign their contract, and Capital Partners is considering increasing their investment by $250K. Your lead volume has increased by 12% this week, with website conversions showing the highest growth. The sales team is at 72% of this month's target with 10 days remaining.
-          </p>
-        </div>
-      </DashboardSection>
-
-      {/* Upcoming Meetings Section */}
-      <DashboardSection title="Upcoming Meetings">
-        <Grid columns={1} gap="md" className={styles.meetingsContainer}>
-          {meetings.map((meeting) => (
-            <Link to={`/dashboard/meetings/${meeting.id}`} key={meeting.id} className={styles.meetingLink}>
-              <div className={styles.meetingCard}>
-                <div className={styles.meetingInfo}>
-                  <h3>{meeting.title}</h3>
-                  <div className={styles.meetingTime}>
-                    <FaCalendarAlt style={{ marginRight: '6px' }} />
-                    {meeting.time}
-                  </div>
-                  <div className={styles.meetingType}>{meeting.type}</div>
-                </div>
-              </div>
+      {/* Quick Actions Section */}
+      <DashboardSection title="Quick Actions">
+        <div className={styles.shortcutsContainer}>
+          {shortcuts.map((shortcut, index) => (
+            <Link key={index} to={shortcut.link} className={styles.shortcutCard}>
+              <div className={styles.shortcutIcon}>{shortcut.icon}</div>
+              <div className={styles.shortcutTitle}>{shortcut.title}</div>
             </Link>
           ))}
-        </Grid>
-      </DashboardSection>
-
-      {/* Action Required Section */}
-      <DashboardSection title="Action Required">
-        <div className="table-container">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th className="col-md">Client</th>
-                <th className="col-md">Action</th>
-                <th className="col-sm">Deadline</th>
-              </tr>
-            </thead>
-            <tbody>
-              {actionRequired.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.lead}</td>
-                  <td>{item.action}</td>
-                  <td>{item.days > 0 ? `${item.days} days` : 'Today'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
       </DashboardSection>
 
-      {/* Company Vitals Section */}
-      <DashboardSection title="Company Vitals">
-        <div className="stats-grid">
+      {/* Metrics Section */}
+      <DashboardSection title="Key Metrics">
+        <div className={styles.metricsContainer}>
           {metrics.map((metric, index) => (
-            <div className="stat-card" key={index}>
-              <div className="stat-icon">
-                <FaChartBar />
-              </div>
-              <div className="stat-content">
-                <h3>{metric.label}</h3>
-                <p className="stat-value">{metric.value}</p>
-                <div className={`${metric.positive ? 'positive' : 'negative'}`}>
-                  {metric.change}
-                </div>
+            <div key={index} className={styles.metricCard}>
+              <div className={styles.metricLabel}>{metric.label}</div>
+              <div className={styles.metricValue}>{metric.value}</div>
+              <div className={`${styles.metricChange} ${metric.positive ? styles.positive : styles.negative}`}>
+                {metric.change}
               </div>
             </div>
           ))}
@@ -276,86 +184,139 @@ const SalesDashboard = () => {
       {/* Sales Goal Section */}
       <DashboardSection title="Sales Goal">
         <div className={styles.salesGoalContainer}>
-          <div className={styles.salesGoalAmount}>${salesGoal.current.toLocaleString()} / ${salesGoal.target.toLocaleString()}</div>
-          <div className={styles.progressText}>{salesGoal.progress.toFixed(1)}% of {dateRange || 'Last 30 Days'} goal</div>
-          <div className={styles.progressBarContainer}>
-            <div className={styles.progressBar} style={{ width: `${salesGoal.progress}%` }}></div>
+          <div className={styles.goalText}>
+            ${salesGoal.current.toLocaleString()} / ${salesGoal.target.toLocaleString()}
           </div>
+          <div className={styles.goalBarContainer}>
+            <div
+              className={styles.goalBar}
+              style={{ width: `${salesGoal.progress}%` }}
+            ></div>
+          </div>
+          <div className={styles.goalPercentage}>{salesGoal.progress.toFixed(1)}% of {dateRange} goal</div>
         </div>
       </DashboardSection>
 
-      {/* Lead Analytics Section */}
-      <DashboardSection title="Lead Analytics">
-        <div className={styles.leadAnalyticsContainer}>
-          {/* Top-Level KPIs */}
-          <div className="stats-grid">
+      {/* Upcoming Meetings Section */}
+      <DashboardSection
+        title="Upcoming Meetings"
+        actions={
+          <Link to="/dashboard/calendar" className="view-all-link">
+            View All
+          </Link>
+        }
+      >
+        <div className={styles.meetingsContainer}>
+          {meetings.length > 0 ? (
+            meetings.map((meeting, index) => (
+              <div key={index} className={styles.meetingCard}>
+                <div className={styles.meetingTitle}>{meeting.title}</div>
+                <div className={styles.meetingDetails}>
+                  <span className={styles.meetingTime}>{meeting.time}</span>
+                  <span className={styles.meetingType}>{meeting.type}</span>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className={styles.noMeetings}>No upcoming meetings</div>
+          )}
+        </div>
+      </DashboardSection>
+
+      {/* Lead Stats Section */}
+      <Grid columns={2}>
+        <DashboardSection title="Lead Statistics">
+          <div className={styles.leadStatsContainer}>
             {leadStats.map((stat, index) => (
-              <div className="stat-card" key={index}>
-                <div className="stat-icon">
-                  <FaChartBar />
-                </div>
-                <div className="stat-content">
-                  <h3>{stat.label}</h3>
-                  <p className="stat-value">{stat.value}</p>
-                </div>
+              <div key={index} className={styles.leadStatCard}>
+                <div className={styles.leadStatLabel}>{stat.label}</div>
+                <div className={styles.leadStatValue}>{stat.value}</div>
               </div>
             ))}
           </div>
+        </DashboardSection>
 
-          {/* Stage Timing Analysis */}
-          <div className={styles.stageTimingSection}>
-            <h3 className={styles.subsectionTitle}>Stage Timing (Avg Days)</h3>
-            {stageTimings.map((item, index) => (
-              <div className={styles.stageTimingItem} key={index}>
-                <div className={styles.stageName}>{item.stage}</div>
-                <div className={styles.stageBarContainer}>
-                  <div className={styles.stageBar} style={{ width: `${(item.days / 10) * 100}%` }}></div>
-                </div>
-                <div className={styles.stageDays}>{item.days} days</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Loss Analysis */}
-          <div className={styles.lossAnalysisSection}>
-            <h3 className={styles.subsectionTitle}>Loss Analysis</h3>
-            {lossAnalysis.map((item, index) => (
-              <div className={styles.lossAnalysisItem} key={index}>
-                <div className={styles.lossReason}>{item.reason}</div>
-                <div className={styles.lossBarContainer}>
-                  <div className={styles.lossBar} style={{ width: `${item.percentage}%` }}></div>
-                </div>
-                <div className={styles.lossPercentage}>{item.percentage}%</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Lead Sources */}
-          <div className={styles.leadSourceSection}>
-            <h3 className={styles.subsectionTitle}>Lead Sources</h3>
+        <DashboardSection title="Lead Sources">
+          <div className={styles.leadSourcesContainer}>
             {leadSources.map((source, index) => (
-              <div className={styles.leadSourceItem} key={index}>
+              <div key={index} className={styles.leadSourceItem}>
                 <div className={styles.leadSourceName}>{source.name}</div>
                 <div className={styles.leadSourceBarContainer}>
-                  <div className={styles.leadSourceBar} style={{ width: `${source.percentage}%` }}></div>
+                  <div
+                    className={styles.leadSourceBar}
+                    style={{ width: `${source.percentage}%` }}
+                  ></div>
                 </div>
-                <div className={styles.leadSourcePercent}>{source.percentage}%</div>
+                <div className={styles.leadSourcePercentage}>{source.percentage}%</div>
               </div>
             ))}
           </div>
-        </div>
-      </DashboardSection>
+        </DashboardSection>
+      </Grid>
 
-      {/* Shortcut Links Section */}
-      <DashboardSection title="Quick Actions">
-        <Grid columns={4} mdColumns={2} smColumns={1} gap="md" className={styles.shortcutsGrid}>
-          {shortcuts.map((shortcut, index) => (
-            <Link to={shortcut.link} key={index} className={styles.shortcutCard}>
-              <div className={styles.shortcutIcon}>{shortcut.icon}</div>
-              <h3 className={styles.shortcutTitle}>{shortcut.title}</h3>
-            </Link>
-          ))}
-        </Grid>
+      {/* Pipeline and Loss Analysis Section */}
+      <Grid columns={2}>
+        <DashboardSection title="Pipeline Stage Timing">
+          <div className={styles.stageTimingContainer}>
+            {stageTimings.map((item, index) => (
+              <div key={index} className={styles.stageTimingItem}>
+                <div className={styles.stageTimingName}>{item.stage}</div>
+                <div className={styles.stageTimingBarContainer}>
+                  <div
+                    className={styles.stageTimingBar}
+                    style={{ width: `${(item.days / 10) * 100}%` }}
+                  ></div>
+                </div>
+                <div className={styles.stageTimingDays}>{item.days} days</div>
+              </div>
+            ))}
+          </div>
+        </DashboardSection>
+
+        <DashboardSection title="Loss Analysis">
+          <div className={styles.lossAnalysisContainer}>
+            {lossAnalysis.map((item, index) => (
+              <div key={index} className={styles.lossAnalysisItem}>
+                <div className={styles.lossAnalysisReason}>{item.reason}</div>
+                <div className={styles.lossAnalysisBarContainer}>
+                  <div
+                    className={styles.lossAnalysisBar}
+                    style={{ width: `${item.percentage}%` }}
+                  ></div>
+                </div>
+                <div className={styles.lossAnalysisPercentage}>{item.percentage}%</div>
+              </div>
+            ))}
+          </div>
+        </DashboardSection>
+      </Grid>
+
+      {/* Action Required Section */}
+      <DashboardSection title="Action Required">
+        <div className={styles.actionRequiredContainer}>
+          <table className={styles.actionRequiredTable}>
+            <thead>
+              <tr>
+                <th>Lead</th>
+                <th>Stage</th>
+                <th>Value</th>
+                <th>Days in Stage</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {actionRequired.map((item, index) => (
+                <tr key={index}>
+                  <td>{item.lead}</td>
+                  <td>{item.stage}</td>
+                  <td>{item.value}</td>
+                  <td>{item.days}</td>
+                  <td>{item.action}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </DashboardSection>
     </div>
   );

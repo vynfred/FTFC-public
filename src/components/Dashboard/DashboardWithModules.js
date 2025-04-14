@@ -1,8 +1,10 @@
-import React from 'react';
+import { collection, getDocs, limit, orderBy, query } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
 import { FaCalendarAlt, FaFileContract, FaLightbulb, FaPencilAlt, FaUserPlus } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useDateRange } from '../../context/DateRangeContext';
 import { useStatsView } from '../../context/StatsViewContext';
+import { db } from '../../firebase-config';
 import Container from '../ui/layout/Container';
 import Grid from '../ui/layout/Grid';
 import styles from './Dashboard.module.css';
@@ -11,141 +13,106 @@ const DashboardWithModules = () => {
   const { dateRange } = useDateRange();
   const { viewCompanyStats } = useStatsView();
 
-  // Get data based on selected date range
-  const getData = () => {
-    switch(dateRange) {
-      case 'Today':
-        return {
-          meetings: [
-            { id: 'm1', title: 'Client Onboarding - TechStart Inc', time: '10:00 AM', type: 'Video Call' },
-            { id: 'm2', title: 'Investor Pitch - Capital Partners', time: '2:30 PM', type: 'In-Person' },
-          ],
-          metrics: [
-            { label: 'New Leads', value: '12', positive: true, change: '+20%' },
-            { label: 'Conversion Rate', value: '5.2%', positive: true, change: '+1.1%' },
-            { label: 'Revenue', value: '$24,500', positive: true, change: '+15%' },
-            { label: 'Potential to Actual', value: '68%', positive: true, change: '+5%' },
-          ],
-          salesGoal: {
-            current: 175000,
-            target: 250000,
-            progress: 70
-          },
-          leadStats: [
-            { label: 'Total Leads', value: '145' },
-            { label: 'Qualified Leads', value: '89' },
-            { label: 'Conversion Rate', value: '12.4%' },
-          ],
-          leadSources: [
-            { name: 'Website', percentage: 45 },
-            { name: 'Referral', percentage: 30 },
-            { name: 'Social', percentage: 15 },
-            { name: 'Other', percentage: 10 },
-          ],
-          lossReasons: [
-            { reason: 'Price', percentage: 40 },
-            { reason: 'Competitor', percentage: 25 },
-            { reason: 'Timing', percentage: 20 },
-            { reason: 'Other', percentage: 15 },
-          ],
-          actionsRequired: [
-            { client: 'TechStart Inc', action: 'Contract Review', deadline: 'Today' },
-            { client: 'Global Ventures', action: 'Follow-up Call', deadline: 'Tomorrow' },
-            { client: 'Innovate LLC', action: 'Proposal Update', deadline: 'Sep 15' },
-          ]
-        };
-      case 'This Week':
-        return {
-          meetings: [
-            { id: 'm1', title: 'Client Onboarding - TechStart Inc', time: 'Today, 10:00 AM', type: 'Video Call' },
-            { id: 'm2', title: 'Investor Pitch - Capital Partners', time: 'Today, 2:30 PM', type: 'In-Person' },
-            { id: 'm3', title: 'Product Demo - Innovate LLC', time: 'Tomorrow, 11:00 AM', type: 'Video Call' },
-            { id: 'm4', title: 'Strategy Session - Internal', time: 'Friday, 9:00 AM', type: 'In-Person' },
-          ],
-          metrics: [
-            { label: 'New Leads', value: '45', positive: true, change: '+15%' },
-            { label: 'Conversion Rate', value: '4.8%', positive: false, change: '-0.5%' },
-            { label: 'Revenue', value: '$86,200', positive: true, change: '+12%' },
-            { label: 'Potential to Actual', value: '72%', positive: true, change: '+8%' },
-          ],
-          salesGoal: {
-            current: 175000,
-            target: 250000,
-            progress: 70
-          },
-          leadStats: [
-            { label: 'Total Leads', value: '145' },
-            { label: 'Qualified Leads', value: '89' },
-            { label: 'Conversion Rate', value: '12.4%' },
-          ],
-          leadSources: [
-            { name: 'Website', percentage: 45 },
-            { name: 'Referral', percentage: 30 },
-            { name: 'Social', percentage: 15 },
-            { name: 'Other', percentage: 10 },
-          ],
-          lossReasons: [
-            { reason: 'Price', percentage: 40 },
-            { reason: 'Competitor', percentage: 25 },
-            { reason: 'Timing', percentage: 20 },
-            { reason: 'Other', percentage: 15 },
-          ],
-          actionsRequired: [
-            { client: 'TechStart Inc', action: 'Contract Review', deadline: 'Today' },
-            { client: 'Global Ventures', action: 'Follow-up Call', deadline: 'Tomorrow' },
-            { client: 'Innovate LLC', action: 'Proposal Update', deadline: 'Sep 15' },
-          ]
-        };
-      case 'This Month':
-      default:
-        return {
-          meetings: [
-            { id: 'm1', title: 'Client Onboarding - TechStart Inc', time: 'Today, 10:00 AM', type: 'Video Call' },
-            { id: 'm2', title: 'Investor Pitch - Capital Partners', time: 'Today, 2:30 PM', type: 'In-Person' },
-            { id: 'm3', title: 'Product Demo - Innovate LLC', time: 'Tomorrow, 11:00 AM', type: 'Video Call' },
-          ],
-          metrics: [
-            { label: 'New Leads', value: '187', positive: true, change: '+22%' },
-            { label: 'Conversion Rate', value: '5.4%', positive: true, change: '+0.8%' },
-            { label: 'Revenue', value: '$342,500', positive: true, change: '+18%' },
-            { label: 'Potential to Actual', value: '75%', positive: true, change: '+10%' },
-          ],
-          salesGoal: {
-            current: 175000,
-            target: 250000,
-            progress: 70
-          },
-          leadStats: [
-            { label: 'Total Leads', value: '145' },
-            { label: 'Qualified Leads', value: '89' },
-            { label: 'Conversion Rate', value: '12.4%' },
-          ],
-          leadSources: [
-            { name: 'Website', percentage: 45 },
-            { name: 'Referral', percentage: 30 },
-            { name: 'Social', percentage: 15 },
-            { name: 'Other', percentage: 10 },
-          ],
-          lossReasons: [
-            { reason: 'Price', percentage: 40 },
-            { reason: 'Competitor', percentage: 25 },
-            { reason: 'Timing', percentage: 20 },
-            { reason: 'Other', percentage: 15 },
-          ],
-          actionsRequired: [
-            { client: 'TechStart Inc', action: 'Contract Review', deadline: 'Today' },
-            { client: 'Global Ventures', action: 'Follow-up Call', deadline: 'Tomorrow' },
-            { client: 'Innovate LLC', action: 'Proposal Update', deadline: 'Sep 15' },
-          ]
-        };
-    }
-  };
+  // State for dashboard data
+  const [meetings, setMeetings] = useState([]);
+  const [metrics, setMetrics] = useState([
+    { label: 'New Leads', value: '0', positive: true, change: '0%' },
+    { label: 'Conversion Rate', value: '0%', positive: true, change: '0%' },
+    { label: 'Revenue', value: '$0', positive: true, change: '0%' },
+    { label: 'Potential to Actual', value: '0%', positive: true, change: '0%' },
+  ]);
+  const [salesGoal, setSalesGoal] = useState({
+    current: 0,
+    target: 100000,
+    progress: 0
+  });
+  const [leadStats, setLeadStats] = useState([
+    { label: 'Total Leads', value: '0' },
+    { label: 'Qualified Leads', value: '0' },
+    { label: 'Conversion Rate', value: '0%' },
+  ]);
+  const [leadSources, setLeadSources] = useState([
+    { name: 'Website', percentage: 0 },
+    { name: 'Referral', percentage: 0 },
+    { name: 'Social', percentage: 0 },
+    { name: 'Other', percentage: 0 },
+  ]);
+  const [lossReasons, setLossReasons] = useState([
+    { reason: 'Price', percentage: 0 },
+    { reason: 'Competitor', percentage: 0 },
+    { reason: 'Timing', percentage: 0 },
+    { reason: 'Other', percentage: 0 },
+  ]);
+  const [actionsRequired, setActionsRequired] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Get data for the selected date range
-  const data = getData();
+  // Fetch data from Firebase
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
 
-  // Destructure data
-  const { meetings, metrics, salesGoal, leadStats, leadSources, lossReasons, actionsRequired } = data;
+        // Fetch meetings
+        const meetingsQuery = query(collection(db, 'meetings'), orderBy('date', 'desc'), limit(5));
+        const meetingsSnapshot = await getDocs(meetingsQuery);
+        const meetingsList = meetingsSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          title: doc.data().title || 'Untitled Meeting',
+          time: doc.data().time || 'No time specified',
+          type: doc.data().type || 'No type specified'
+        }));
+        setMeetings(meetingsList.length > 0 ? meetingsList : []);
+
+        // Fetch leads for metrics
+        const leadsQuery = query(collection(db, 'leads'));
+        const leadsSnapshot = await getDocs(leadsQuery);
+        const leadsList = leadsSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+
+        // Calculate metrics
+        const totalLeads = leadsList.length;
+        const qualifiedLeads = leadsList.filter(lead => lead.status === 'Qualified').length;
+        const conversionRate = totalLeads > 0 ? ((qualifiedLeads / totalLeads) * 100).toFixed(1) : '0';
+
+        // Update metrics
+        setMetrics([
+          { label: 'New Leads', value: totalLeads.toString(), positive: true, change: '+0%' },
+          { label: 'Conversion Rate', value: `${conversionRate}%`, positive: true, change: '+0%' },
+          { label: 'Revenue', value: '$0', positive: true, change: '+0%' },
+          { label: 'Potential to Actual', value: '0%', positive: true, change: '+0%' },
+        ]);
+
+        // Update lead stats
+        setLeadStats([
+          { label: 'Total Leads', value: totalLeads.toString() },
+          { label: 'Qualified Leads', value: qualifiedLeads.toString() },
+          { label: 'Conversion Rate', value: `${conversionRate}%` },
+        ]);
+
+        // Fetch actions required (tasks)
+        const tasksQuery = query(collection(db, 'tasks'), limit(3));
+        const tasksSnapshot = await getDocs(tasksQuery);
+        const tasksList = tasksSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          client: doc.data().client || 'Unknown Client',
+          action: doc.data().action || 'No action specified',
+          deadline: doc.data().deadline || 'No deadline'
+        }));
+        setActionsRequired(tasksList.length > 0 ? tasksList : []);
+
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [dateRange, viewCompanyStats]);
 
   // Quick action shortcuts
   const shortcuts = [
