@@ -7,7 +7,8 @@ import { FaBullseye, FaChartBar, FaFileAlt, FaSort, FaSortDown, FaSortUp, FaUplo
 import { useNavigate } from 'react-router-dom';
 import { useStatsView } from '../../context/StatsViewContext';
 // CSS is now imported globally
-import { clientsData } from '../../data/testData';
+import { collection, getDocs, query } from 'firebase/firestore';
+import { db } from '../../firebase-config';
 import { generateClientsCSVTemplate, processClientsData, validateClientsCSV } from '../../utils/csvUtils';
 import FileUploader from '../common/FileUploader';
 import DashboardSection from '../shared/DashboardSection';
@@ -44,8 +45,39 @@ const ClientsDashboard = () => {
   const { statsView } = useStatsView();
 
   // State for clients data
-  const [clients, setClients] = useState(clientsData);
-  const [filteredClients, setFilteredClients] = useState(clientsData);
+  const [clients, setClients] = useState([]);
+  const [filteredClients, setFilteredClients] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch clients from Firebase
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        setLoading(true);
+        const clientsQuery = query(collection(db, 'clients'));
+        const snapshot = await getDocs(clientsQuery);
+        const clientsList = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          // Ensure all required fields have default values
+          name: doc.data().name || 'Unnamed Client',
+          status: doc.data().status || 'Active',
+          revenue: doc.data().revenue || '$0',
+          lastContact: doc.data().lastContact || new Date().toISOString().split('T')[0],
+          milestoneStatus: doc.data().milestoneStatus || '0%',
+          industry: doc.data().industry || 'Unknown'
+        }));
+        setClients(clientsList);
+        setFilteredClients(clientsList);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching clients:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchClients();
+  }, []);
 
   // State for sorting
   const [sortConfig, setSortConfig] = useState({

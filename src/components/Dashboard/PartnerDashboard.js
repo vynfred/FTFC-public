@@ -1,7 +1,8 @@
+import { collection, getDocs, query } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { FaChartBar, FaHandshake, FaMoneyBillWave, FaSort, FaSortDown, FaSortUp, FaUserPlus } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { partnersData } from '../../data/testData';
+import { db } from '../../firebase-config';
 import DashboardSection from '../shared/DashboardSection';
 import styles from './PartnerDashboard.module.css';
 
@@ -9,8 +10,40 @@ const PartnerDashboard = () => {
   const navigate = useNavigate();
 
   // State for partners data
-  const [partners, setPartners] = useState(partnersData);
-  const [filteredPartners, setFilteredPartners] = useState(partnersData);
+  const [partners, setPartners] = useState([]);
+  const [filteredPartners, setFilteredPartners] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch partners from Firebase
+  useEffect(() => {
+    const fetchPartners = async () => {
+      try {
+        setLoading(true);
+        const partnersQuery = query(collection(db, 'partners'));
+        const snapshot = await getDocs(partnersQuery);
+        const partnersList = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          // Ensure all required fields have default values
+          name: doc.data().name || 'Unnamed Partner',
+          type: doc.data().type || 'Unknown',
+          status: doc.data().status || 'Active',
+          referrals: doc.data().referrals || 0,
+          lastReferral: doc.data().lastReferral || new Date().toISOString().split('T')[0],
+          commission: doc.data().commission || '$0',
+          contactName: doc.data().contactName || 'Unknown'
+        }));
+        setPartners(partnersList);
+        setFilteredPartners(partnersList);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching partners:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchPartners();
+  }, []);
 
   // State for sorting
   const [sortConfig, setSortConfig] = useState({

@@ -1,7 +1,8 @@
+import { collection, getDocs, query } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { FaChartBar, FaHandshake, FaMoneyBillWave, FaSort, FaSortDown, FaSortUp, FaUserPlus } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { investorsData } from '../../data/testData';
+import { db } from '../../firebase-config';
 import DashboardSection from '../shared/DashboardSection';
 import styles from './InvestorDashboard.module.css';
 
@@ -9,8 +10,40 @@ const InvestorDashboard = () => {
   const navigate = useNavigate();
 
   // State for investors data
-  const [investors, setInvestors] = useState(investorsData);
-  const [filteredInvestors, setFilteredInvestors] = useState(investorsData);
+  const [investors, setInvestors] = useState([]);
+  const [filteredInvestors, setFilteredInvestors] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch investors from Firebase
+  useEffect(() => {
+    const fetchInvestors = async () => {
+      try {
+        setLoading(true);
+        const investorsQuery = query(collection(db, 'investors'));
+        const snapshot = await getDocs(investorsQuery);
+        const investorsList = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          // Ensure all required fields have default values
+          name: doc.data().name || 'Unnamed Investor',
+          firm: doc.data().firm || 'Unknown Firm',
+          status: doc.data().status || 'Active',
+          investmentRange: doc.data().investmentRange || 'Unknown',
+          preferredStage: doc.data().preferredStage || 'Unknown',
+          totalInvested: doc.data().totalInvested || 0,
+          deals: doc.data().deals || 0
+        }));
+        setInvestors(investorsList);
+        setFilteredInvestors(investorsList);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching investors:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchInvestors();
+  }, []);
 
   // State for sorting
   const [sortConfig, setSortConfig] = useState({

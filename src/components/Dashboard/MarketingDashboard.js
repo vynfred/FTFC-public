@@ -2,11 +2,13 @@ import {
     ArcElement, BarElement, CategoryScale, Chart as ChartJS, Filler, Legend, LinearScale, LineElement, PointElement, Title,
     Tooltip
 } from 'chart.js';
+import { collection, getDocs, query } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { FaChartBar, FaSort, FaSortDown, FaSortUp } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDateRange } from '../../context/DateRangeContext';
 import { useStatsView } from '../../context/StatsViewContext';
+import { db } from '../../firebase-config';
 import DashboardSection from '../shared/DashboardSection';
 import './DashboardStyles.css';
 import styles from './MarketingDashboard.module.css';
@@ -508,12 +510,28 @@ const MarketingDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // In a real app, this would fetch data from Firebase
-        // For now, we'll use our mock data
-        setFilteredContent(allContent);
-        setFilteredCampaigns(allCampaigns);
+        // Fetch content from Firebase
+        const contentQuery = query(collection(db, 'content'));
+        const contentSnapshot = await getDocs(contentQuery);
+        const contentList = contentSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setFilteredContent(contentList.length > 0 ? contentList : []);
+
+        // Fetch campaigns from Firebase
+        const campaignsQuery = query(collection(db, 'campaigns'));
+        const campaignsSnapshot = await getDocs(campaignsQuery);
+        const campaignsList = campaignsSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setFilteredCampaigns(campaignsList.length > 0 ? campaignsList : []);
       } catch (error) {
         console.error('Error fetching data:', error);
+        // Set empty arrays if there's an error
+        setFilteredContent([]);
+        setFilteredCampaigns([]);
       }
     };
 

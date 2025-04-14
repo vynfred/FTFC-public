@@ -1,7 +1,8 @@
+import { collection, getDocs, query } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { FaChartBar, FaSearch, FaSort, FaSortDown, FaSortUp, FaUserPlus } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { leadsData } from '../../data/testData';
+import { db } from '../../firebase-config';
 import DashboardSection from '../shared/DashboardSection';
 import './DashboardStyles.css';
 import styles from './LeadsDashboard.module.css';
@@ -10,8 +11,40 @@ const LeadsDashboard = () => {
   const navigate = useNavigate();
 
   // State for leads data
-  const [leads, setLeads] = useState(leadsData);
-  const [filteredLeads, setFilteredLeads] = useState(leadsData);
+  const [leads, setLeads] = useState([]);
+  const [filteredLeads, setFilteredLeads] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch leads from Firebase
+  useEffect(() => {
+    const fetchLeads = async () => {
+      try {
+        setLoading(true);
+        const leadsQuery = query(collection(db, 'leads'));
+        const snapshot = await getDocs(leadsQuery);
+        const leadsList = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          // Ensure all required fields have default values
+          name: doc.data().name || 'Unnamed Lead',
+          company: doc.data().company || 'Unknown Company',
+          status: doc.data().status || 'New',
+          value: doc.data().value || '$0',
+          lastContact: doc.data().lastContact || new Date().toISOString().split('T')[0],
+          source: doc.data().source || 'Unknown',
+          assignedTo: doc.data().assignedTo || 'Unassigned'
+        }));
+        setLeads(leadsList);
+        setFilteredLeads(leadsList);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching leads:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchLeads();
+  }, []);
 
   // State for sorting
   const [sortConfig, setSortConfig] = useState({
