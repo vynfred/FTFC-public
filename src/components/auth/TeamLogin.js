@@ -23,17 +23,61 @@ const TeamLogin = () => {
 
     try {
       console.log('TeamLogin: Starting Google sign-in with redirect...');
+      // Set a flag in sessionStorage to indicate we're doing a redirect
+      sessionStorage.setItem('googleRedirectInProgress', 'true');
       auth.signInWithGoogleRedirect();
       // Note: This will redirect the page, so no need for further handling here
     } catch (error) {
       console.error('TeamLogin: Google sign-in redirect error:', error);
+      sessionStorage.removeItem('googleRedirectInProgress');
       setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });
       setIsLoading(false);
     }
   };
 
-  // Force scroll to top when component mounts
+  // Check for redirect result when component mounts
   useEffect(() => {
+    const checkRedirectResult = async () => {
+      // Check if we have a redirect in progress or just completed
+      const redirectInProgress = sessionStorage.getItem('googleRedirectInProgress');
+      const googleSignInSuccess = sessionStorage.getItem('googleSignInSuccess');
+
+      if (redirectInProgress || googleSignInSuccess) {
+        try {
+          setIsLoading(true);
+          console.log('Checking for redirect result...');
+
+          // Clear the flags
+          sessionStorage.removeItem('googleRedirectInProgress');
+          sessionStorage.removeItem('googleSignInSuccess');
+
+          // Get the redirect result
+          const result = await auth.getRedirectResult();
+
+          if (result && result.user) {
+            console.log('Redirect sign-in successful:', result.user.email);
+            // Redirect to dashboard
+            navigate('/dashboard');
+            return;
+          } else if (googleSignInSuccess) {
+            // If we have a success flag but no redirect result, it was a popup success
+            navigate('/dashboard');
+            return;
+          }
+        } catch (error) {
+          console.error('Redirect sign-in error:', error);
+          if (error.code !== 'auth/credential-already-in-use') {
+            setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });
+          }
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    checkRedirectResult();
+
+    // Force scroll to top when component mounts
     // Immediate scroll
     window.scrollTo(0, 0);
     document.body.scrollTop = 0; // For Safari
@@ -121,8 +165,8 @@ const TeamLogin = () => {
     try {
       console.log('TeamLogin: Starting Google sign-in...');
       // Attempt Google sign-in with Firebase Authentication
-      await googleSignIn();
-      console.log('TeamLogin: Google sign-in successful, redirecting...');
+      const result = await googleSignIn();
+      console.log('TeamLogin: Google sign-in successful, redirecting...', result);
 
       // Redirect to dashboard on success
       navigate('/dashboard');
@@ -136,14 +180,14 @@ const TeamLogin = () => {
         console.log('TeamLogin: User closed the popup');
         // No need to show an error
       } else if (error.code === 'auth/popup-blocked') {
-        setErrors({ general: 'Popup was blocked by your browser. Please allow popups for this site and try again.' });
+        setErrors({ general: 'Popup was blocked by your browser. Please try the redirect method instead.' });
       } else if (error.code === 'auth/cancelled-popup-request') {
         console.log('TeamLogin: Popup request was cancelled');
         // No need to show an error
       } else if (error.code === 'auth/unauthorized-domain') {
-        setErrors({ general: 'This domain is not authorized for OAuth operations. Please contact support.' });
+        setErrors({ general: 'This domain is not authorized for OAuth operations. Please try the redirect method instead.' });
       } else {
-        setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });
+        setErrors({ general: `Google sign-in failed: ${error.message}. Please try again or use the redirect method.` });
       }
     } finally {
       setIsLoading(false);

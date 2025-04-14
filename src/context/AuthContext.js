@@ -26,6 +26,8 @@ export const AuthProvider = ({ children }) => {
   // Check for existing session on mount using Firebase Auth
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      console.log('Auth state changed:', firebaseUser ? 'User signed in' : 'No user');
+
       if (firebaseUser) {
         try {
           // Get user data from Firestore
@@ -34,6 +36,7 @@ export const AuthProvider = ({ children }) => {
           if (userDoc.exists()) {
             // User exists in Firestore, use that data
             const userData = userDoc.data();
+            console.log('User found in Firestore:', userData);
             setUser({
               ...userData,
               id: firebaseUser.uid,
@@ -44,6 +47,7 @@ export const AuthProvider = ({ children }) => {
           } else {
             // User doesn't exist in Firestore yet, create a new record
             // Default to team role for new users
+            console.log('Creating new user in Firestore');
             const newUserData = {
               name: firebaseUser.displayName || 'User',
               email: firebaseUser.email,
@@ -53,8 +57,15 @@ export const AuthProvider = ({ children }) => {
               photoURL: firebaseUser.photoURL || ''
             };
 
-            // Save to Firestore
-            await setDoc(doc(db, 'users', firebaseUser.uid), newUserData);
+            try {
+              // Save to Firestore
+              await setDoc(doc(db, 'users', firebaseUser.uid), newUserData);
+              console.log('User saved to Firestore');
+            } catch (firestoreError) {
+              // If Firestore save fails (e.g., due to ad blockers), still proceed with authentication
+              console.error('Error saving user to Firestore:', firestoreError);
+              console.log('Continuing with authentication despite Firestore error');
+            }
 
             setUser({
               ...newUserData,
@@ -63,13 +74,33 @@ export const AuthProvider = ({ children }) => {
           }
 
           setIsAuthenticated(true);
+
+          // Check if we need to redirect after successful authentication
+          const redirectInProgress = sessionStorage.getItem('googleRedirectInProgress');
+          const googleSignInSuccess = sessionStorage.getItem('googleSignInSuccess');
+
+          if (redirectInProgress || googleSignInSuccess) {
+            // Clear the flags
+            sessionStorage.removeItem('googleRedirectInProgress');
+            sessionStorage.removeItem('googleSignInSuccess');
+          }
         } catch (error) {
           console.error('Error getting user data:', error);
-          setIsAuthenticated(false);
-          setUser(null);
+          // Even if there's an error with Firestore, we still want to authenticate the user
+          // since they've successfully signed in with Firebase Auth
+          setUser({
+            id: firebaseUser.uid,
+            name: firebaseUser.displayName || 'User',
+            email: firebaseUser.email,
+            role: USER_ROLES.TEAM,
+            permissions: ['view_all', 'edit_all', 'admin'],
+            photoURL: firebaseUser.photoURL || ''
+          });
+          setIsAuthenticated(true);
         }
       } else {
         // No user is signed in
+        console.log('No user signed in');
         setIsAuthenticated(false);
         setUser(null);
       }

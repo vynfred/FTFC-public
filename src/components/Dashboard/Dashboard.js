@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { FaCalendarAlt, FaChartBar, FaFileContract, FaLightbulb, FaPencilAlt, FaUserPlus } from 'react-icons/fa';
+import { collection, getDocs, limit, orderBy, query } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
+import { FaCalendarAlt, FaFileContract, FaLightbulb, FaPencilAlt, FaUserPlus } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useDateRange } from '../../context/DateRangeContext';
 import { useStatsView } from '../../context/StatsViewContext';
-import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
 import { db } from '../../firebase-config';
 import Grid from '../ui/layout/Grid';
 import styles from './Dashboard.module.css';
@@ -41,32 +41,44 @@ const SalesDashboard = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        
-        // Fetch meetings
-        const meetingsQuery = query(collection(db, 'meetings'), orderBy('date', 'desc'), limit(5));
-        const meetingsSnapshot = await getDocs(meetingsQuery);
-        const meetingsList = meetingsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          title: doc.data().title || 'Untitled Meeting',
-          time: doc.data().time || 'No time specified',
-          type: doc.data().type || 'No type specified'
-        }));
+
+        // Fetch meetings with error handling
+        let meetingsList = [];
+        try {
+          const meetingsQuery = query(collection(db, 'meetings'), orderBy('date', 'desc'), limit(5));
+          const meetingsSnapshot = await getDocs(meetingsQuery);
+          meetingsList = meetingsSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+            title: doc.data().title || 'Untitled Meeting',
+            time: doc.data().time || 'No time specified',
+            type: doc.data().type || 'No type specified'
+          }));
+        } catch (meetingsError) {
+          console.error('Error fetching meetings:', meetingsError);
+          // Continue with empty meetings list
+        }
         setMeetings(meetingsList.length > 0 ? meetingsList : []);
-        
-        // Fetch leads for metrics
-        const leadsQuery = query(collection(db, 'leads'));
-        const leadsSnapshot = await getDocs(leadsQuery);
-        const leadsList = leadsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        
+
+        // Fetch leads for metrics with error handling
+        let leadsList = [];
+        try {
+          const leadsQuery = query(collection(db, 'leads'));
+          const leadsSnapshot = await getDocs(leadsQuery);
+          leadsList = leadsSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+        } catch (leadsError) {
+          console.error('Error fetching leads:', leadsError);
+          // Continue with empty leads list
+        }
+
         // Calculate metrics
         const totalLeads = leadsList.length;
         const qualifiedLeads = leadsList.filter(lead => lead.status === 'Qualified').length;
         const conversionRate = totalLeads > 0 ? ((qualifiedLeads / totalLeads) * 100).toFixed(1) : '0';
-        
+
         // Update metrics based on viewCompanyStats
         if (viewCompanyStats) {
           setMetrics([
@@ -95,14 +107,14 @@ const SalesDashboard = () => {
             progress: 0
           });
         }
-        
+
         setLoading(false);
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
         setLoading(false);
       }
     };
-    
+
     fetchData();
   }, [dateRange, viewCompanyStats]);
 

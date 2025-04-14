@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, onAuthStateChanged as firebaseAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, signOut as firebaseSignOut } from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth, getRedirectResult, GoogleAuthProvider, onAuthStateChanged as firebaseAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, signOut as firebaseSignOut } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { getStorage } from 'firebase/storage';
@@ -25,6 +25,16 @@ const firebaseFunctions = getFunctions(app);
 // Development mode check
 const isDevelopment = process.env.NODE_ENV === 'development';
 
+// Create a Google provider instance to reuse
+const googleProvider = new GoogleAuthProvider();
+// Add scopes
+googleProvider.addScope('https://www.googleapis.com/auth/userinfo.email');
+googleProvider.addScope('https://www.googleapis.com/auth/userinfo.profile');
+// Set custom parameters
+googleProvider.setCustomParameters({
+  prompt: 'select_account'
+});
+
 // Auth service
 // Always use real Firebase auth for Google authentication to work properly
 const auth = {
@@ -33,24 +43,15 @@ const auth = {
   signInWithEmailAndPassword: (email, password) => signInWithEmailAndPassword(firebaseAuth, email, password),
   signOut: () => firebaseSignOut(firebaseAuth),
   createUserWithEmailAndPassword: (email, password) => createUserWithEmailAndPassword(firebaseAuth, email, password),
+  getRedirectResult: () => getRedirectResult(firebaseAuth),
   signInWithGoogle: () => {
     try {
-      console.log('Starting Google sign-in process...');
-      const provider = new GoogleAuthProvider();
-
-      // Add scopes if needed
-      provider.addScope('https://www.googleapis.com/auth/userinfo.email');
-      provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
-
-      // Set custom parameters
-      provider.setCustomParameters({
-        prompt: 'select_account'
-      });
-
-      console.log('Configured Google provider, initiating popup...');
-      return signInWithPopup(firebaseAuth, provider)
+      console.log('Starting Google sign-in process with popup...');
+      return signInWithPopup(firebaseAuth, googleProvider)
         .then(result => {
           console.log('Google sign-in successful:', result.user.email);
+          // Store a flag in sessionStorage to indicate successful sign-in
+          sessionStorage.setItem('googleSignInSuccess', 'true');
           return result;
         })
         .catch(error => {
@@ -63,7 +64,7 @@ const auth = {
           // If popup is blocked or fails, try redirect method
           if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
             console.log('Popup failed, trying redirect method...');
-            return signInWithRedirect(firebaseAuth, provider);
+            return signInWithRedirect(firebaseAuth, googleProvider);
           }
 
           throw error;
@@ -78,20 +79,12 @@ const auth = {
   signInWithGoogleRedirect: () => {
     try {
       console.log('Starting Google sign-in with redirect...');
-      const provider = new GoogleAuthProvider();
-
-      // Add scopes if needed
-      provider.addScope('https://www.googleapis.com/auth/userinfo.email');
-      provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
-
-      // Set custom parameters
-      provider.setCustomParameters({
-        prompt: 'select_account'
-      });
-
-      return signInWithRedirect(firebaseAuth, provider);
+      // Store a flag in sessionStorage to indicate redirect is in progress
+      sessionStorage.setItem('googleRedirectInProgress', 'true');
+      return signInWithRedirect(firebaseAuth, googleProvider);
     } catch (error) {
       console.error('Google sign-in redirect error:', error);
+      sessionStorage.removeItem('googleRedirectInProgress');
       throw error;
     }
   }
