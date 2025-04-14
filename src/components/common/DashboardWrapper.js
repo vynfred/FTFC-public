@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import styles from './DashboardWrapper.module.css';
 import PrivateTopNav from './PrivateTopNav';
 import SidebarNav from './SidebarNav';
@@ -30,22 +31,15 @@ const DashboardWrapper = () => {
     setSidebarCollapsed(!sidebarCollapsed);
   };
 
-  // Get user info from localStorage or use defaults
-  const getUserInfo = () => {
-    try {
-      const user = JSON.parse(localStorage.getItem('user')) || {};
-      return {
-        name: user.name || 'John Doe',
-        role: user.role || 'Admin',
-        initials: user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'JD'
-      };
-    } catch (error) {
-      console.error('Error parsing user data:', error);
-      return { name: 'John Doe', role: 'Admin', initials: 'JD' };
-    }
-  };
+  // Get user info from AuthContext
+  const { user } = useAuth();
 
-  const { name, role, initials } = getUserInfo();
+  // Extract user info or use defaults
+  const name = user?.name || user?.displayName || 'Team Member';
+  const role = user?.role || 'Team';
+  const initials = name
+    ? name.split(' ').map(n => n[0]).join('').toUpperCase()
+    : 'TM';
 
   // Add necessary class to body to enable style targeting
   useEffect(() => {
