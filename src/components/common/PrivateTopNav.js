@@ -40,7 +40,9 @@ const PrivateTopNav = ({ toggleMobileMenu }) => {
       </div>
 
       <div className={styles.searchBar}>
-        <FaSearch className={styles.searchIcon} />
+        <span className={styles.searchIcon}>
+          <FaSearch />
+        </span>
         <input type="text" placeholder="Search..." />
       </div>
 

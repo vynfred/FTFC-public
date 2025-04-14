@@ -18,6 +18,7 @@ import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import { DateRangeProvider } from './context/DateRangeContext';
 import { StatsViewProvider } from './context/StatsViewContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 // Create root
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -27,11 +28,13 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <DateRangeProvider>
-          <StatsViewProvider>
-            <App />
-          </StatsViewProvider>
-        </DateRangeProvider>
+        <ThemeProvider>
+          <DateRangeProvider>
+            <StatsViewProvider>
+              <App />
+            </StatsViewProvider>
+          </DateRangeProvider>
+        </ThemeProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>

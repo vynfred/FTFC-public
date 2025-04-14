@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { db } from '../../firebase-config';
 import GoogleCalendarConnect from '../integrations/GoogleCalendarConnect';
 import GoogleDriveConnect from '../integrations/GoogleDriveConnect';
+import ProfileThemeToggle from '../ui/theme/ProfileThemeToggle';
 import styles from './UserProfile.module.css';
 
 const UserProfile = () => {
@@ -223,6 +224,10 @@ const UserProfile = () => {
           <div className={styles.settingsSection}>
             <h4>Two-Factor Authentication</h4>
             <button className={styles.actionButton}>Enable 2FA</button>
+          </div>
+
+          <div className={styles.settingsSection}>
+            <ProfileThemeToggle />
           </div>
         </div>
 

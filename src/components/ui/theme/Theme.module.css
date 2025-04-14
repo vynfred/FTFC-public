@@ -121,3 +121,73 @@
 .themeColorOption.active {
   border-color: var(--color-text-primary);
 }
+
+/* Profile Theme Settings */
+.profileThemeSettings {
+  margin-bottom: var(--spacing-lg);
+}
+
+.settingTitle {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-text-primary);
+}
+
+.settingDescription {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.themeCard {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-background-light);
+  margin-bottom: var(--spacing-sm);
+  cursor: pointer;
+  transition: all var(--transition-default);
+  position: relative;
+}
+
+.themeCard:hover {
+  background-color: var(--color-background);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.activeTheme {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+.themeCardIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: var(--color-background);
+  margin-right: var(--spacing-md);
+  color: var(--color-primary);
+  font-size: 1.25rem;
+}
+
+.themeCardContent {
+  flex: 1;
+}
+
+.themeCardTitle {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.themeCardCheck {
+  color: var(--color-primary);
+  font-size: 1.25rem;
+}
