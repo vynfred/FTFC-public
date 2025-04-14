@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, onAuthStateChanged as firebaseAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut as firebaseSignOut } from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, onAuthStateChanged as firebaseAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, signOut as firebaseSignOut } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { getStorage } from 'firebase/storage';
@@ -34,8 +34,66 @@ const auth = {
   signOut: () => firebaseSignOut(firebaseAuth),
   createUserWithEmailAndPassword: (email, password) => createUserWithEmailAndPassword(firebaseAuth, email, password),
   signInWithGoogle: () => {
-    const provider = new GoogleAuthProvider();
-    return signInWithPopup(firebaseAuth, provider);
+    try {
+      console.log('Starting Google sign-in process...');
+      const provider = new GoogleAuthProvider();
+
+      // Add scopes if needed
+      provider.addScope('https://www.googleapis.com/auth/userinfo.email');
+      provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
+
+      // Set custom parameters
+      provider.setCustomParameters({
+        prompt: 'select_account'
+      });
+
+      console.log('Configured Google provider, initiating popup...');
+      return signInWithPopup(firebaseAuth, provider)
+        .then(result => {
+          console.log('Google sign-in successful:', result.user.email);
+          return result;
+        })
+        .catch(error => {
+          console.error('Google sign-in error in promise chain:', error);
+          console.error('Error code:', error.code);
+          console.error('Error message:', error.message);
+          if (error.email) console.error('Error email:', error.email);
+          if (error.credential) console.error('Error credential:', error.credential);
+
+          // If popup is blocked or fails, try redirect method
+          if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
+            console.log('Popup failed, trying redirect method...');
+            return signInWithRedirect(firebaseAuth, provider);
+          }
+
+          throw error;
+        });
+    } catch (error) {
+      console.error('Google sign-in error in try/catch:', error);
+      throw error;
+    }
+  },
+
+  // Alternative method using redirect instead of popup
+  signInWithGoogleRedirect: () => {
+    try {
+      console.log('Starting Google sign-in with redirect...');
+      const provider = new GoogleAuthProvider();
+
+      // Add scopes if needed
+      provider.addScope('https://www.googleapis.com/auth/userinfo.email');
+      provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
+
+      // Set custom parameters
+      provider.setCustomParameters({
+        prompt: 'select_account'
+      });
+
+      return signInWithRedirect(firebaseAuth, provider);
+    } catch (error) {
+      console.error('Google sign-in redirect error:', error);
+      throw error;
+    }
   }
 };
 

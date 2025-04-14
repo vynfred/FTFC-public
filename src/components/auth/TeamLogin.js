@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FaEnvelope, FaGoogle, FaLock } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { auth } from '../../firebase-config';
 
 const TeamLogin = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,22 @@ const TeamLogin = () => {
 
   const navigate = useNavigate();
   const { login, googleSignIn } = useAuth();
+
+  // Alternative method for Google sign-in using redirect
+  const handleGoogleSignInRedirect = () => {
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      console.log('TeamLogin: Starting Google sign-in with redirect...');
+      auth.signInWithGoogleRedirect();
+      // Note: This will redirect the page, so no need for further handling here
+    } catch (error) {
+      console.error('TeamLogin: Google sign-in redirect error:', error);
+      setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });
+      setIsLoading(false);
+    }
+  };
 
   // Force scroll to top when component mounts
   useEffect(() => {
@@ -102,17 +119,31 @@ const TeamLogin = () => {
     setErrors({});
 
     try {
+      console.log('TeamLogin: Starting Google sign-in...');
       // Attempt Google sign-in with Firebase Authentication
       await googleSignIn();
+      console.log('TeamLogin: Google sign-in successful, redirecting...');
 
       // Redirect to dashboard on success
       navigate('/dashboard');
     } catch (error) {
-      console.error('Google sign-in error:', error);
+      console.error('TeamLogin: Google sign-in error:', error);
+      console.error('TeamLogin: Error code:', error.code);
+      console.error('TeamLogin: Error message:', error.message);
 
-      // Only show error if it's not the user closing the popup
-      if (error.code !== 'auth/popup-closed-by-user') {
-        setErrors({ general: 'Google sign-in failed. Please try again.' });
+      // Show detailed error message
+      if (error.code === 'auth/popup-closed-by-user') {
+        console.log('TeamLogin: User closed the popup');
+        // No need to show an error
+      } else if (error.code === 'auth/popup-blocked') {
+        setErrors({ general: 'Popup was blocked by your browser. Please allow popups for this site and try again.' });
+      } else if (error.code === 'auth/cancelled-popup-request') {
+        console.log('TeamLogin: Popup request was cancelled');
+        // No need to show an error
+      } else if (error.code === 'auth/unauthorized-domain') {
+        setErrors({ general: 'This domain is not authorized for OAuth operations. Please contact support.' });
+      } else {
+        setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });
       }
     } finally {
       setIsLoading(false);
@@ -180,13 +211,13 @@ const TeamLogin = () => {
 
         <div style={{ margin: '20px 0', textAlign: 'center' }}>
           <p style={{ margin: '10px 0', color: '#94a3b8' }}>- OR -</p>
-          <button 
-            type="button" 
-            onClick={handleGoogleSignIn} 
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
             disabled={isLoading}
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
+            style={{
+              display: 'flex',
+              alignItems: 'center',
               justifyContent: 'center',
               gap: '10px',
               width: '100%',
@@ -198,12 +229,44 @@ const TeamLogin = () => {
               fontSize: '16px',
               fontWeight: '500',
               cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              marginBottom: '10px'
+            }}
+          >
+            <FaGoogle style={{ color: '#DB4437' }} />
+            {isLoading ? 'Signing in...' : 'Sign in with Google (Popup)'}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleGoogleSignInRedirect}
+            disabled={isLoading}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+              width: '100%',
+              padding: '12px',
+              backgroundColor: '#f8fafc',
+              color: '#333333',
+              border: '1px solid #d1d5db',
+              borderRadius: '4px',
+              fontSize: '16px',
+              fontWeight: '500',
+              cursor: 'pointer',
               transition: 'all 0.2s ease'
             }}
           >
             <FaGoogle style={{ color: '#DB4437' }} />
-            {isLoading ? 'Signing in...' : 'Sign in with Google'}
+            {isLoading ? 'Signing in...' : 'Sign in with Google (Redirect)'}
           </button>
+
+          {errors.general && errors.general.includes('unauthorized-domain') && (
+            <div style={{ marginTop: '10px', fontSize: '14px', color: '#94a3b8' }}>
+              <p>If you're seeing an unauthorized domain error, try the redirect method above.</p>
+            </div>
+          )}
         </div>
 
         <div className="login-footer">
