@@ -1,8 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import {
-    getAuth, onAuthStateChanged as firebaseAuthStateChanged, signInWithEmailAndPassword,
-    signOut as firebaseSignOut
-} from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, onAuthStateChanged as firebaseAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut as firebaseSignOut } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { getStorage } from 'firebase/storage';
@@ -29,38 +26,18 @@ const firebaseFunctions = getFunctions(app);
 const isDevelopment = process.env.NODE_ENV === 'development';
 
 // Auth service
-const auth = isDevelopment ?
-  // Mock auth for development
-  {
-    currentUser: {
-      uid: '1',
-      email: 'john@example.com',
-      displayName: 'John Doe'
-    },
-    onAuthStateChanged: (callback) => {
-      callback(auth.currentUser);
-      return () => {}; // Return unsubscribe function
-    },
-    signInWithEmailAndPassword: (email, password) => {
-      return Promise.resolve({
-        user: {
-          uid: '1',
-          email,
-          displayName: 'John Doe'
-        }
-      });
-    },
-    signOut: () => Promise.resolve(),
-    createUserWithEmailAndPassword: () => Promise.resolve()
-  } :
-  // Real Firebase auth for production
-  {
-    currentUser: firebaseAuth.currentUser,
-    onAuthStateChanged: (callback) => firebaseAuthStateChanged(firebaseAuth, callback),
-    signInWithEmailAndPassword: (email, password) => signInWithEmailAndPassword(firebaseAuth, email, password),
-    signOut: () => firebaseSignOut(firebaseAuth),
-    createUserWithEmailAndPassword: (email, password) => firebaseAuth.createUserWithEmailAndPassword(email, password)
-  };
+// Always use real Firebase auth for Google authentication to work properly
+const auth = {
+  currentUser: firebaseAuth.currentUser,
+  onAuthStateChanged: (callback) => firebaseAuthStateChanged(firebaseAuth, callback),
+  signInWithEmailAndPassword: (email, password) => signInWithEmailAndPassword(firebaseAuth, email, password),
+  signOut: () => firebaseSignOut(firebaseAuth),
+  createUserWithEmailAndPassword: (email, password) => createUserWithEmailAndPassword(firebaseAuth, email, password),
+  signInWithGoogle: () => {
+    const provider = new GoogleAuthProvider();
+    return signInWithPopup(firebaseAuth, provider);
+  }
+};
 
 // Firestore service
 const db = isDevelopment ?

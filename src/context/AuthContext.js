@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { auth, db } from '../firebase-config';
@@ -107,8 +107,8 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
 
     try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
+      // Use the signInWithGoogle method from our auth service
+      const result = await auth.signInWithGoogle();
 
       // Firebase Auth successful, user state will be updated by the onAuthStateChanged listener
       return result.user;
