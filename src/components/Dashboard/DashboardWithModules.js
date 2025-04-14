@@ -1,6 +1,6 @@
 import { collection, getDocs, limit, orderBy, query } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { FaCalendarAlt, FaFileContract, FaLightbulb, FaPencilAlt, FaUserPlus } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileContract, FaUserPlus } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useDateRange } from '../../context/DateRangeContext';
 import { useStatsView } from '../../context/StatsViewContext';
@@ -117,10 +117,9 @@ const DashboardWithModules = () => {
   // Quick action shortcuts
   const shortcuts = [
     { title: 'Add Lead', icon: <FaUserPlus />, link: '/dashboard/leads/new' },
-    { title: 'Create Contract', icon: <FaFileContract />, link: '/dashboard/contracts/new' },
+    { title: 'Add Contact', icon: <FaUserPlus />, link: '/dashboard/contacts/new' },
     { title: 'Schedule Meeting', icon: <FaCalendarAlt />, link: '/dashboard/meetings/new' },
-    { title: 'Add Note', icon: <FaPencilAlt />, link: '/dashboard/notes/new' },
-    { title: 'Create Proposal', icon: <FaLightbulb />, link: '/dashboard/proposals/new' },
+    { title: 'Create Proposal', icon: <FaFileContract />, link: '/dashboard/proposals/new' },
   ];
 
   return (

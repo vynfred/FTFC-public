@@ -31,17 +31,21 @@ import ClientCreate from './components/Dashboard/ClientCreate';
 import ClientDetail from './components/Dashboard/ClientDetail';
 import ClientsDashboard from './components/Dashboard/ClientsDashboard';
 import CompanySettings from './components/Dashboard/CompanySettings';
+import ContactCreate from './components/Dashboard/ContactCreate';
 import Dashboard from './components/Dashboard/Dashboard';
 import DashboardWithModules from './components/Dashboard/DashboardWithModules';
 import InvestorDashboard from './components/Dashboard/InvestorDashboard';
 import InvestorDashboardWithModules from './components/Dashboard/InvestorDashboardWithModules';
 import InvestorDetail from './components/Dashboard/InvestorDetail';
+import LeadCreate from './components/Dashboard/LeadCreate';
 import LeadDetail from './components/Dashboard/LeadDetail';
 import LeadsDashboard from './components/Dashboard/LeadsDashboard';
 import MarketingDashboard from './components/Dashboard/MarketingDashboard';
+import MeetingCreate from './components/Dashboard/MeetingCreate';
 import MeetingDetail from './components/Dashboard/MeetingDetail';
 import PartnerDashboard from './components/Dashboard/PartnerDashboard';
 import PartnerDetail from './components/Dashboard/PartnerDetail';
+import ProposalCreate from './components/Dashboard/ProposalCreate';
 import UserProfile from './components/Dashboard/UserProfile';
 import ComponentsExamples from './components/examples/ComponentsExamples';
 import CssExamples from './components/examples/CssExamples';
@@ -177,7 +181,11 @@ function App() {
           <Route path="/dashboard/investors/:id" element={<InvestorDetail />} />
           <Route path="/dashboard/partners/:id" element={<PartnerDetail />} />
           <Route path="/dashboard/leads/:id" element={<LeadDetail />} />
+          <Route path="/dashboard/leads/new" element={<LeadCreate />} />
+          <Route path="/dashboard/contacts/new" element={<ContactCreate />} />
           <Route path="/dashboard/meetings/:id" element={<MeetingDetail />} />
+          <Route path="/dashboard/meetings/new" element={<MeetingCreate />} />
+          <Route path="/dashboard/proposals/new" element={<ProposalCreate />} />
 
           {/* Blog Management Routes */}
           <Route path="/admin/blog" element={<BlogManage />} />

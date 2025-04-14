@@ -1,6 +1,6 @@
 import { collection, getDocs, limit, orderBy, query } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { FaCalendarAlt, FaFileContract, FaLightbulb, FaPencilAlt, FaUserPlus } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileContract, FaLightbulb, FaUserPlus } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useDateRange } from '../../context/DateRangeContext';
 import { useStatsView } from '../../context/StatsViewContext';
@@ -154,9 +154,9 @@ const SalesDashboard = () => {
 
   const shortcuts = [
     { title: 'Add Lead', icon: <FaUserPlus />, link: '/dashboard/leads/new' },
-    { title: 'Schedule Meeting', icon: <FaCalendarAlt />, link: '/dashboard/calendar' },
+    { title: 'Add Contact', icon: <FaUserPlus />, link: '/dashboard/contacts/new' },
+    { title: 'Schedule Meeting', icon: <FaCalendarAlt />, link: '/dashboard/meetings/new' },
     { title: 'Create Proposal', icon: <FaFileContract />, link: '/dashboard/proposals/new' },
-    { title: 'Add Note', icon: <FaPencilAlt />, link: '/dashboard/notes/new' },
     { title: 'Create Campaign', icon: <FaLightbulb />, link: '/dashboard/marketing/campaigns/new' },
   ];
 

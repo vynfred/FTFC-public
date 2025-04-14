@@ -130,7 +130,7 @@ const LeadsDashboard = () => {
 
   // Function to handle create lead
   const handleCreateLead = () => {
-    navigate('/dashboard/leads/create');
+    navigate('/dashboard/leads/new');
   };
 
   // Table actions component for the leads table
