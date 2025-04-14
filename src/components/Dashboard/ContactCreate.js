@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaSave, FaTimes } from 'react-icons/fa';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import React, { useState } from 'react';
+import { FaArrowLeft, FaSave, FaTimes } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import { db } from '../../firebase-config';
+import { EMAIL_TYPES, sendCustomEmail } from '../../services/emailService';
+import { generateToken } from '../../utils/tokenUtils';
 import styles from './DetailPages.module.css';
 
 const ContactCreate = () => {
@@ -10,7 +12,7 @@ const ContactCreate = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
-  
+
   // Form state
   const [contactData, setContactData] = useState({
     firstName: '',
@@ -23,9 +25,10 @@ const ContactCreate = () => {
     linkedCompanyId: '',
     linkedInvestorId: '',
     linkedPartnerId: '',
-    notes: ''
+    notes: '',
+    sendConfirmationEmail: true
   });
-  
+
   // Handle input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -34,31 +37,62 @@ const ContactCreate = () => {
       [name]: value
     }));
   };
-  
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validate form
     if (!contactData.firstName || !contactData.lastName || !contactData.email) {
       setError('Please fill in all required fields');
       return;
     }
-    
+
     setIsSubmitting(true);
     setError(null);
-    
+
     try {
+      // Generate verification token if sending confirmation email
+      const verificationToken = contactData.sendConfirmationEmail ? generateToken() : null;
+      const verificationExpiry = contactData.sendConfirmationEmail ?
+        new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) : null; // 7 days from now
+
       // Create contact in Firestore
       const docRef = await addDoc(collection(db, 'contacts'), {
         ...contactData,
         name: `${contactData.firstName} ${contactData.lastName}`,
         createdAt: serverTimestamp(),
-        lastUpdated: serverTimestamp()
+        lastUpdated: serverTimestamp(),
+        isVerified: !contactData.sendConfirmationEmail, // If not sending email, mark as verified
+        verificationToken: verificationToken,
+        verificationExpiry: verificationExpiry,
+        portalAccess: !contactData.sendConfirmationEmail // If not sending email, grant portal access
       });
-      
+
+      // Send confirmation email if option is selected
+      if (contactData.sendConfirmationEmail) {
+        try {
+          const verificationUrl = `${window.location.origin}/verify-contact/${docRef.id}/${verificationToken}`;
+
+          await sendCustomEmail(
+            contactData.email,
+            EMAIL_TYPES.WELCOME,
+            {
+              name: `${contactData.firstName} ${contactData.lastName}`,
+              verificationUrl: verificationUrl,
+              portalType: contactData.type.toLowerCase()
+            }
+          );
+
+          console.log('Confirmation email sent successfully');
+        } catch (emailError) {
+          console.error('Error sending confirmation email:', emailError);
+          // Continue even if email fails
+        }
+      }
+
       setSuccess(true);
-      
+
       // Redirect to contact detail page after a short delay
       setTimeout(() => {
         navigate(`/dashboard/contacts/${docRef.id}`);
@@ -70,25 +104,25 @@ const ContactCreate = () => {
       setIsSubmitting(false);
     }
   };
-  
+
   return (
     <div className={styles.detailPage}>
       <div className={styles.header}>
-        <button 
+        <button
           className={styles.backButton}
           onClick={() => navigate('/dashboard/contacts')}
         >
           <FaArrowLeft /> Back to Contacts
         </button>
         <div className={styles.actions}>
-          <button 
+          <button
             className={`${styles.actionButton} ${styles.saveButton}`}
             onClick={handleSubmit}
             disabled={isSubmitting}
           >
             <FaSave /> {isSubmitting ? 'Creating...' : 'Create Contact'}
           </button>
-          <button 
+          <button
             className={styles.actionButton}
             onClick={() => navigate('/dashboard/contacts')}
             disabled={isSubmitting}
@@ -97,13 +131,13 @@ const ContactCreate = () => {
           </button>
         </div>
       </div>
-      
+
       {error && (
         <div className={styles.errorMessage}>
           {error}
         </div>
       )}
-      
+
       {success ? (
         <div className={styles.successMessage}>
           <h3>Contact Created Successfully!</h3>
@@ -113,7 +147,7 @@ const ContactCreate = () => {
         <form className={styles.createForm} onSubmit={handleSubmit}>
           <div className={styles.formSection}>
             <h3>Contact Information</h3>
-            
+
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
                 <label htmlFor="firstName">First Name *</label>
@@ -126,7 +160,7 @@ const ContactCreate = () => {
                   required
                 />
               </div>
-              
+
               <div className={styles.formGroup}>
                 <label htmlFor="lastName">Last Name *</label>
                 <input
@@ -139,7 +173,7 @@ const ContactCreate = () => {
                 />
               </div>
             </div>
-            
+
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
                 <label htmlFor="email">Email *</label>
@@ -152,7 +186,7 @@ const ContactCreate = () => {
                   required
                 />
               </div>
-              
+
               <div className={styles.formGroup}>
                 <label htmlFor="phone">Phone</label>
                 <input
@@ -165,10 +199,10 @@ const ContactCreate = () => {
               </div>
             </div>
           </div>
-          
+
           <div className={styles.formSection}>
             <h3>Professional Information</h3>
-            
+
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
                 <label htmlFor="companyName">Company Name</label>
@@ -180,7 +214,7 @@ const ContactCreate = () => {
                   onChange={handleInputChange}
                 />
               </div>
-              
+
               <div className={styles.formGroup}>
                 <label htmlFor="position">Position</label>
                 <input
@@ -192,7 +226,7 @@ const ContactCreate = () => {
                 />
               </div>
             </div>
-            
+
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
                 <label htmlFor="type">Contact Type</label>
@@ -209,7 +243,7 @@ const ContactCreate = () => {
                   <option value="Other">Other</option>
                 </select>
               </div>
-              
+
               {contactData.type === 'Client' && (
                 <div className={styles.formGroup}>
                   <label htmlFor="linkedCompanyId">Linked Company ID</label>
@@ -222,7 +256,7 @@ const ContactCreate = () => {
                   />
                 </div>
               )}
-              
+
               {contactData.type === 'Investor' && (
                 <div className={styles.formGroup}>
                   <label htmlFor="linkedInvestorId">Linked Investor ID</label>
@@ -235,7 +269,7 @@ const ContactCreate = () => {
                   />
                 </div>
               )}
-              
+
               {contactData.type === 'Partner' && (
                 <div className={styles.formGroup}>
                   <label htmlFor="linkedPartnerId">Linked Partner ID</label>
@@ -250,10 +284,10 @@ const ContactCreate = () => {
               )}
             </div>
           </div>
-          
+
           <div className={styles.formSection}>
             <h3>Additional Information</h3>
-            
+
             <div className={styles.formGroup}>
               <label htmlFor="notes">Notes</label>
               <textarea
@@ -263,6 +297,23 @@ const ContactCreate = () => {
                 value={contactData.notes}
                 onChange={handleInputChange}
               ></textarea>
+            </div>
+
+            <div className={styles.formGroup}>
+              <div className={styles.checkboxGroup}>
+                <input
+                  type="checkbox"
+                  id="sendConfirmationEmail"
+                  name="sendConfirmationEmail"
+                  checked={contactData.sendConfirmationEmail}
+                  onChange={(e) => setContactData(prev => ({
+                    ...prev,
+                    sendConfirmationEmail: e.target.checked
+                  }))}
+                />
+                <label htmlFor="sendConfirmationEmail">Send confirmation email with portal access</label>
+              </div>
+              <p className={styles.helpText}>When checked, the contact will receive an email to verify their account and access their portal.</p>
             </div>
           </div>
         </form>

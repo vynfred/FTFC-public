@@ -10,7 +10,8 @@ export const EMAIL_TYPES = {
   MILESTONE_COMPLETED: 'milestone_completed',
   PASSWORD_RESET: 'password_reset',
   LEAD_NOTIFICATION: 'lead_notification',
-  REFERRAL_RECEIVED: 'referral_received'
+  REFERRAL_RECEIVED: 'referral_received',
+  CONTACT_VERIFICATION: 'contact_verification'
 };
 
 /**

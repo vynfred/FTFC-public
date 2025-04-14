@@ -9,7 +9,8 @@ const EMAIL_TYPES = {
   MILESTONE_COMPLETED: 'milestone_completed',
   PASSWORD_RESET: 'password_reset',
   LEAD_NOTIFICATION: 'lead_notification',
-  REFERRAL_RECEIVED: 'referral_received'
+  REFERRAL_RECEIVED: 'referral_received',
+  CONTACT_VERIFICATION: 'contact_verification'
 };
 
 /**
@@ -18,12 +19,12 @@ const EMAIL_TYPES = {
 const initSendGrid = () => {
   // Get API key from environment variables
   const apiKey = functions.config().sendgrid?.key;
-  
+
   if (!apiKey) {
     console.error('SendGrid API key not found in environment variables');
     throw new Error('SendGrid API key not configured');
   }
-  
+
   sgMail.setApiKey(apiKey);
 };
 
@@ -37,6 +38,8 @@ const getSubjectForEmailType = (emailType, data) => {
   switch (emailType) {
     case EMAIL_TYPES.WELCOME:
       return `Welcome to FTFC, ${data.name}!`;
+    case EMAIL_TYPES.CONTACT_VERIFICATION:
+      return `Please Verify Your FTFC ${data.portalType || 'Client'} Portal Account`;
     case EMAIL_TYPES.MEETING_SCHEDULED:
       return `Meeting Scheduled: ${data.meetingTitle}`;
     case EMAIL_TYPES.DOCUMENT_UPLOADED:
@@ -136,7 +139,7 @@ const getHtmlForEmailType = (emailType, data) => {
 
   // Email-specific content
   let content = '';
-  
+
   switch (emailType) {
     case EMAIL_TYPES.WELCOME:
       content = `
@@ -147,7 +150,18 @@ const getHtmlForEmailType = (emailType, data) => {
         <p>If you have any questions, please don't hesitate to contact our support team.</p>
       `;
       break;
-      
+
+    case EMAIL_TYPES.CONTACT_VERIFICATION:
+      content = `
+        <h1>Verify Your FTFC ${data.portalType || 'Client'} Portal Account</h1>
+        <p>Thank you for joining FTFC. To complete your registration and access your portal, please verify your email address.</p>
+        <p>Click the button below to verify your account:</p>
+        <p><a href="${data.verificationUrl}" class="button">Verify My Account</a></p>
+        <p>This link will expire in 7 days. If you did not request this verification, please ignore this email.</p>
+        <p>If you have any questions, please don't hesitate to contact our support team.</p>
+      `;
+      break;
+
     case EMAIL_TYPES.MEETING_SCHEDULED:
       content = `
         <h1>Meeting Scheduled</h1>
@@ -164,7 +178,7 @@ const getHtmlForEmailType = (emailType, data) => {
         <p><a href="${data.calendarLink}" class="button">Add to Calendar</a></p>
       `;
       break;
-      
+
     case EMAIL_TYPES.DOCUMENT_UPLOADED:
       content = `
         <h1>New Document Uploaded</h1>
@@ -178,7 +192,7 @@ const getHtmlForEmailType = (emailType, data) => {
         <p><a href="${data.documentLink}" class="button">View Document</a></p>
       `;
       break;
-      
+
     case EMAIL_TYPES.MILESTONE_COMPLETED:
       content = `
         <h1>Milestone Completed</h1>
@@ -192,7 +206,7 @@ const getHtmlForEmailType = (emailType, data) => {
         <p><a href="${data.portalLink}" class="button">View in Portal</a></p>
       `;
       break;
-      
+
     case EMAIL_TYPES.PASSWORD_RESET:
       content = `
         <h1>Password Reset Request</h1>
@@ -202,7 +216,7 @@ const getHtmlForEmailType = (emailType, data) => {
         <p>This link will expire in 1 hour.</p>
       `;
       break;
-      
+
     case EMAIL_TYPES.LEAD_NOTIFICATION:
       content = `
         <h1>New Lead Notification</h1>
@@ -218,7 +232,7 @@ const getHtmlForEmailType = (emailType, data) => {
         <p><a href="${data.leadLink}" class="button">View Lead</a></p>
       `;
       break;
-      
+
     case EMAIL_TYPES.REFERRAL_RECEIVED:
       content = `
         <h1>New Referral Received</h1>
@@ -234,7 +248,7 @@ const getHtmlForEmailType = (emailType, data) => {
         <p><a href="${data.referralLink}" class="button">View Referral</a></p>
       `;
       break;
-      
+
     default:
       content = `
         <h1>FTFC Notification</h1>
@@ -242,7 +256,7 @@ const getHtmlForEmailType = (emailType, data) => {
         <p><a href="https://ftfc-start.web.app/login" class="button">Log In to Your Account</a></p>
       `;
   }
-  
+
   return header + content + footer;
 };
 
@@ -257,7 +271,7 @@ const sendEmail = async (to, emailType, data) => {
   try {
     // Initialize SendGrid
     initSendGrid();
-    
+
     // Prepare email message
     const msg = {
       to,
@@ -265,16 +279,16 @@ const sendEmail = async (to, emailType, data) => {
       subject: getSubjectForEmailType(emailType, data),
       html: getHtmlForEmailType(emailType, data),
     };
-    
+
     // Send email
     await sgMail.send(msg);
-    
+
     return { success: true };
   } catch (error) {
     console.error('Error sending email:', error);
-    return { 
-      success: false, 
-      error: error.message 
+    return {
+      success: false,
+      error: error.message
     };
   }
 };

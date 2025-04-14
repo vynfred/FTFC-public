@@ -8,6 +8,7 @@ import PartnerLogin from './components/auth/PartnerLogin';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import ResetPassword from './components/auth/ResetPassword';
 import TeamLogin from './components/auth/TeamLogin';
+import VerifyContact from './components/auth/VerifyContact';
 import BlogCreate from './components/blog/BlogCreate';
 import BlogEdit from './components/blog/BlogEdit';
 import BlogManage from './components/blog/BlogManage';
@@ -102,6 +103,7 @@ function App() {
           <Route path="/partner-login" element={<PartnerLogin />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/verify-contact/:contactId/:token" element={<VerifyContact />} />
           <Route path="/auth-test" element={<AuthTest />} />
 
           {/* Referral Intake Form Routes */}
