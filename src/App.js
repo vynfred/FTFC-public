@@ -177,15 +177,15 @@ function App() {
           <Route path="/dashboard/marketing/create-blog" element={<BlogCreate />} />
           <Route path="/dashboard/marketing/edit-content/:id" element={<BlogCreate />} />
           <Route path="/dashboard/marketing/create-campaign" element={<CampaignDetail />} />
+          <Route path="/dashboard/leads/new" element={<LeadCreate />} />
+          <Route path="/dashboard/contacts/new" element={<ContactCreate />} />
+          <Route path="/dashboard/meetings/new" element={<MeetingCreate />} />
+          <Route path="/dashboard/proposals/new" element={<ProposalCreate />} />
           <Route path="/dashboard/clients/:id" element={<ClientDetail />} />
           <Route path="/dashboard/investors/:id" element={<InvestorDetail />} />
           <Route path="/dashboard/partners/:id" element={<PartnerDetail />} />
           <Route path="/dashboard/leads/:id" element={<LeadDetail />} />
-          <Route path="/dashboard/leads/new" element={<LeadCreate />} />
-          <Route path="/dashboard/contacts/new" element={<ContactCreate />} />
           <Route path="/dashboard/meetings/:id" element={<MeetingDetail />} />
-          <Route path="/dashboard/meetings/new" element={<MeetingCreate />} />
-          <Route path="/dashboard/proposals/new" element={<ProposalCreate />} />
 
           {/* Blog Management Routes */}
           <Route path="/admin/blog" element={<BlogManage />} />
