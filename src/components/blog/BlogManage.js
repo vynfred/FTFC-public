@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { collection, deleteDoc, doc, getDocs, orderBy, query } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
+import { FaEdit, FaEye, FaFilter, FaPlus, FaTrash } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { collection, query, orderBy, getDocs, deleteDoc, doc } from 'firebase/firestore';
-import { FaEdit, FaTrash, FaPlus, FaSearch, FaFilter, FaEye } from 'react-icons/fa';
 import { db } from '../../firebase-config';
+import { SearchBar } from '../ui/form';
 import styles from './Blog.module.css';
 
 /**
@@ -28,7 +29,7 @@ const BlogManage = () => {
       }));
       setPosts(fetchedPosts);
       setFilteredPosts(fetchedPosts);
-      
+
       // Extract unique categories
       const uniqueCategories = [...new Set(fetchedPosts.map(post => post.category).filter(Boolean))];
       setCategories(uniqueCategories);
@@ -48,22 +49,22 @@ const BlogManage = () => {
   useEffect(() => {
     if (posts.length > 0) {
       let filtered = [...posts];
-      
+
       // Apply search filter
       if (searchTerm) {
         const term = searchTerm.toLowerCase();
-        filtered = filtered.filter(post => 
-          post.title?.toLowerCase().includes(term) || 
+        filtered = filtered.filter(post =>
+          post.title?.toLowerCase().includes(term) ||
           post.content?.toLowerCase().includes(term) ||
           post.author?.toLowerCase().includes(term)
         );
       }
-      
+
       // Apply category filter
       if (categoryFilter) {
         filtered = filtered.filter(post => post.category === categoryFilter);
       }
-      
+
       setFilteredPosts(filtered);
     }
   }, [searchTerm, categoryFilter, posts]);
@@ -109,13 +110,11 @@ const BlogManage = () => {
 
       <div className={styles.blogFilters}>
         <div className={styles.searchBar}>
-          <FaSearch className={styles.searchIcon} />
-          <input
-            type="text"
+          <SearchBar
             placeholder="Search posts..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className={styles.searchInput}
+            className={styles.blogSearch}
           />
         </div>
 
@@ -166,20 +165,20 @@ const BlogManage = () => {
                 </div>
               </div>
               <div className={styles.blogManageActions}>
-                <Link 
-                  to={`/blog/${post.slug || post.id}`} 
+                <Link
+                  to={`/blog/${post.slug || post.id}`}
                   target="_blank"
                   className={`${styles.dashboardButton} ${styles.secondary}`}
                 >
                   <FaEye /> View
                 </Link>
-                <Link 
-                  to={`/admin/blog/edit/${post.id}`} 
+                <Link
+                  to={`/admin/blog/edit/${post.id}`}
                   className={`${styles.dashboardButton} ${styles.secondary}`}
                 >
                   <FaEdit /> Edit
                 </Link>
-                <button 
+                <button
                   onClick={() => handleDelete(post.id)}
                   className={`${styles.dashboardButton} ${styles.danger}`}
                 >

@@ -49,6 +49,12 @@
   margin-bottom: var(--spacing-md);
 }
 
+/* Styles for the SearchBar component in contacts */
+.contact-search {
+  width: 100%;
+}
+
+/* Legacy styles for backward compatibility */
 .search-icon {
   position: absolute;
   left: var(--spacing-sm);
@@ -294,20 +300,20 @@
     align-items: flex-start;
     gap: var(--spacing-sm);
   }
-  
+
   .filters-container {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .filter-group {
     width: 100%;
   }
-  
+
   .filter-group select {
     width: 100%;
   }
-  
+
   .contact-table th:nth-child(2),
   .contact-table td:nth-child(2),
   .contact-table th:nth-child(5),

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { FaEnvelope, FaLock, FaSearch, FaSave, FaTimes, FaUser } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaSave, FaTimes, FaUser } from 'react-icons/fa';
+import { FormButton, FormCheckbox, FormInput, FormSelect, FormTextarea } from '../ui/form';
 import Container from '../ui/layout/Container';
 import Grid from '../ui/layout/Grid';
-import { FormButton, FormCheckbox, FormInput, FormSelect, FormTextarea } from '../ui/form';
 import styles from './Examples.module.css';
 
 const FormExamples = () => {
@@ -108,13 +108,13 @@ const FormExamples = () => {
   return (
     <Container className={styles.examplesContainer}>
       <h1 className={styles.examplesTitle}>Form Components</h1>
-      
+
       <div className={styles.examplesSection}>
         <h2 className={styles.examplesSectionTitle}>Form Example</h2>
         <p className={styles.examplesDescription}>
           This is an example of a form using our form components. The form includes validation and responsive layout.
         </p>
-        
+
         <form onSubmit={handleSubmit} className={styles.exampleForm}>
           <Grid columns={2} mdColumns={2} smColumns={1} gap="md">
             <div>
@@ -130,7 +130,7 @@ const FormExamples = () => {
                 error={formErrors.name}
               />
             </div>
-            
+
             <div>
               <FormInput
                 id="email"
@@ -145,7 +145,7 @@ const FormExamples = () => {
                 error={formErrors.email}
               />
             </div>
-            
+
             <div>
               <FormInput
                 id="password"
@@ -161,7 +161,7 @@ const FormExamples = () => {
                 helpText="Password must be at least 8 characters"
               />
             </div>
-            
+
             <div>
               <FormInput
                 id="confirmPassword"
@@ -176,7 +176,7 @@ const FormExamples = () => {
                 error={formErrors.confirmPassword}
               />
             </div>
-            
+
             <div>
               <FormSelect
                 id="role"
@@ -189,7 +189,7 @@ const FormExamples = () => {
                 error={formErrors.role}
               />
             </div>
-            
+
             <div>
               <FormInput
                 id="search"
@@ -198,12 +198,12 @@ const FormExamples = () => {
                 value=""
                 placeholder="Search..."
                 disabled
-                leftIcon={<FaSearch />}
+                leftIcon={<FaUser />}
                 helpText="This input is disabled for demonstration"
               />
             </div>
           </Grid>
-          
+
           <FormTextarea
             id="bio"
             name="bio"
@@ -214,7 +214,7 @@ const FormExamples = () => {
             rows={4}
             helpText="Optional: Share some information about yourself"
           />
-          
+
           <FormCheckbox
             id="agreeTerms"
             name="agreeTerms"
@@ -223,7 +223,7 @@ const FormExamples = () => {
             onChange={handleChange}
             error={formErrors.agreeTerms}
           />
-          
+
           <div className={styles.formActions}>
             <FormButton
               type="submit"
@@ -232,7 +232,7 @@ const FormExamples = () => {
             >
               Submit
             </FormButton>
-            
+
             <FormButton
               type="button"
               variant="secondary"
@@ -255,10 +255,10 @@ const FormExamples = () => {
           </div>
         </form>
       </div>
-      
+
       <div className={styles.examplesSection}>
         <h2 className={styles.examplesSectionTitle}>Form Components</h2>
-        
+
         <h3 className={styles.examplesSubtitle}>Text Inputs</h3>
         <Grid columns={3} mdColumns={2} smColumns={1} gap="md">
           <FormInput
@@ -266,35 +266,35 @@ const FormExamples = () => {
             label="Default Input"
             placeholder="Default input"
           />
-          
+
           <FormInput
             id="requiredInput"
             label="Required Input"
             placeholder="Required input"
             required
           />
-          
+
           <FormInput
             id="disabledInput"
             label="Disabled Input"
             placeholder="Disabled input"
             disabled
           />
-          
+
           <FormInput
             id="errorInput"
             label="Input with Error"
             placeholder="Input with error"
             error="This field has an error"
           />
-          
+
           <FormInput
             id="helpTextInput"
             label="Input with Help Text"
             placeholder="Input with help text"
             helpText="This is some helpful text"
           />
-          
+
           <FormInput
             id="iconInput"
             label="Input with Icon"
@@ -302,7 +302,7 @@ const FormExamples = () => {
             leftIcon={<FaUser />}
           />
         </Grid>
-        
+
         <h3 className={styles.examplesSubtitle}>Select Inputs</h3>
         <Grid columns={2} mdColumns={2} smColumns={1} gap="md">
           <FormSelect
@@ -310,21 +310,21 @@ const FormExamples = () => {
             label="Default Select"
             options={roleOptions}
           />
-          
+
           <FormSelect
             id="requiredSelect"
             label="Required Select"
             options={roleOptions}
             required
           />
-          
+
           <FormSelect
             id="disabledSelect"
             label="Disabled Select"
             options={roleOptions}
             disabled
           />
-          
+
           <FormSelect
             id="errorSelect"
             label="Select with Error"
@@ -332,7 +332,7 @@ const FormExamples = () => {
             error="This field has an error"
           />
         </Grid>
-        
+
         <h3 className={styles.examplesSubtitle}>Textarea</h3>
         <Grid columns={2} mdColumns={1} smColumns={1} gap="md">
           <FormTextarea
@@ -340,7 +340,7 @@ const FormExamples = () => {
             label="Default Textarea"
             placeholder="Default textarea"
           />
-          
+
           <FormTextarea
             id="errorTextarea"
             label="Textarea with Error"
@@ -348,36 +348,36 @@ const FormExamples = () => {
             error="This field has an error"
           />
         </Grid>
-        
+
         <h3 className={styles.examplesSubtitle}>Checkboxes</h3>
         <Grid columns={3} mdColumns={2} smColumns={1} gap="md">
           <FormCheckbox
             id="defaultCheckbox"
             label="Default Checkbox"
           />
-          
+
           <FormCheckbox
             id="checkedCheckbox"
             label="Checked Checkbox"
             checked
           />
-          
+
           <FormCheckbox
             id="disabledCheckbox"
             label="Disabled Checkbox"
             disabled
           />
         </Grid>
-        
+
         <h3 className={styles.examplesSubtitle}>Buttons</h3>
         <Grid columns={4} mdColumns={2} smColumns={1} gap="md">
           <FormButton variant="primary">Primary</FormButton>
           <FormButton variant="secondary">Secondary</FormButton>
           <FormButton variant="danger">Danger</FormButton>
           <FormButton variant="primary" disabled>Disabled</FormButton>
-          
+
           <FormButton variant="primary" icon={<FaSave />}>With Icon</FormButton>
-          <FormButton variant="secondary" icon={<FaSearch />}>Search</FormButton>
+          <FormButton variant="secondary" icon={<FaUser />}>Search</FormButton>
           <FormButton variant="danger" icon={<FaTimes />}>Cancel</FormButton>
           <FormButton variant="primary" icon={<FaUser />} disabled>Disabled</FormButton>
         </Grid>

@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { FaSearch, FaFilter, FaEye, FaEdit, FaTrash, FaPlus, FaUser, FaBuilding, FaEnvelope, FaPhone } from 'react-icons/fa';
+import React, { useEffect, useState } from 'react';
+import { FaBuilding, FaEdit, FaEnvelope, FaEye, FaFilter, FaPhone, FaPlus, FaTrash, FaUser } from 'react-icons/fa';
+import { SearchBar } from '../ui/form';
 import './ContactList.css';
 
 /**
  * Contact List Component
- * 
+ *
  * A reusable component for displaying a list of contacts with filtering and sorting.
  */
-const ContactList = ({ 
-  contacts = [], 
+const ContactList = ({
+  contacts = [],
   companies = [],
   investmentFirms = [],
   partnerFirms = [],
@@ -25,40 +25,40 @@ const ContactList = ({
   const [filterCompany, setFilterCompany] = useState('');
   const [filterFirm, setFilterFirm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: 'lastName', direction: 'ascending' });
-  
+
   // Filtered and sorted contacts
   const [filteredContacts, setFilteredContacts] = useState([]);
-  
+
   // Apply filters and sorting
   useEffect(() => {
     let result = [...contacts];
-    
+
     // Apply search filter
     if (searchTerm) {
       const lowerCaseSearch = searchTerm.toLowerCase();
-      result = result.filter(contact => 
+      result = result.filter(contact =>
         contact.firstName.toLowerCase().includes(lowerCaseSearch) ||
         contact.lastName.toLowerCase().includes(lowerCaseSearch) ||
         contact.email.toLowerCase().includes(lowerCaseSearch) ||
         (contact.title && contact.title.toLowerCase().includes(lowerCaseSearch))
       );
     }
-    
+
     // Apply type filter
     if (filterType !== 'all') {
       switch (filterType) {
         case 'company':
-          result = result.filter(contact => 
+          result = result.filter(contact =>
             contact.associations?.companies && contact.associations.companies.length > 0
           );
           break;
         case 'investor':
-          result = result.filter(contact => 
+          result = result.filter(contact =>
             contact.associations?.investmentFirms && contact.associations.investmentFirms.length > 0
           );
           break;
         case 'partner':
-          result = result.filter(contact => 
+          result = result.filter(contact =>
             contact.associations?.partnerFirms && contact.associations.partnerFirms.length > 0
           );
           break;
@@ -66,25 +66,25 @@ const ContactList = ({
           break;
       }
     }
-    
+
     // Apply company filter
     if (filterCompany) {
-      result = result.filter(contact => 
-        contact.associations?.companies && 
+      result = result.filter(contact =>
+        contact.associations?.companies &&
         contact.associations.companies.some(company => company.companyId === filterCompany)
       );
     }
-    
+
     // Apply firm filter
     if (filterFirm) {
-      result = result.filter(contact => 
-        (contact.associations?.investmentFirms && 
+      result = result.filter(contact =>
+        (contact.associations?.investmentFirms &&
          contact.associations.investmentFirms.some(firm => firm.firmId === filterFirm)) ||
-        (contact.associations?.partnerFirms && 
+        (contact.associations?.partnerFirms &&
          contact.associations.partnerFirms.some(firm => firm.firmId === filterFirm))
       );
     }
-    
+
     // Apply sorting
     if (sortConfig.key) {
       result.sort((a, b) => {
@@ -97,10 +97,10 @@ const ContactList = ({
         return 0;
       });
     }
-    
+
     setFilteredContacts(result);
   }, [contacts, searchTerm, filterType, filterCompany, filterFirm, sortConfig]);
-  
+
   // Request sort
   const requestSort = (key) => {
     let direction = 'ascending';
@@ -109,7 +109,7 @@ const ContactList = ({
     }
     setSortConfig({ key, direction });
   };
-  
+
   // Get sort icon
   const getSortIcon = (key) => {
     if (sortConfig.key !== key) {
@@ -117,24 +117,24 @@ const ContactList = ({
     }
     return sortConfig.direction === 'ascending' ? '↑' : '↓';
   };
-  
+
   // Get primary company for a contact
   const getPrimaryCompany = (contact) => {
     if (!contact.associations?.companies || contact.associations.companies.length === 0) {
       return null;
     }
-    
+
     const primaryCompany = contact.associations.companies.find(company => company.isPrimary);
     if (primaryCompany) {
       const company = companies.find(c => c.id === primaryCompany.companyId);
       return company ? company.name : 'Unknown Company';
     }
-    
+
     // If no primary company, return the first one
     const firstCompany = companies.find(c => c.id === contact.associations.companies[0].companyId);
     return firstCompany ? firstCompany.name : 'Unknown Company';
   };
-  
+
   // Reset filters
   const resetFilters = () => {
     setSearchTerm('');
@@ -142,31 +142,29 @@ const ContactList = ({
     setFilterCompany('');
     setFilterFirm('');
   };
-  
+
   return (
     <div className="contact-list">
       <div className="contact-list-header">
         <h2>Contacts</h2>
-        <button 
+        <button
           className="create-button"
           onClick={onCreateContact}
         >
           <FaPlus /> Add Contact
         </button>
       </div>
-      
+
       <div className="contact-list-filters">
         <div className="search-container">
-          <FaSearch className="search-icon" />
-          <input
-            type="text"
+          <SearchBar
             placeholder="Search contacts..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
+            className="contact-search"
           />
         </div>
-        
+
         <div className="filters-container">
           <div className="filter-group">
             <label>
@@ -182,7 +180,7 @@ const ContactList = ({
               <option value="partner">Partner Contacts</option>
             </select>
           </div>
-          
+
           <div className="filter-group">
             <label>
               <FaBuilding /> Company:
@@ -199,7 +197,7 @@ const ContactList = ({
               ))}
             </select>
           </div>
-          
+
           <div className="filter-group">
             <label>
               <FaBuilding /> Firm:
@@ -225,8 +223,8 @@ const ContactList = ({
               </optgroup>
             </select>
           </div>
-          
-          <button 
+
+          <button
             className="reset-button"
             onClick={resetFilters}
           >
@@ -234,7 +232,7 @@ const ContactList = ({
           </button>
         </div>
       </div>
-      
+
       {isLoading ? (
         <div className="loading-state">
           <div className="spinner"></div>
@@ -245,7 +243,7 @@ const ContactList = ({
           <FaUser className="empty-icon" />
           <p>No contacts found</p>
           {(searchTerm || filterType !== 'all' || filterCompany || filterFirm) && (
-            <button 
+            <button
               className="reset-button"
               onClick={resetFilters}
             >
@@ -307,21 +305,21 @@ const ContactList = ({
                   </td>
                   <td>
                     <div className="contact-actions">
-                      <button 
+                      <button
                         className="action-button view"
                         onClick={() => onViewContact(contact.id)}
                         title="View Contact"
                       >
                         <FaEye />
                       </button>
-                      <button 
+                      <button
                         className="action-button edit"
                         onClick={() => onEditContact(contact.id)}
                         title="Edit Contact"
                       >
                         <FaEdit />
                       </button>
-                      <button 
+                      <button
                         className="action-button delete"
                         onClick={() => onDeleteContact(contact.id)}
                         title="Delete Contact"
@@ -336,7 +334,7 @@ const ContactList = ({
           </table>
         </div>
       )}
-      
+
       <div className="contact-list-footer">
         <p>Showing {filteredContacts.length} of {contacts.length} contacts</p>
       </div>
