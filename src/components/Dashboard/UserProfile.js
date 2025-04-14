@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { FaCalendarAlt, FaCamera, FaEnvelope, FaGoogleDrive, FaPhone, FaUser } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import { db } from '../../firebase-config';
+import GoogleCalendarConnect from '../integrations/GoogleCalendarConnect';
 import GoogleDriveConnect from '../integrations/GoogleDriveConnect';
 import styles from './UserProfile.module.css';
 
