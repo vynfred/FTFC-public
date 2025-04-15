@@ -5,9 +5,10 @@ import { Link } from 'react-router-dom';
 import { useDateRange } from '../../context/DateRangeContext';
 import { useStatsView } from '../../context/StatsViewContext';
 import { db } from '../../firebase-config';
-import Container from '../ui/layout/Container';
+import DashboardSection from "../shared/DashboardSection";
 import Grid from '../ui/layout/Grid';
 import styles from './Dashboard.module.css';
+import './DashboardStyles.css';
 
 const DashboardWithModules = () => {
   const { dateRange } = useDateRange();
@@ -123,22 +124,19 @@ const DashboardWithModules = () => {
   ];
 
   return (
-    <Container fluid className={styles.dashboardPage}>
-      <div className={styles.dashboardHeader}>
-        <h1 className={styles.dashboardTitle}>Sales</h1>
+    <div className="dashboard-container">
+      <div className="dashboard-header">
+        <h1>Sales</h1>
       </div>
       {/* AI Summary Section */}
-      <Container className={styles.summarySection}>
-        <div className={styles.aiSummaryWrapper}>
-          <p className={styles.aiSummary}>
-          Welcome back! Today you have 3 client meetings scheduled. TechStart Inc is ready to sign their contract, and Capital Partners is considering increasing their investment by $250K. Your lead volume has increased by 12% this week, with website conversions showing the highest growth. The sales team is at 72% of this month's target with 10 days remaining.
-          </p>
-        </div>
-      </Container>
+      <DashboardSection title="Summary">
+        <p className={styles.aiSummary}>
+        Welcome back! Today you have 3 client meetings scheduled. TechStart Inc is ready to sign their contract, and Capital Partners is considering increasing their investment by $250K. Your lead volume has increased by 12% this week, with website conversions showing the highest growth. The sales team is at 72% of this month's target with 10 days remaining.
+        </p>
+      </DashboardSection>
 
       {/* Upcoming Meetings Section */}
-      <Container className={styles.dashboardSection}>
-        <h2 className={styles.sectionTitle}>Upcoming Meetings</h2>
+      <DashboardSection title="Upcoming Meetings">
         <Grid columns={1} gap="md" className={styles.meetingsContainer}>
           {meetings.map((meeting) => (
             <Link to={`/dashboard/meetings/${meeting.id}`} key={meeting.id} className={styles.meetingLink}>
@@ -155,11 +153,10 @@ const DashboardWithModules = () => {
             </Link>
           ))}
         </Grid>
-      </Container>
+      </DashboardSection>
 
       {/* Action Required Section */}
-      <Container className={styles.dashboardSection}>
-        <h2 className={styles.sectionTitle}>Action Required</h2>
+      <DashboardSection title="Action Required">
         <div className={styles.actionTable}>
           <div className={styles.actionHeader}>
             <div className={styles.actionCell}>Client</div>
@@ -174,11 +171,10 @@ const DashboardWithModules = () => {
             </div>
           ))}
         </div>
-      </Container>
+      </DashboardSection>
 
       {/* Company Vitals Section */}
-      <Container className={styles.dashboardSection}>
-        <h2 className={styles.sectionTitle}>Company Vitals</h2>
+      <DashboardSection title="Company Vitals">
         <Grid columns={2} mdColumns={2} smColumns={1} gap="md" className={styles.metricsGrid}>
           {metrics.map((metric, index) => (
             <div className={styles.metricCard} key={index}>
@@ -190,11 +186,10 @@ const DashboardWithModules = () => {
             </div>
           ))}
         </Grid>
-      </Container>
+      </DashboardSection>
 
       {/* Sales Goal Section */}
-      <Container className={styles.dashboardSection}>
-        <h2 className={styles.sectionTitle}>Sales Goal</h2>
+      <DashboardSection title="Sales Goal">
         <div className={styles.salesGoalContainer}>
           <div className={styles.salesGoalAmount}>${salesGoal.current.toLocaleString()} / ${salesGoal.target.toLocaleString()}</div>
           <div className={styles.progressText}>{salesGoal.progress.toFixed(1)}% of {dateRange || 'Last 30 Days'} goal</div>
@@ -202,11 +197,10 @@ const DashboardWithModules = () => {
             <div className={styles.progressBar} style={{ width: `${salesGoal.progress}%` }}></div>
           </div>
         </div>
-      </Container>
+      </DashboardSection>
 
       {/* Lead Analytics Section */}
-      <Container className={styles.dashboardSection}>
-        <h2 className={styles.sectionTitle}>Lead Analytics</h2>
+      <DashboardSection title="Lead Analytics">
         <div className={styles.leadAnalyticsContainer}>
           {/* Top-Level KPIs */}
           <Grid columns={3} mdColumns={3} smColumns={1} gap="md" className={styles.leadStats}>
@@ -252,11 +246,10 @@ const DashboardWithModules = () => {
             ))}
           </div>
         </div>
-      </Container>
+      </DashboardSection>
 
       {/* Shortcut Links Section */}
-      <Container className={styles.dashboardSection}>
-        <h2 className={styles.sectionTitle}>Quick Actions</h2>
+      <DashboardSection title="Quick Actions">
         <Grid columns={4} mdColumns={2} smColumns={1} gap="md" className={styles.shortcutsGrid}>
           {shortcuts.map((shortcut, index) => (
             <Link to={shortcut.link} key={index} className={styles.shortcutCard}>
@@ -265,8 +258,8 @@ const DashboardWithModules = () => {
             </Link>
           ))}
         </Grid>
-      </Container>
-    </Container>
+      </DashboardSection>
+    </div>
   );
 };
 
