@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { getTokensFromCode, storeTokens } from '../../services/googleIntegration';
+import { exchangeCodeForTokens as getTokensFromCode, storeTokens } from '../../services/googleIntegration';
 import styles from './GoogleIntegrations.module.css';
 
 /**

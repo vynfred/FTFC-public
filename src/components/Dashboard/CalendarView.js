@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import React, { useCallback, useEffect, useState } from 'react';
+import { FaChevronLeft, FaChevronRight, FaGoogle } from 'react-icons/fa';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase-config';
-import { listCalendarEvents } from '../../services/googleIntegration';
-import DashboardSection from './DashboardSection';
+import { exchangeCodeForTokens, getAuthUrl, listCalendarEvents } from '../../services/googleIntegration';
 import LoadingSpinner from '../common/LoadingSpinner';
-import { FaChevronLeft, FaChevronRight, FaCalendarAlt, FaListUl } from 'react-icons/fa';
 import styles from './CalendarView.module.css';
+import DashboardSection from './DashboardSection';
 
 /**
  * CalendarView component for displaying a full calendar with Google Calendar events
@@ -21,12 +22,16 @@ const CalendarView = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState('month'); // 'month', 'week', or 'day'
   const [showAllEvents, setShowAllEvents] = useState(true);
+  const [isConnecting, setIsConnecting] = useState(false);
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // Get start and end dates for the current view
   const getDateRange = useCallback(() => {
     const startDate = new Date(currentDate);
     const endDate = new Date(currentDate);
-    
+
     if (viewMode === 'month') {
       startDate.setDate(1); // First day of month
       startDate.setHours(0, 0, 0, 0);
@@ -44,20 +49,62 @@ const CalendarView = () => {
       startDate.setHours(0, 0, 0, 0);
       endDate.setHours(23, 59, 59, 999);
     }
-    
+
     return { startDate, endDate };
   }, [currentDate, viewMode]);
+
+  // Check for OAuth callback code in URL
+  useEffect(() => {
+    const handleOAuthCallback = async () => {
+      const urlParams = new URLSearchParams(location.search);
+      const code = urlParams.get('code');
+
+      if (code) {
+        setLoading(true);
+        setError(null);
+
+        try {
+          console.log('Received OAuth callback code, exchanging for tokens...');
+
+          // Exchange code for tokens
+          const tokens = await exchangeCodeForTokens(code);
+
+          if (tokens && currentUser) {
+            // Save tokens to user document in Firestore
+            await setDoc(doc(db, 'users', currentUser.uid), {
+              tokens,
+              lastUpdated: new Date().toISOString()
+            }, { merge: true });
+
+            setUserTokens(tokens);
+            setGoogleConnected(true);
+
+            // Remove code from URL
+            navigate('/dashboard/calendar', { replace: true });
+          }
+        } catch (err) {
+          console.error('Error exchanging code for tokens:', err);
+          setError('Failed to connect to Google Calendar. Please try again.');
+        } finally {
+          setLoading(false);
+          setIsConnecting(false);
+        }
+      }
+    };
+
+    handleOAuthCallback();
+  }, [location, currentUser, navigate]);
 
   // Fetch user's Google tokens
   useEffect(() => {
     const fetchUserTokens = async () => {
       try {
         if (!currentUser) return;
-        
+
         const userRef = collection(db, 'users');
         const q = query(userRef, where('uid', '==', currentUser.uid));
         const querySnapshot = await getDocs(q);
-        
+
         if (!querySnapshot.empty) {
           const userData = querySnapshot.docs[0].data();
           if (userData.tokens) {
@@ -78,13 +125,13 @@ const CalendarView = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       if (!userTokens) return;
-      
+
       try {
         setLoading(true);
-        
+
         // Get date range for current view
         const { startDate, endDate } = getDateRange();
-        
+
         // Get events from Google Calendar
         const eventsList = await listCalendarEvents(
           userTokens,
@@ -92,7 +139,7 @@ const CalendarView = () => {
           endDate,
           showAllEvents
         );
-        
+
         setEvents(eventsList || []);
       } catch (err) {
         console.error('Error fetching events:', err);
@@ -108,6 +155,29 @@ const CalendarView = () => {
       setLoading(false);
     }
   }, [googleConnected, userTokens, getDateRange, showAllEvents]);
+
+  // Connect to Google Calendar
+  const connectToGoogle = async () => {
+    setIsConnecting(true);
+
+    try {
+      // Get auth URL with appropriate scopes
+      const scopes = [
+        'https://www.googleapis.com/auth/calendar',
+        'https://www.googleapis.com/auth/calendar.events',
+        'https://www.googleapis.com/auth/calendar.readonly'
+      ];
+
+      const authUrl = await getAuthUrl(scopes);
+
+      // Redirect to Google OAuth
+      window.location.href = authUrl;
+    } catch (err) {
+      console.error('Error starting Google OAuth flow:', err);
+      setError('Failed to connect to Google Calendar');
+      setIsConnecting(false);
+    }
+  };
 
   // Navigate to previous period
   const goToPrevious = () => {
@@ -164,10 +234,10 @@ const CalendarView = () => {
   const getEventsForDay = (day) => {
     const dayStart = new Date(day);
     dayStart.setHours(0, 0, 0, 0);
-    
+
     const dayEnd = new Date(day);
     dayEnd.setHours(23, 59, 59, 999);
-    
+
     return events.filter(event => {
       const eventStart = new Date(event.start.dateTime || event.start.date);
       return eventStart >= dayStart && eventStart <= dayEnd;
@@ -179,27 +249,27 @@ const CalendarView = () => {
     const { startDate } = getDateRange();
     const year = startDate.getFullYear();
     const month = startDate.getMonth();
-    
+
     // Get first day of month and last day of month
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
-    
+
     // Get day of week for first day (0 = Sunday, 6 = Saturday)
     const firstDayOfWeek = firstDay.getDay();
-    
+
     // Calculate days from previous month to show
     const daysFromPrevMonth = firstDayOfWeek;
-    
+
     // Calculate total days to show (previous month + current month + next month)
     const totalDays = 42; // 6 rows of 7 days
-    
+
     // Generate array of days
     const days = [];
-    
+
     // Add days from previous month
     const prevMonth = new Date(year, month, 0);
     const prevMonthDays = prevMonth.getDate();
-    
+
     for (let i = prevMonthDays - daysFromPrevMonth + 1; i <= prevMonthDays; i++) {
       const date = new Date(year, month - 1, i);
       days.push({
@@ -209,27 +279,27 @@ const CalendarView = () => {
         events: getEventsForDay(date)
       });
     }
-    
+
     // Add days from current month
     const currentMonthDays = lastDay.getDate();
     const today = new Date();
-    
+
     for (let i = 1; i <= currentMonthDays; i++) {
       const date = new Date(year, month, i);
       days.push({
         date,
         isCurrentMonth: true,
-        isToday: 
-          date.getDate() === today.getDate() && 
-          date.getMonth() === today.getMonth() && 
+        isToday:
+          date.getDate() === today.getDate() &&
+          date.getMonth() === today.getMonth() &&
           date.getFullYear() === today.getFullYear(),
         events: getEventsForDay(date)
       });
     }
-    
+
     // Add days from next month
     const remainingDays = totalDays - days.length;
-    
+
     for (let i = 1; i <= remainingDays; i++) {
       const date = new Date(year, month + 1, i);
       days.push({
@@ -239,7 +309,7 @@ const CalendarView = () => {
         events: getEventsForDay(date)
       });
     }
-    
+
     return days;
   };
 
@@ -248,21 +318,21 @@ const CalendarView = () => {
     const { startDate } = getDateRange();
     const days = [];
     const today = new Date();
-    
+
     for (let i = 0; i < 7; i++) {
       const date = new Date(startDate);
       date.setDate(date.getDate() + i);
-      
+
       days.push({
         date,
-        isToday: 
-          date.getDate() === today.getDate() && 
-          date.getMonth() === today.getMonth() && 
+        isToday:
+          date.getDate() === today.getDate() &&
+          date.getMonth() === today.getMonth() &&
           date.getFullYear() === today.getFullYear(),
         events: getEventsForDay(date)
       });
     }
-    
+
     return days;
   };
 
@@ -270,7 +340,7 @@ const CalendarView = () => {
   const renderMonthView = () => {
     const days = generateMonthDays();
     const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    
+
     return (
       <div className={styles.monthView}>
         <div className={styles.weekDays}>
@@ -280,8 +350,8 @@ const CalendarView = () => {
         </div>
         <div className={styles.monthGrid}>
           {days.map((day, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className={`${styles.day} ${!day.isCurrentMonth ? styles.otherMonth : ''} ${day.isToday ? styles.today : ''}`}
             >
               <div className={styles.dayHeader}>
@@ -313,14 +383,14 @@ const CalendarView = () => {
   const renderWeekView = () => {
     const days = generateWeekDays();
     const hours = Array.from({ length: 24 }, (_, i) => i);
-    
+
     return (
       <div className={styles.weekView}>
         <div className={styles.weekHeader}>
           <div className={styles.timeColumn}></div>
           {days.map((day, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className={`${styles.weekDay} ${day.isToday ? styles.today : ''}`}
             >
               <div className={styles.weekDayName}>
@@ -348,7 +418,7 @@ const CalendarView = () => {
                   const eventHour = new Date(event.start.dateTime).getHours();
                   return eventHour === hour;
                 });
-                
+
                 return (
                   <div key={hour} className={styles.hourSlot}>
                     {hourEvents.map((event, eventIndex) => (
@@ -375,7 +445,7 @@ const CalendarView = () => {
   const renderDayView = () => {
     const hours = Array.from({ length: 24 }, (_, i) => i);
     const dayEvents = getEventsForDay(currentDate);
-    
+
     return (
       <div className={styles.dayView}>
         <div className={styles.dayHeader}>
@@ -398,7 +468,7 @@ const CalendarView = () => {
                 const eventHour = new Date(event.start.dateTime).getHours();
                 return eventHour === hour;
               });
-              
+
               return (
                 <div key={hour} className={styles.hourSlot}>
                   {hourEvents.map((event, eventIndex) => (
@@ -452,8 +522,16 @@ const CalendarView = () => {
     return (
       <DashboardSection title="Calendar">
         <div className={styles.notConnectedContainer}>
-          <p>Google Calendar is not connected. Please connect your Google account in your profile settings.</p>
-          <a href="/dashboard/settings" className={styles.connectButton}>Go to Settings</a>
+          <h2>Connect to Google Calendar</h2>
+          <p>To view your calendar events, please connect your Google Calendar account.</p>
+          <button
+            className={styles.connectButton}
+            onClick={connectToGoogle}
+            disabled={isConnecting}
+          >
+            <FaGoogle style={{ marginRight: '8px' }} />
+            {isConnecting ? 'Connecting...' : 'Connect Google Calendar'}
+          </button>
         </div>
       </DashboardSection>
     );
@@ -467,17 +545,17 @@ const CalendarView = () => {
           <button onClick={() => setError(null)}>Dismiss</button>
         </div>
       )}
-      
+
       <div className={styles.calendarHeader}>
         <div className={styles.calendarTitle}>
           <h2>{getViewTitle()}</h2>
         </div>
-        
+
         <div className={styles.calendarControls}>
           <button className={styles.todayButton} onClick={goToToday}>
             Today
           </button>
-          
+
           <div className={styles.navigationButtons}>
             <button className={styles.navButton} onClick={goToPrevious}>
               <FaChevronLeft />
@@ -486,32 +564,32 @@ const CalendarView = () => {
               <FaChevronRight />
             </button>
           </div>
-          
+
           <div className={styles.viewButtons}>
-            <button 
+            <button
               className={`${styles.viewButton} ${viewMode === 'month' ? styles.activeView : ''}`}
               onClick={() => setViewMode('month')}
             >
               Month
             </button>
-            <button 
+            <button
               className={`${styles.viewButton} ${viewMode === 'week' ? styles.activeView : ''}`}
               onClick={() => setViewMode('week')}
             >
               Week
             </button>
-            <button 
+            <button
               className={`${styles.viewButton} ${viewMode === 'day' ? styles.activeView : ''}`}
               onClick={() => setViewMode('day')}
             >
               Day
             </button>
           </div>
-          
+
           <div className={styles.filterToggle}>
             <label className={styles.toggleLabel}>
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 checked={showAllEvents}
                 onChange={() => setShowAllEvents(!showAllEvents)}
               />
@@ -520,7 +598,7 @@ const CalendarView = () => {
           </div>
         </div>
       </div>
-      
+
       <div className={styles.calendarContainer}>
         {viewMode === 'month' && renderMonthView()}
         {viewMode === 'week' && renderWeekView()}

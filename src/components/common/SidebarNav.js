@@ -59,11 +59,6 @@ const SidebarNav = ({ collapsed, toggleSidebar }) => {
       icon: <FaCalendarAlt />
     },
     {
-      path: '/dashboard/calendar-view',
-      name: 'Calendar View',
-      icon: <FaCalendarAlt />
-    },
-    {
       path: '/dashboard/company-settings',
       name: 'Company Settings',
       icon: <FaCog />

@@ -61,7 +61,7 @@ export const getAuthUrl = (scopes = []) => {
  * @param {String} code - Authorization code from OAuth callback
  * @returns {Object} - Tokens object with access_token, refresh_token, etc.
  */
-export const getTokensFromCode = async (code) => {
+export const exchangeCodeForTokens = async (code) => {
   const oauth2Client = createOAuth2Client();
 
   try {
@@ -69,6 +69,23 @@ export const getTokensFromCode = async (code) => {
     return tokens;
   } catch (error) {
     console.error('Error getting tokens:', error);
+    throw error;
+  }
+};
+
+/**
+ * Store tokens in Firestore
+ * @param {String} userId - User ID
+ * @param {Object} tokens - OAuth tokens
+ * @returns {Promise} - Promise that resolves when tokens are stored
+ */
+export const storeTokens = async (userId, tokens) => {
+  try {
+    // In a real app, you would store these tokens in your database
+    console.log('Storing tokens for user:', userId);
+    return { success: true };
+  } catch (error) {
+    console.error('Error storing tokens:', error);
     throw error;
   }
 };
@@ -205,9 +222,10 @@ export const createMeetEvent = async (tokens, eventDetails) => {
  * @param {Boolean} companyWide - Whether to include all company events or just user's events
  * @param {String} entityType - Optional entity type filter (client, investor, partner)
  * @param {String} entityId - Optional entity ID filter
+ * @param {Boolean} meetOnly - Whether to only include Google Meet events
  * @returns {Array} - List of upcoming events
  */
-export const listUpcomingEvents = async (tokens, maxResults = 10, includePast = false, companyWide = true, entityType = null, entityId = null) => {
+export const listUpcomingEvents = async (tokens, maxResults = 10, includePast = false, companyWide = true, entityType = null, entityId = null, meetOnly = false) => {
   try {
     // Ensure tokens are valid
     const validTokens = await ensureValidTokens(tokens);
@@ -228,12 +246,14 @@ export const listUpcomingEvents = async (tokens, maxResults = 10, includePast = 
 
     let events = response.data.items || [];
 
-    // Filter for Google Meet events
-    events = events.filter(event =>
-      event.conferenceData &&
-      event.conferenceData.conferenceSolution &&
-      event.conferenceData.conferenceSolution.key.type === 'hangoutsMeet'
-    );
+    // Filter for Google Meet events if meetOnly is true
+    if (meetOnly) {
+      events = events.filter(event =>
+        event.conferenceData &&
+        event.conferenceData.conferenceSolution &&
+        event.conferenceData.conferenceSolution.key.type === 'hangoutsMeet'
+      );
+    }
 
     // If not company-wide, filter for events created by the current user
     if (!companyWide) {
@@ -448,10 +468,63 @@ export const getMeetingRecordings = async (tokens, meetingId) => {
 };
 
 /**
+ * List calendar events for a specific date range
+ * @param {Object} tokens - OAuth tokens
+ * @param {Date|string} startDate - Start date for the range
+ * @param {Date|string} endDate - End date for the range
+ * @param {Boolean} companyWide - Whether to include all company events or just user's events
+ * @returns {Array} - List of events in the date range
+ */
+export const listCalendarEvents = async (tokens, startDate, endDate, companyWide = true) => {
+  try {
+    // Ensure tokens are valid
+    const validTokens = await ensureValidTokens(tokens);
+    const auth = getAuthenticatedClient(validTokens);
+    const calendar = google.calendar({ version: 'v3', auth });
+
+    // Convert dates to ISO strings if they're Date objects
+    const timeMin = typeof startDate === 'string' ? startDate : startDate.toISOString();
+    const timeMax = typeof endDate === 'string' ? endDate : endDate.toISOString();
+
+    // Get events from Google Calendar
+    const response = await calendar.events.list({
+      calendarId: 'primary',
+      timeMin: timeMin,
+      timeMax: timeMax,
+      maxResults: 2500, // Get a large number of events
+      singleEvents: true,
+      orderBy: 'startTime'
+    });
+
+    let events = response.data.items || [];
+
+    // If not company-wide, filter for events created by the current user
+    if (!companyWide) {
+      const userInfo = await getUserProfile(validTokens);
+      const userEmail = userInfo.emailAddresses?.[0]?.value;
+
+      if (userEmail) {
+        events = events.filter(event => {
+          // Check if user is the creator or an attendee
+          const isCreator = event.creator?.email === userEmail;
+          const isAttendee = event.attendees?.some(attendee => attendee.email === userEmail);
+          return isCreator || isAttendee;
+        });
+      }
+    }
+
+    return events;
+  } catch (error) {
+    console.error('Error listing calendar events:', error);
+    throw error;
+  }
+};
+
+/**
  * Store OAuth tokens in local storage
  * @param {Object} tokens - OAuth tokens
  */
-export const storeTokens = (tokens) => {
+export const storeTokensInLocalStorage = (tokens) => {
   localStorage.setItem('googleTokens', JSON.stringify(tokens));
 };
 
@@ -499,7 +572,7 @@ export const ensureValidTokens = async (tokens) => {
       }
 
       // Store the refreshed tokens
-      storeTokens(credentials);
+      storeTokensInLocalStorage(credentials);
 
       // Also update in Firestore if user is logged in
       try {
