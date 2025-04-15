@@ -1,0 +1,124 @@
+.loginContainer {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.loginHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.loginHeader h2 {
+  font-size: 1.8rem;
+  color: #1a1a2e;
+  margin-bottom: 0.5rem;
+}
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.formGroup input:focus {
+  outline: none;
+  border-color: #C6A052;
+  box-shadow: 0 0 0 2px rgba(198, 160, 82, 0.2);
+}
+
+.loginButton {
+  background-color: #C6A052;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.loginButton:hover {
+  background-color: #b08d45;
+}
+
+.loginButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.formActions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.errorMessage {
+  color: #e53935;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background-color: rgba(229, 57, 53, 0.1);
+  border-radius: 4px;
+}
+
+.successMessage {
+  color: #43a047;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background-color: rgba(67, 160, 71, 0.1);
+  border-radius: 4px;
+}
+
+.forgotPassword {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.forgotPasswordLink {
+  color: #C6A052;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.forgotPasswordLink:hover {
+  color: #b08d45;
+}
+
+.loadingSpinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  margin-left: 0.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

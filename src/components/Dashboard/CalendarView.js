@@ -78,12 +78,20 @@ const CalendarView = () => {
 
             // Also store tokens in localStorage for consistency with GoogleCalendarConnect
             localStorage.setItem('googleTokens', JSON.stringify(tokens));
+            localStorage.setItem('googleCalendarConnected', 'true');
 
             setUserTokens(tokens);
             setGoogleConnected(true);
 
-            // Remove code from URL
-            navigate('/dashboard/calendar', { replace: true });
+            // Get the return path from localStorage or use default
+            const returnPath = localStorage.getItem('googleAuthReturnPath') || '/dashboard/calendar';
+            console.log('CalendarView: Return path:', returnPath);
+
+            // Remove code from URL and navigate to return path
+            navigate(returnPath, { replace: true });
+
+            // Clear the return path
+            localStorage.removeItem('googleAuthReturnPath');
           }
         } catch (err) {
           console.error('Error exchanging code for tokens:', err);
@@ -108,9 +116,11 @@ const CalendarView = () => {
 
         // First check localStorage for tokens (from GoogleCalendarConnect)
         const localTokens = localStorage.getItem('googleTokens');
+        const calendarConnected = localStorage.getItem('googleCalendarConnected');
         console.log('Local storage tokens:', localTokens ? 'Found' : 'Not found');
+        console.log('Calendar connected flag:', calendarConnected);
 
-        if (localTokens) {
+        if (localTokens && calendarConnected === 'true') {
           const parsedTokens = JSON.parse(localTokens);
           console.log('Parsed tokens:', parsedTokens);
           setUserTokens(parsedTokens);
@@ -205,6 +215,11 @@ const CalendarView = () => {
         'https://www.googleapis.com/auth/calendar.events',
         'https://www.googleapis.com/auth/calendar.readonly'
       ];
+
+      // Store the current path to return to after authentication
+      const currentPath = window.location.pathname;
+      localStorage.setItem('googleAuthReturnPath', currentPath);
+      console.log('CalendarView: Stored return path:', currentPath);
 
       const authUrl = await getAuthUrl(scopes);
 

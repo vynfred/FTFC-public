@@ -57,6 +57,13 @@ const auth = {
           console.log('User signed in via redirect:', result.user.email);
           // Store a flag in sessionStorage to indicate successful sign-in
           sessionStorage.setItem('googleSignInSuccess', 'true');
+
+          // Get the intended role from localStorage
+          const intendedRole = localStorage.getItem('intendedUserRole') || 'team';
+          sessionStorage.setItem('userRole', intendedRole);
+
+          // Clear the intended role from localStorage
+          localStorage.removeItem('intendedUserRole');
         }
         return result;
       })
@@ -81,6 +88,8 @@ const auth = {
           console.log('Google sign-in successful:', result.user.email);
           // Store a flag in sessionStorage to indicate successful sign-in
           sessionStorage.setItem('googleSignInSuccess', 'true');
+          // Store the user's role in sessionStorage
+          sessionStorage.setItem('userRole', 'team');
           return result;
         })
         .catch(error => {
@@ -93,6 +102,8 @@ const auth = {
           // If popup is blocked or fails, try redirect method
           if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
             console.log('Popup failed, trying redirect method...');
+            // Store the intended role before redirecting
+            localStorage.setItem('intendedUserRole', 'team');
             return signInWithRedirect(firebaseAuth, googleProvider);
           }
 

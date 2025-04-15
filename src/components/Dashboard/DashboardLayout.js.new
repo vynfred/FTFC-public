@@ -1,0 +1,58 @@
+import React, { useState } from 'react';
+import { FaCog } from 'react-icons/fa';
+import { useLocation } from 'react-router-dom';
+import Sidebar from '../common/Sidebar';
+import styles from './DashboardLayout.module.css';
+
+const DashboardLayout = ({ children }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+
+  return (
+    <div className={styles.dashboardApp}>
+      {/* Sidebar Navigation */}
+      <Sidebar />
+      
+      <div className={styles.mainContainer}>
+        {/* Top Header */}
+        <header className={styles.dashboardHeader}>
+          <div className={styles.logo}>FTFC</div>
+          <button
+            className={styles.menuButton}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            <span className={`${styles.hamburger} ${isMenuOpen ? styles.active : ''}`}></span>
+          </button>
+        </header>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className={styles.mobileMenu}>
+            <div className={styles.userInfo}>
+              <div className={styles.userAvatar}>W</div>
+              <div className={styles.userDetails}>
+                <h3>Wilfred</h3>
+                <p>Admin</p>
+              </div>
+            </div>
+            <div className={styles.menuSettings}>
+              <button className={styles.settingsButton}>
+                <FaCog /> Settings
+              </button>
+              <button className={styles.logoutButton}>
+                Logout
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Main Content */}
+        <main className={styles.dashboardContent}>
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default DashboardLayout;

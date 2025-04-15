@@ -57,12 +57,29 @@ const TeamLogin = () => {
 
     // Check if we have a successful Google sign-in from redirect
     const googleSignInSuccess = sessionStorage.getItem('googleSignInSuccess');
+    const userRole = sessionStorage.getItem('userRole');
+
     if (googleSignInSuccess) {
       console.log('TeamLogin: Detected successful Google sign-in from redirect');
-      // Clear the flag
+      console.log('TeamLogin: User role from session:', userRole);
+
+      // Clear the flags
       sessionStorage.removeItem('googleSignInSuccess');
-      // Redirect to dashboard
-      navigate('/dashboard');
+      sessionStorage.removeItem('userRole');
+
+      // Redirect based on role
+      if (userRole === 'team') {
+        navigate('/dashboard');
+      } else if (userRole === 'client') {
+        navigate('/client-portal');
+      } else if (userRole === 'investor') {
+        navigate('/investor-portal');
+      } else if (userRole === 'partner') {
+        navigate('/partner-portal');
+      } else {
+        // Default to dashboard
+        navigate('/dashboard');
+      }
     }
 
     // Set a single timeout to ensure it works

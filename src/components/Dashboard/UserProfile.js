@@ -21,10 +21,31 @@ const UserProfile = () => {
     profileImage: null
   });
 
+  // Check for Google connections
+  const [isGoogleDriveConnected, setIsGoogleDriveConnected] = useState(false);
+  const [isGoogleCalendarConnected, setIsGoogleCalendarConnected] = useState(false);
+
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ ...userData });
 
   // Fetch user data from Firestore
+  // Check for Google connections
+  useEffect(() => {
+    // Check if Google Drive is connected
+    const driveConnected = localStorage.getItem('googleDriveConnected');
+    if (driveConnected === 'true') {
+      setIsGoogleDriveConnected(true);
+      console.log('UserProfile: Google Drive is connected');
+    }
+
+    // Check if Google Calendar is connected
+    const calendarConnected = localStorage.getItem('googleCalendarConnected');
+    if (calendarConnected === 'true') {
+      setIsGoogleCalendarConnected(true);
+      console.log('UserProfile: Google Calendar is connected');
+    }
+  }, []);
+
   useEffect(() => {
     const fetchUserData = async () => {
       if (user && user.uid) {
@@ -244,9 +265,13 @@ const UserProfile = () => {
           <GoogleDriveConnect
             onConnect={(tokens, profile) => {
               console.log('Google Drive connected', profile);
+              setIsGoogleDriveConnected(true);
+              localStorage.setItem('googleDriveConnected', 'true');
             }}
             onDisconnect={() => {
               console.log('Google Drive disconnected');
+              setIsGoogleDriveConnected(false);
+              localStorage.removeItem('googleDriveConnected');
             }}
           />
         </div>
@@ -264,9 +289,13 @@ const UserProfile = () => {
           <GoogleCalendarConnect
             onConnect={(tokens, profile) => {
               console.log('Google Calendar connected', profile);
+              setIsGoogleCalendarConnected(true);
+              localStorage.setItem('googleCalendarConnected', 'true');
             }}
             onDisconnect={() => {
               console.log('Google Calendar disconnected');
+              setIsGoogleCalendarConnected(false);
+              localStorage.removeItem('googleCalendarConnected');
             }}
           />
         </div>

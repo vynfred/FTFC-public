@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { exchangeCodeForTokens as getTokensFromCode, storeTokensInLocalStorage } from '../../services/googleIntegration';
+import { exchangeCodeForTokens as getTokensFromCode } from '../../services/googleIntegration';
 import styles from './GoogleIntegrations.module.css';
 
 /**
@@ -38,14 +38,24 @@ const GoogleOAuthCallback = ({ redirectPath = '/dashboard' }) => {
         console.log('GoogleOAuthCallback: Storing tokens in localStorage');
         localStorage.setItem('googleTokens', JSON.stringify(tokens));
 
+        // Store a flag to indicate successful connection
+        localStorage.setItem('googleCalendarConnected', 'true');
+        localStorage.setItem('googleDriveConnected', 'true');
+
+        // Get the return path from localStorage or use default
+        const returnPath = localStorage.getItem('googleAuthReturnPath') || redirectPath;
+        console.log('GoogleOAuthCallback: Return path:', returnPath);
+
         // Update status
         setStatus('success');
         console.log('GoogleOAuthCallback: Set status to success');
 
         // Redirect after a short delay
         setTimeout(() => {
-          console.log('GoogleOAuthCallback: Redirecting to', redirectPath);
-          navigate(redirectPath);
+          console.log('GoogleOAuthCallback: Redirecting to', returnPath);
+          navigate(returnPath);
+          // Clear the return path
+          localStorage.removeItem('googleAuthReturnPath');
         }, 2000);
       } catch (error) {
         console.error('Error processing OAuth callback:', error);

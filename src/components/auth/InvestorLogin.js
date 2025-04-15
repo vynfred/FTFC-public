@@ -12,7 +12,7 @@ const InvestorLogin = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, googleSignIn } = useAuth();
 
   // Force scroll to top when component mounts
   useEffect(() => {
@@ -83,6 +83,35 @@ const InvestorLogin = () => {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      console.log('InvestorLogin: Starting Google sign-in...');
+      // Attempt Google sign-in with Firebase Authentication
+      const result = await auth.signInWithGoogle();
+      console.log('InvestorLogin: Google sign-in successful, redirecting...');
+
+      // Redirect to investor portal on success
+      navigate('/investor-portal');
+    } catch (error) {
+      console.error('InvestorLogin: Google sign-in error:', error);
+
+      // Show detailed error message
+      if (error.code === 'auth/popup-closed-by-user') {
+        console.log('InvestorLogin: User closed the popup');
+        // No need to show an error
+      } else if (error.code === 'auth/popup-blocked') {
+        setErrors({ general: 'Popup was blocked by your browser. Please allow popups for this site.' });
+      } else {
+        setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.card}>
@@ -148,6 +177,20 @@ const InvestorLogin = () => {
             {isLoading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
+
+        <div className={styles.orDivider}>
+          <span>OR</span>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleGoogleSignIn}
+          disabled={isLoading}
+          className={styles.googleButton}
+        >
+          <FaGoogle className={styles.googleIcon} />
+          {isLoading ? 'Signing in...' : 'Sign in with Google'}
+        </button>
 
         <div className={styles.footer}>
           <p>Don't have an account? <a href="/contact" className={styles.link}>Contact us</a> to get access.</p>

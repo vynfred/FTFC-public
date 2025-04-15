@@ -1,0 +1,172 @@
+.dashboardApp {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.mainContainer {
+  flex: 1;
+  margin-left: 70px; /* Width of collapsed sidebar */
+  transition: margin-left 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* When sidebar is expanded */
+:global(.expanded) + .mainContainer {
+  margin-left: 240px;
+}
+
+.dashboardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1a1a2e;
+}
+
+.menuButton {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.hamburger {
+  display: block;
+  width: 25px;
+  height: 3px;
+  background-color: #1a1a2e;
+  position: relative;
+}
+
+.hamburger::before,
+.hamburger::after {
+  content: '';
+  position: absolute;
+  width: 25px;
+  height: 3px;
+  background-color: #1a1a2e;
+  transition: all 0.3s ease;
+}
+
+.hamburger::before {
+  top: -8px;
+}
+
+.hamburger::after {
+  bottom: -8px;
+}
+
+.hamburger.active {
+  background-color: transparent;
+}
+
+.hamburger.active::before {
+  transform: rotate(45deg);
+  top: 0;
+}
+
+.hamburger.active::after {
+  transform: rotate(-45deg);
+  bottom: 0;
+}
+
+.mobileMenu {
+  display: none;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.userAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #C6A052;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #fff;
+  margin-right: 10px;
+}
+
+.userDetails h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.userDetails p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.menuSettings {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.settingsButton,
+.logoutButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.settingsButton {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.logoutButton {
+  background-color: #ff6b6b;
+  color: #fff;
+}
+
+.dashboardContent {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .mainContainer {
+    margin-left: 0;
+  }
+  
+  .menuButton {
+    display: block;
+  }
+  
+  .mobileMenu {
+    display: block;
+  }
+}

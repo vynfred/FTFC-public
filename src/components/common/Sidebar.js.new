@@ -1,0 +1,90 @@
+import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
+import { 
+  FaChartBar, 
+  FaBullhorn, 
+  FaUserTie, 
+  FaUsers, 
+  FaHandshake, 
+  FaCog,
+  FaCalendarAlt
+} from 'react-icons/fa';
+import { FaUserGroup } from 'react-icons/fa6';
+import styles from './Sidebar.module.css';
+
+/**
+ * Sidebar Navigation Component
+ * 
+ * Provides the main navigation for the dashboard with collapsible functionality
+ */
+const Sidebar = () => {
+  const [expanded, setExpanded] = useState(false);
+
+  const toggleSidebar = () => {
+    setExpanded(!expanded);
+  };
+
+  // Navigation items with icons
+  const navItems = [
+    { path: '/dashboard', icon: <FaChartBar />, label: 'Dashboard' },
+    { path: '/dashboard/marketing', icon: <FaBullhorn />, label: 'Marketing' },
+    { path: '/dashboard/leads', icon: <FaUserTie />, label: 'Leads' },
+    { path: '/dashboard/clients', icon: <FaUsers />, label: 'Clients' },
+    { path: '/dashboard/investors', icon: <FaUserGroup />, label: 'Investors' },
+    { path: '/dashboard/partners', icon: <FaHandshake />, label: 'Partners' },
+    { path: '/dashboard/calendar', icon: <FaCalendarAlt />, label: 'Calendar' },
+    { path: '/dashboard/settings', icon: <FaCog />, label: 'Settings' }
+  ];
+
+  return (
+    <div className={`${styles.sidebar} ${expanded ? styles.expanded : styles.collapsed}`}>
+      <div className={styles.sidebarContent}>
+        {/* Navigation Links */}
+        <nav className={styles.nav}>
+          <ul className={styles.navList}>
+            {navItems.map((item) => (
+              <li key={item.path} className={styles.navItem}>
+                <NavLink 
+                  to={item.path} 
+                  className={({ isActive }) => 
+                    `${styles.navLink} ${isActive ? styles.active : ''}`
+                  }
+                  end={item.path === '/dashboard'}
+                >
+                  <span className={styles.icon}>{item.icon}</span>
+                  {expanded && <span className={styles.label}>{item.label}</span>}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {/* User Profile Section */}
+        <div className={styles.userSection}>
+          <div className={styles.userAvatar}>
+            <span>W</span>
+          </div>
+          {expanded && (
+            <div className={styles.userInfo}>
+              <p className={styles.userName}>Wilfred</p>
+              <p className={styles.userRole}>Admin</p>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Toggle Button - Moved outside the sidebarContent div */}
+      <button 
+        className={styles.toggleButton} 
+        onClick={toggleSidebar}
+        aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
+      >
+        <span className={styles.toggleText}>
+          {expanded ? '<<' : '>>'}
+        </span>
+      </button>
+    </div>
+  );
+};
+
+export default Sidebar;

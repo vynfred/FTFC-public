@@ -71,34 +71,17 @@ const GoogleCalendarConnect = ({ onConnect, onDisconnect }) => {
       console.log('GoogleCalendarConnect: Stored user email in localStorage:', user.email);
     }
 
+    // Store the current path to return to after authentication
+    const currentPath = window.location.pathname;
+    localStorage.setItem('googleAuthReturnPath', currentPath);
+    console.log('GoogleCalendarConnect: Stored return path:', currentPath);
+
     // Generate the auth URL and redirect
     const authUrl = getAuthUrl(scopes);
     console.log('GoogleCalendarConnect: Redirecting to Google OAuth URL:', authUrl);
 
-    // Use window.open instead of location.href to avoid potential ad blocker issues
-    const authWindow = window.open(authUrl, '_blank', 'width=600,height=700');
-
-    // Check if the window was blocked by a popup blocker
-    if (!authWindow || authWindow.closed || typeof authWindow.closed === 'undefined') {
-      alert('Please allow popups for this site to connect to Google Calendar.');
-    } else {
-      // Set a flag to check connection status on window focus
-      window.addEventListener('focus', function onFocus() {
-        console.log('GoogleCalendarConnect: Window focused, checking connection status');
-        setTimeout(() => {
-          const tokens = getStoredTokens();
-          if (tokens) {
-            console.log('GoogleCalendarConnect: Tokens found after redirect');
-            setIsConnected(true);
-            getUserProfile(tokens).then(profile => {
-              setUserProfile(profile);
-              if (onConnect) onConnect(tokens, profile);
-            });
-          }
-        }, 1000);
-        window.removeEventListener('focus', onFocus);
-      });
-    }
+    // Redirect directly to the auth URL
+    window.location.href = authUrl;
   };
 
   // Handle disconnect button click

@@ -13,7 +13,7 @@ const ClientLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, googleSignIn } = useAuth();
 
   // Force scroll to top when component mounts
   useEffect(() => {
@@ -83,6 +83,35 @@ const ClientLogin = () => {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      console.log('ClientLogin: Starting Google sign-in...');
+      // Attempt Google sign-in with Firebase Authentication
+      const result = await auth.signInWithGoogle();
+      console.log('ClientLogin: Google sign-in successful, redirecting...');
+
+      // Redirect to client portal on success
+      navigate('/client-portal');
+    } catch (error) {
+      console.error('ClientLogin: Google sign-in error:', error);
+
+      // Show detailed error message
+      if (error.code === 'auth/popup-closed-by-user') {
+        console.log('ClientLogin: User closed the popup');
+        // No need to show an error
+      } else if (error.code === 'auth/popup-blocked') {
+        setErrors({ general: 'Popup was blocked by your browser. Please allow popups for this site.' });
+      } else {
+        setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="client-login-container">
       <div className="login-card">
@@ -141,6 +170,35 @@ const ClientLogin = () => {
             </button>
           </div>
         </form>
+
+        <div style={{ margin: '32px 0', textAlign: 'center' }}>
+          <p style={{ margin: '16px 0', color: '#94a3b8' }}>- OR -</p>
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            disabled={isLoading}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+              width: '100%',
+              padding: '14px',
+              backgroundColor: '#ffffff',
+              color: '#333333',
+              border: '1px solid #d1d5db',
+              borderRadius: '4px',
+              fontSize: '16px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
+            }}
+          >
+            <FaGoogle style={{ color: '#DB4437' }} />
+            {isLoading ? 'Signing in...' : 'Sign in with Google'}
+          </button>
+        </div>
 
         <div className="login-footer">
           <p>Don't have an account? <Link to="/contact" className="signup-link">Contact us</Link></p>

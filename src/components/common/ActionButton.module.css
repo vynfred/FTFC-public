@@ -1,0 +1,83 @@
+/* ActionButton.module.css */
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+/* Variants */
+.variantPrimary {
+  background-color: var(--color-primary, #f59e0b);
+  color: black;
+  border: none;
+}
+
+.variantPrimary:hover {
+  background-color: var(--color-primary-hover, #d97706);
+}
+
+.variantSecondary {
+  background-color: #3B82F6;
+  color: white;
+  border: none;
+}
+
+.variantSecondary:hover {
+  background-color: #2563EB;
+}
+
+.variantOutline {
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.variantOutline:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.variantText {
+  background-color: transparent;
+  border: none;
+  color: var(--color-primary, #f59e0b);
+  padding: 0;
+}
+
+.variantText:hover {
+  color: var(--color-primary-hover, #d97706);
+  text-decoration: underline;
+}
+
+/* Sizes */
+.sizeSM {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+.sizeMD {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.sizeLG {
+  padding: 0.625rem 1.25rem;
+  font-size: 1rem;
+}
+
+/* Icon */
+.icon {
+  font-size: 1em;
+}
+
+/* Disabled state */
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

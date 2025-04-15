@@ -110,8 +110,7 @@
 ### Support
 - [ ] Set up support ticketing system
 - [ ] Create FAQ for common issues
-- [ ] Train support team on application functionality
-- [ ] Implement feedback collection mechanism
+- [ ] Implement feedback collection mechanism via Slack
 
 ### Continuous Improvement
 - [ ] Schedule regular code reviews

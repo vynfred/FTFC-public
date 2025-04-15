@@ -36,10 +36,13 @@ const Calendar = () => {
 
         // First check localStorage for tokens (from GoogleCalendarConnect)
         const localTokens = localStorage.getItem('googleTokens');
-        if (localTokens) {
+        const calendarConnected = localStorage.getItem('googleCalendarConnected');
+
+        if (localTokens && calendarConnected === 'true') {
           const parsedTokens = JSON.parse(localTokens);
           setUserTokens(parsedTokens);
           setGoogleConnected(true);
+          console.log('Calendar: Google Calendar is connected');
           return; // If we found tokens in localStorage, no need to check Firestore
         }
 

@@ -52,17 +52,17 @@ const GoogleDriveConnect = ({ onConnect, onDisconnect }) => {
       localStorage.setItem('userEmail', user.email);
     }
 
+    // Store the current path to return to after authentication
+    const currentPath = window.location.pathname;
+    localStorage.setItem('googleAuthReturnPath', currentPath);
+    console.log('GoogleDriveConnect: Stored return path:', currentPath);
+
     // Get auth URL with drive-specific scopes
     const authUrl = getGoogleAuthUrl();
     console.log('Redirecting to Google Drive OAuth URL:', authUrl);
 
-    // Use window.open instead of location.href to avoid potential ad blocker issues
-    const authWindow = window.open(authUrl, '_blank', 'width=600,height=700');
-
-    // Check if the window was blocked by a popup blocker
-    if (!authWindow || authWindow.closed || typeof authWindow.closed === 'undefined') {
-      alert('Please allow popups for this site to connect to Google Drive.');
-    }
+    // Redirect directly to the auth URL
+    window.location.href = authUrl;
   };
 
   // Handle disconnect button click
