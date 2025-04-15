@@ -10,7 +10,7 @@ import styles from './Dashboard.module.css';
 import DashboardSection from './DashboardSection';
 import './DashboardStyles.css';
 
-const SalesDashboard = () => {
+const Dashboard = () => {
   const { dateRange } = useDateRange();
   const { viewCompanyStats } = useStatsView();
 
@@ -334,4 +334,4 @@ const SalesDashboard = () => {
   );
 };
 
-export default SalesDashboard;
+export default Dashboard;

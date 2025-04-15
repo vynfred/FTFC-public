@@ -28,17 +28,25 @@ const GoogleDriveCallback = ({ redirectPath = '/profile' }) => {
           throw new Error(error || 'No authorization code found');
         }
 
+        console.log('GoogleDriveCallback: Got code from URL, exchanging for tokens');
         // Exchange code for tokens
         const tokens = await getTokensFromCode(code);
+        console.log('GoogleDriveCallback: Got tokens, connecting Google Drive');
 
         // Connect Google Drive
         await connectGoogleDrive(tokens);
+        console.log('GoogleDriveCallback: Successfully connected Google Drive');
 
         // Update status
         setStatus('success');
 
+        // Store tokens in localStorage with a different key to avoid conflicts
+        localStorage.setItem('googleDriveTokens', JSON.stringify(tokens));
+        console.log('GoogleDriveCallback: Stored tokens in localStorage');
+
         // Redirect after a short delay
         setTimeout(() => {
+          console.log('GoogleDriveCallback: Redirecting to', redirectPath);
           navigate(redirectPath);
         }, 2000);
       } catch (error) {

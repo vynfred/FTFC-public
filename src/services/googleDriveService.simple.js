@@ -125,12 +125,24 @@ export const getGoogleDriveStatus = async () => {
     // In a real implementation, this would call a Cloud Function
     // For now, we'll just check if tokens exist in localStorage
     const tokens = localStorage.getItem('googleDriveTokens');
-    return {
-      connected: !!tokens,
-      email: tokens ? JSON.parse(tokens).email || 'user@example.com' : null
-    };
+    console.log('getGoogleDriveStatus: Checking tokens in localStorage:', tokens ? 'Found' : 'Not found');
+
+    if (tokens) {
+      // Try to parse the tokens to make sure they're valid
+      const parsedTokens = JSON.parse(tokens);
+      console.log('getGoogleDriveStatus: Parsed tokens successfully');
+
+      return {
+        connected: true,
+        email: parsedTokens.email || localStorage.getItem('userEmail') || 'user@example.com'
+      };
+    }
+
+    return { connected: false, email: null };
   } catch (error) {
     console.error('Error getting Google Drive status:', error);
+    // Clear invalid tokens
+    localStorage.removeItem('googleDriveTokens');
     return { connected: false };
   }
 };
