@@ -48,7 +48,23 @@ const auth = {
   signInWithEmailAndPassword: (email, password) => signInWithEmailAndPassword(firebaseAuth, email, password),
   signOut: () => firebaseSignOut(firebaseAuth),
   createUserWithEmailAndPassword: (email, password) => createUserWithEmailAndPassword(firebaseAuth, email, password),
-  getRedirectResult: () => getRedirectResult(firebaseAuth),
+  getRedirectResult: () => {
+    console.log('Getting redirect result...');
+    return getRedirectResult(firebaseAuth)
+      .then(result => {
+        console.log('Redirect result:', result ? 'Success' : 'No result');
+        if (result && result.user) {
+          console.log('User signed in via redirect:', result.user.email);
+          // Store a flag in sessionStorage to indicate successful sign-in
+          sessionStorage.setItem('googleSignInSuccess', 'true');
+        }
+        return result;
+      })
+      .catch(error => {
+        console.error('Error getting redirect result:', error);
+        throw error;
+      });
+  },
   // Method to update the Google provider's client ID
   updateGoogleProviderClientId: (clientId) => {
     console.log('Updating Google provider client ID:', clientId);

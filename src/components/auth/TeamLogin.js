@@ -55,6 +55,16 @@ const TeamLogin = () => {
     document.body.scrollTop = 0; // For Safari
     document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
 
+    // Check if we have a successful Google sign-in from redirect
+    const googleSignInSuccess = sessionStorage.getItem('googleSignInSuccess');
+    if (googleSignInSuccess) {
+      console.log('TeamLogin: Detected successful Google sign-in from redirect');
+      // Clear the flag
+      sessionStorage.removeItem('googleSignInSuccess');
+      // Redirect to dashboard
+      navigate('/dashboard');
+    }
+
     // Set a single timeout to ensure it works
     const timeoutId = setTimeout(() => {
       window.scrollTo(0, 0);
@@ -63,7 +73,7 @@ const TeamLogin = () => {
     }, 100);
 
     return () => clearTimeout(timeoutId);
-  }, []);
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

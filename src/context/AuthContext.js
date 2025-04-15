@@ -23,6 +23,24 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Check for redirect result on mount
+  useEffect(() => {
+    console.log('AuthContext: Checking for redirect result');
+    const checkRedirectResult = async () => {
+      try {
+        const result = await auth.getRedirectResult();
+        if (result && result.user) {
+          console.log('AuthContext: Redirect result found, user signed in');
+          // User is already handled by the auth state change listener
+        }
+      } catch (error) {
+        console.error('AuthContext: Error getting redirect result:', error);
+      }
+    };
+
+    checkRedirectResult();
+  }, []);
+
   // Check for existing session on mount using Firebase Auth
   useEffect(() => {
     console.log('AuthContext: Setting up auth state listener');
