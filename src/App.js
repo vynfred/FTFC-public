@@ -28,6 +28,7 @@ import { ModalProvider } from './context/ModalContext';
 import Analytics from './components/Dashboard/Analytics';
 import BlogDetail from './components/Dashboard/BlogDetail';
 import Calendar from './components/Dashboard/Calendar';
+import CalendarView from './components/Dashboard/CalendarView';
 import CampaignDetail from './components/Dashboard/CampaignDetail';
 import ClientCreate from './components/Dashboard/ClientCreate';
 import ClientDetail from './components/Dashboard/ClientDetail';
@@ -176,6 +177,7 @@ function App() {
           <Route path="/dashboard/search-example" element={<SearchBarExample />} />
           <Route path="/dashboard/email-example" element={<EmailExample />} />
           <Route path="/dashboard/calendar" element={<Calendar />} />
+          <Route path="/dashboard/calendar-view" element={<CalendarView />} />
           <Route path="/dashboard/marketing/content/:id" element={<BlogDetail />} />
           <Route path="/dashboard/marketing/campaigns/:id" element={<CampaignDetail />} />
           <Route path="/dashboard/marketing/create-blog" element={<BlogCreate />} />

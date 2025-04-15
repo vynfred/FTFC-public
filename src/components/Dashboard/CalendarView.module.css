@@ -1,0 +1,439 @@
+/* CalendarView.module.css */
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  min-height: 300px;
+}
+
+.notConnectedContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  min-height: 300px;
+}
+
+.connectButton {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.connectButton:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.errorMessage {
+  background-color: var(--color-error-bg);
+  color: var(--color-error);
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.errorMessage button {
+  background: none;
+  border: none;
+  color: var(--color-error);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.calendarHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.calendarTitle {
+  display: flex;
+  align-items: center;
+}
+
+.calendarTitle h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.calendarControls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.todayButton {
+  padding: 0.5rem 1rem;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.todayButton:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.navigationButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.navButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background-color: var(--color-background-light);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.navButton:hover {
+  background-color: var(--color-background-hover);
+}
+
+.viewButtons {
+  display: flex;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.viewButton {
+  padding: 0.5rem 1rem;
+  background-color: var(--color-background-light);
+  border: none;
+  border-right: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.viewButton:last-child {
+  border-right: none;
+}
+
+.viewButton:hover {
+  background-color: var(--color-background-hover);
+}
+
+.activeView {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.activeView:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.filterToggle {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.toggleLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.calendarContainer {
+  background-color: var(--color-background-light);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Month View Styles */
+.monthView {
+  display: flex;
+  flex-direction: column;
+}
+
+.weekDays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background-color: var(--color-background-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.weekDay {
+  padding: 0.75rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.monthGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  min-height: 600px;
+}
+
+.day {
+  border-right: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0.5rem;
+  min-height: 100px;
+}
+
+.day:nth-child(7n) {
+  border-right: none;
+}
+
+.day:nth-child(n+36) {
+  border-bottom: none;
+}
+
+.otherMonth {
+  background-color: var(--color-background-secondary);
+  color: var(--color-text-secondary);
+}
+
+.today {
+  background-color: var(--color-highlight-bg);
+}
+
+.dayHeader {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.dayNumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  font-weight: 500;
+}
+
+.today .dayNumber {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.dayEvents {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  overflow: hidden;
+}
+
+.eventItem {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-primary-light);
+  border-left: 3px solid var(--color-primary);
+  border-radius: 2px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.eventTime {
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+}
+
+.eventTitle {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.moreEvents {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: 0.25rem;
+  background-color: var(--color-background-secondary);
+  border-radius: 2px;
+}
+
+/* Week View Styles */
+.weekView {
+  display: flex;
+  flex-direction: column;
+}
+
+.weekHeader {
+  display: grid;
+  grid-template-columns: 60px repeat(7, 1fr);
+  background-color: var(--color-background-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.weekDay {
+  padding: 0.75rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.weekDayName {
+  font-weight: 500;
+}
+
+.weekDayNumber {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+.weekGrid {
+  display: grid;
+  grid-template-columns: 60px repeat(7, 1fr);
+  min-height: 600px;
+}
+
+.timeColumn {
+  border-right: 1px solid var(--color-border);
+  background-color: var(--color-background-secondary);
+}
+
+.timeSlot {
+  height: 60px;
+  padding: 0.25rem;
+  text-align: right;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dayColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.hourSlot {
+  height: 60px;
+  border-right: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0.25rem;
+}
+
+.weekEventItem {
+  background-color: var(--color-primary-light);
+  border-left: 3px solid var(--color-primary);
+  border-radius: 2px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.weekEventTime {
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+}
+
+.weekEventTitle {
+  font-weight: 500;
+}
+
+/* Day View Styles */
+.dayView {
+  display: flex;
+  flex-direction: column;
+}
+
+.dayHeader {
+  padding: 0.75rem;
+  background-color: var(--color-background-secondary);
+  border-bottom: 1px solid var(--color-border);
+  text-align: center;
+}
+
+.dayDate {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.dayGrid {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  min-height: 600px;
+}
+
+.eventsColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.dayEventItem {
+  background-color: var(--color-primary-light);
+  border-left: 3px solid var(--color-primary);
+  border-radius: 2px;
+  padding: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.dayEventTime {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.dayEventTitle {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.dayEventDescription {
+  font-size: 0.8rem;
+  color: var(--color-text-primary);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .calendarControls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filterToggle {
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
+  
+  .monthGrid {
+    min-height: 400px;
+  }
+  
+  .weekGrid, .dayGrid {
+    min-height: 400px;
+  }
+  
+  .timeSlot, .hourSlot {
+    height: 40px;
+  }
+}
