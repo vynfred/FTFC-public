@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaMoon, FaSun, FaAdjust, FaDesktop, FaCheck } from 'react-icons/fa';
+import { FaAdjust, FaCheck, FaDesktop, FaMoon, FaSun } from 'react-icons/fa';
 import { useTheme } from '../../../context/ThemeContext';
 import styles from './Theme.module.css';
 
@@ -48,9 +48,9 @@ const ProfileThemeToggle = () => {
       <p className={styles.settingDescription}>
         Choose your preferred theme for the application
       </p>
-      
+
       <div className={styles.themeOptions}>
-        {['light', 'dark', 'high-contrast', 'system'].map((themeType) => (
+        {['light', 'dark', 'high-contrast'].map((themeType) => (
           <div
             key={themeType}
             className={`${styles.themeCard} ${theme === themeType ? styles.activeTheme : ''}`}
