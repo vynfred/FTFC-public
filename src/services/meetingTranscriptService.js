@@ -218,12 +218,12 @@ export const processGeminiNotesForEntity = async (entityType, entityId, tokens =
       // If we have entity emails, check if any are in the participants
       if (participants.length > 0) {
         // Get entity emails from database
-        const entityEmails = await getEntityEmails(entityType, entityId);
-
-        // Check if any entity emails are in the participants
-        return participants.some(participant =>
-          entityEmails.includes(participant.toLowerCase())
-        );
+        return getEntityEmails(entityType, entityId).then(entityEmails => {
+          // Check if any entity emails are in the participants
+          return participants.some(participant =>
+            entityEmails.includes(participant.toLowerCase())
+          );
+        });
       }
 
       return false;
