@@ -16,6 +16,7 @@ import DashboardWrapper from './components/common/DashboardWrapper';
 import EmailExample from './components/common/EmailExample';
 import PWAInstallPrompt from './components/common/PWAInstallPrompt';
 import ScrollToTop from './components/common/ScrollToTop';
+import SearchBarExample from './components/examples/SearchBarExample';
 
 // Modal Components
 import AddAttendeeModal from './components/modals/AddAttendeeModal';
@@ -172,6 +173,7 @@ function App() {
           <Route path="/dashboard/css-examples" element={<CssExamples />} />
           <Route path="/dashboard/form-examples" element={<FormExamples />} />
           <Route path="/dashboard/components-examples" element={<ComponentsExamples />} />
+          <Route path="/dashboard/search-example" element={<SearchBarExample />} />
           <Route path="/dashboard/email-example" element={<EmailExample />} />
           <Route path="/dashboard/calendar" element={<Calendar />} />
           <Route path="/dashboard/marketing/content/:id" element={<BlogDetail />} />
