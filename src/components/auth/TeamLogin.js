@@ -30,6 +30,9 @@ const TeamLogin = () => {
       // Add a timestamp to track when the redirect was initiated
       localStorage.setItem('googleRedirectTimestamp', Date.now().toString());
 
+      // Store the client ID in localStorage to ensure consistency
+      localStorage.setItem('googleClientId', process.env.REACT_APP_GOOGLE_CLIENT_ID);
+
       // Use the redirect method
       await auth.signInWithGoogleRedirect();
 
@@ -39,6 +42,7 @@ const TeamLogin = () => {
       console.error('TeamLogin: Google sign-in redirect error:', error);
       localStorage.removeItem('googleRedirectInProgress');
       localStorage.removeItem('googleRedirectTimestamp');
+      localStorage.removeItem('googleClientId');
       setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });
       setIsLoading(false);
     }

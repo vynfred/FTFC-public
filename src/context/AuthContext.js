@@ -169,13 +169,27 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
 
     try {
+      console.log('AuthContext: Starting Google sign-in...');
+
+      // Check if we have a stored client ID from a redirect
+      const storedClientId = localStorage.getItem('googleClientId');
+      if (storedClientId) {
+        console.log('AuthContext: Using stored client ID from redirect');
+        // Ensure the auth provider uses the same client ID
+        auth.updateGoogleProviderClientId(storedClientId);
+      }
+
       // Use the signInWithGoogle method from our auth service
       const result = await auth.signInWithGoogle();
+
+      // Clear any stored client ID
+      localStorage.removeItem('googleClientId');
 
       // Firebase Auth successful, user state will be updated by the onAuthStateChanged listener
       return result.user;
     } catch (error) {
       console.error('Google Sign-In error:', error);
+      localStorage.removeItem('googleClientId');
       setLoading(false);
       throw error;
     }

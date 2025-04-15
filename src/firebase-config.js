@@ -35,7 +35,9 @@ googleProvider.addScope('https://www.googleapis.com/auth/userinfo.email');
 googleProvider.addScope('https://www.googleapis.com/auth/userinfo.profile');
 // Set custom parameters
 googleProvider.setCustomParameters({
-  prompt: 'select_account'
+  prompt: 'select_account',
+  // Explicitly set the client ID from environment variable
+  client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID
 });
 
 // Auth service
@@ -47,6 +49,14 @@ const auth = {
   signOut: () => firebaseSignOut(firebaseAuth),
   createUserWithEmailAndPassword: (email, password) => createUserWithEmailAndPassword(firebaseAuth, email, password),
   getRedirectResult: () => getRedirectResult(firebaseAuth),
+  // Method to update the Google provider's client ID
+  updateGoogleProviderClientId: (clientId) => {
+    console.log('Updating Google provider client ID:', clientId);
+    googleProvider.setCustomParameters({
+      prompt: 'select_account',
+      client_id: clientId
+    });
+  },
   signInWithGoogle: () => {
     try {
       console.log('Starting Google sign-in process with popup...');
