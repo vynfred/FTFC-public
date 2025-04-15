@@ -46,82 +46,19 @@ const TeamLogin = () => {
 
   // Check for redirect result when component mounts
   useEffect(() => {
-    const checkRedirectResult = async () => {
-      try {
-        setIsLoading(true);
-        console.log('Checking for redirect result...');
-
-        // Get the redirect result
-        const result = await auth.getRedirectResult();
-
-        if (result && result.user) {
-          console.log('Redirect sign-in successful:', result.user.email);
-          // Redirect to dashboard
-          navigate('/dashboard');
-          return;
-        }
-
-        // Check if we have a redirect in progress or just completed
-        const redirectInProgress = localStorage.getItem('googleRedirectInProgress');
-        const redirectTimestamp = localStorage.getItem('googleRedirectTimestamp');
-        const googleSignInSuccess = sessionStorage.getItem('googleSignInSuccess');
-
-        if (redirectInProgress || googleSignInSuccess) {
-          // Clear the flags
-          localStorage.removeItem('googleRedirectInProgress');
-          localStorage.removeItem('googleRedirectTimestamp');
-          sessionStorage.removeItem('googleSignInSuccess');
-
-          // If the redirect was recent (within the last 5 minutes), this is likely a successful redirect
-          if (redirectTimestamp) {
-            const timestamp = parseInt(redirectTimestamp, 10);
-            const now = Date.now();
-            const fiveMinutesInMs = 5 * 60 * 1000;
-
-            if (now - timestamp < fiveMinutesInMs) {
-              console.log('Recent redirect detected, likely successful');
-              navigate('/dashboard');
-              return;
-            }
-          }
-
-          if (googleSignInSuccess) {
-            // If we have a success flag but no redirect result, it was a popup success
-            navigate('/dashboard');
-            return;
-          }
-        }
-      } catch (error) {
-        console.error('Redirect sign-in error:', error);
-        if (error.code !== 'auth/credential-already-in-use') {
-          setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkRedirectResult();
-
     // Force scroll to top when component mounts
-    // Immediate scroll
     window.scrollTo(0, 0);
     document.body.scrollTop = 0; // For Safari
     document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
 
-    // Set multiple timeouts to ensure it works
-    const timeoutIds = [];
-    for (let i = 0; i < 10; i++) {
-      timeoutIds.push(
-        setTimeout(() => {
-          window.scrollTo(0, 0);
-          document.body.scrollTop = 0;
-          document.documentElement.scrollTop = 0;
-        }, i * 100) // 0ms, 100ms, 200ms, etc.
-      );
-    }
+    // Set a single timeout to ensure it works
+    const timeoutId = setTimeout(() => {
+      window.scrollTo(0, 0);
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    }, 100);
 
-    return () => timeoutIds.forEach(id => clearTimeout(id));
+    return () => clearTimeout(timeoutId);
   }, []);
 
   const handleChange = (e) => {
@@ -192,34 +129,14 @@ const TeamLogin = () => {
       console.log('TeamLogin: Starting Google sign-in...');
       // Attempt Google sign-in with Firebase Authentication using the popup method
       const result = await auth.signInWithGoogle();
-      console.log('TeamLogin: Google sign-in successful:', result);
-      console.log('TeamLogin: User:', result.user);
-      console.log('TeamLogin: User email:', result.user.email);
-      console.log('TeamLogin: User ID:', result.user.uid);
+      console.log('TeamLogin: Google sign-in successful, redirecting...');
 
-      // Store authentication success in localStorage for debugging
-      localStorage.setItem('authSuccess', 'true');
-      localStorage.setItem('authUser', JSON.stringify({
-        email: result.user.email,
-        uid: result.user.uid,
-        displayName: result.user.displayName,
-        timestamp: new Date().toISOString()
-      }));
-
-      console.log('TeamLogin: Redirecting to dashboard...');
       // Redirect to dashboard on success
       navigate('/dashboard');
     } catch (error) {
       console.error('TeamLogin: Google sign-in error:', error);
       console.error('TeamLogin: Error code:', error.code);
       console.error('TeamLogin: Error message:', error.message);
-
-      // Store authentication error in localStorage for debugging
-      localStorage.setItem('authError', JSON.stringify({
-        code: error.code,
-        message: error.message,
-        timestamp: new Date().toISOString()
-      }));
 
       // Show detailed error message
       if (error.code === 'auth/popup-closed-by-user') {
