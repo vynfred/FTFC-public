@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { FaChartBar, FaHandshake, FaMoneyBillWave, FaSort, FaSortDown, FaSortUp, FaUserPlus } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../../firebase-config';
+import SimpleSearch from '../common/SimpleSearch';
 import DashboardSection from '../shared/DashboardSection';
-import { SearchBar } from '../ui/form';
 import styles from './InvestorDashboard.module.css';
 
 const InvestorDashboard = () => {
@@ -138,11 +138,11 @@ const InvestorDashboard = () => {
     <>
       <div className="filter-container">
         <div className="search-container">
-          <SearchBar
+          <SimpleSearch
             placeholder="Search investors..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="dashboard-search"
+            className="simple-search"
           />
         </div>
         <div className="filter-actions">

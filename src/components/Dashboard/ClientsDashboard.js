@@ -10,8 +10,8 @@ import { useStatsView } from '../../context/StatsViewContext';
 import { db } from '../../firebase-config';
 import { generateClientsCSVTemplate, processClientsData, validateClientsCSV } from '../../utils/csvUtils';
 import FileUploader from '../common/FileUploader';
+import SimpleSearch from '../common/SimpleSearch';
 import DashboardSection from '../shared/DashboardSection';
-import { SearchBar } from '../ui/form';
 import styles from './ClientsDashboard.module.css';
 // CSS is now imported globally
 
@@ -192,11 +192,11 @@ const ClientsDashboard = () => {
     <>
       <div className="filter-container">
         <div className="search-container">
-          <SearchBar
+          <SimpleSearch
             placeholder="Search clients..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="dashboard-search"
+            className="simple-search"
           />
         </div>
         <div className="filter-actions">
