@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { listUpcomingEvents, createMeetEvent } from '../../services/googleIntegration';
-import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase-config';
-import DashboardSection from './DashboardSection';
+import { createMeetEvent, listUpcomingEvents } from '../../services/googleIntegration';
 import LoadingSpinner from '../common/LoadingSpinner';
 import styles from './Calendar.module.css';
+import DashboardSection from './DashboardSection';
 
 const Calendar = () => {
   const { currentUser } = useAuth();
@@ -33,16 +33,28 @@ const Calendar = () => {
     const fetchUserTokens = async () => {
       try {
         if (!currentUser) return;
-        
+
+        // First check localStorage for tokens (from GoogleCalendarConnect)
+        const localTokens = localStorage.getItem('googleTokens');
+        if (localTokens) {
+          const parsedTokens = JSON.parse(localTokens);
+          setUserTokens(parsedTokens);
+          setGoogleConnected(true);
+          return; // If we found tokens in localStorage, no need to check Firestore
+        }
+
+        // If no tokens in localStorage, check Firestore
         const userRef = collection(db, 'users');
         const q = query(userRef, where('uid', '==', currentUser.uid));
         const querySnapshot = await getDocs(q);
-        
+
         if (!querySnapshot.empty) {
           const userData = querySnapshot.docs[0].data();
           if (userData.tokens) {
             setUserTokens(userData.tokens);
             setGoogleConnected(true);
+            // Also store in localStorage for consistency
+            localStorage.setItem('googleTokens', JSON.stringify(userData.tokens));
           }
         }
       } catch (err) {
@@ -58,7 +70,7 @@ const Calendar = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       if (!userTokens) return;
-      
+
       try {
         setLoading(true);
         const eventsList = await listUpcomingEvents(userTokens, 20);
@@ -123,21 +135,21 @@ const Calendar = () => {
 
   const handleCreateEvent = async (e) => {
     e.preventDefault();
-    
+
     if (!userTokens) {
       setError('Google Calendar not connected');
       return;
     }
-    
+
     try {
       setCreatingEvent(true);
-      
+
       // Format attendees as array
       const attendeesList = newEvent.attendees
         .split(',')
         .map(email => email.trim())
         .filter(email => email);
-      
+
       const eventDetails = {
         title: newEvent.title,
         description: newEvent.description,
@@ -145,9 +157,9 @@ const Calendar = () => {
         end: new Date(newEvent.end).toISOString(),
         attendees: attendeesList
       };
-      
+
       const createdEvent = await createMeetEvent(userTokens, eventDetails);
-      
+
       // Reset form and show success message
       setNewEvent({
         title: '',
@@ -156,14 +168,14 @@ const Calendar = () => {
         end: '',
         attendees: ''
       });
-      
+
       setEventCreated(true);
       setTimeout(() => setEventCreated(false), 3000);
-      
+
       // Refresh events list
       const updatedEvents = await listUpcomingEvents(userTokens, 20);
       setEvents(updatedEvents || []);
-      
+
       // Hide form after successful creation
       setShowNewEventForm(false);
     } catch (err) {
@@ -217,23 +229,23 @@ const Calendar = () => {
           <button onClick={() => setError(null)}>Dismiss</button>
         </div>
       )}
-      
+
       {eventCreated && (
         <div className={styles.successMessage}>
           <p>Event created successfully!</p>
         </div>
       )}
-      
+
       <div className={styles.calendarHeader}>
         <h2>Upcoming Events</h2>
-        <button 
+        <button
           className={styles.newEventButton}
           onClick={() => setShowNewEventForm(!showNewEventForm)}
         >
           {showNewEventForm ? 'Cancel' : 'New Event'}
         </button>
       </div>
-      
+
       {showNewEventForm && (
         <div className={styles.newEventFormContainer}>
           <h3>Create New Meeting</h3>
@@ -250,7 +262,7 @@ const Calendar = () => {
                 placeholder="Meeting title"
               />
             </div>
-            
+
             <div className={styles.formGroup}>
               <label htmlFor="description">Description</label>
               <textarea
@@ -262,7 +274,7 @@ const Calendar = () => {
                 rows="3"
               />
             </div>
-            
+
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
                 <label htmlFor="start">Start Time</label>
@@ -275,7 +287,7 @@ const Calendar = () => {
                   required
                 />
               </div>
-              
+
               <div className={styles.formGroup}>
                 <label htmlFor="end">End Time</label>
                 <input
@@ -288,7 +300,7 @@ const Calendar = () => {
                 />
               </div>
             </div>
-            
+
             <div className={styles.formGroup}>
               <label htmlFor="attendees">Attendees (comma-separated emails)</label>
               <input
@@ -300,14 +312,14 @@ const Calendar = () => {
                 placeholder="email1@example.com, email2@example.com"
               />
             </div>
-            
+
             <div className={styles.contactsContainer}>
               <div className={styles.contactsSection}>
                 <h4>Clients</h4>
                 <div className={styles.contactsList}>
                   {clients.map(client => (
-                    <div 
-                      key={client.id} 
+                    <div
+                      key={client.id}
                       className={styles.contactItem}
                       onClick={() => {
                         const email = client.email;
@@ -325,13 +337,13 @@ const Calendar = () => {
                   ))}
                 </div>
               </div>
-              
+
               <div className={styles.contactsSection}>
                 <h4>Investors</h4>
                 <div className={styles.contactsList}>
                   {investors.map(investor => (
-                    <div 
-                      key={investor.id} 
+                    <div
+                      key={investor.id}
                       className={styles.contactItem}
                       onClick={() => {
                         const email = investor.email;
@@ -349,13 +361,13 @@ const Calendar = () => {
                   ))}
                 </div>
               </div>
-              
+
               <div className={styles.contactsSection}>
                 <h4>Partners</h4>
                 <div className={styles.contactsList}>
                   {partners.map(partner => (
-                    <div 
-                      key={partner.id} 
+                    <div
+                      key={partner.id}
                       className={styles.contactItem}
                       onClick={() => {
                         const email = partner.email;
@@ -374,17 +386,17 @@ const Calendar = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className={styles.formActions}>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className={styles.cancelButton}
                 onClick={() => setShowNewEventForm(false)}
               >
                 Cancel
               </button>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className={styles.submitButton}
                 disabled={creatingEvent}
               >
@@ -394,7 +406,7 @@ const Calendar = () => {
           </form>
         </div>
       )}
-      
+
       <div className={styles.eventsContainer}>
         {events.length === 0 ? (
           <p className={styles.noEvents}>No upcoming events found.</p>
@@ -405,9 +417,9 @@ const Calendar = () => {
                 <div className={styles.eventHeader}>
                   <h3 className={styles.eventTitle}>{event.summary}</h3>
                   {event.hangoutLink && (
-                    <a 
-                      href={event.hangoutLink} 
-                      target="_blank" 
+                    <a
+                      href={event.hangoutLink}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className={styles.meetLink}
                     >
@@ -415,7 +427,7 @@ const Calendar = () => {
                     </a>
                   )}
                 </div>
-                
+
                 <div className={styles.eventTime}>
                   <div className={styles.eventTimeItem}>
                     <span className={styles.eventTimeLabel}>Start:</span>
@@ -426,13 +438,13 @@ const Calendar = () => {
                     <span>{formatDateTime(event.end.dateTime || event.end.date)}</span>
                   </div>
                 </div>
-                
+
                 {event.description && (
                   <div className={styles.eventDescription}>
                     <p>{event.description}</p>
                   </div>
                 )}
-                
+
                 {event.attendees && event.attendees.length > 0 && (
                   <div className={styles.eventAttendees}>
                     <h4>Attendees:</h4>

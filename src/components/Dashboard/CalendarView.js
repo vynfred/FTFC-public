@@ -76,6 +76,9 @@ const CalendarView = () => {
               lastUpdated: new Date().toISOString()
             }, { merge: true });
 
+            // Also store tokens in localStorage for consistency with GoogleCalendarConnect
+            localStorage.setItem('googleTokens', JSON.stringify(tokens));
+
             setUserTokens(tokens);
             setGoogleConnected(true);
 
@@ -101,6 +104,16 @@ const CalendarView = () => {
       try {
         if (!currentUser) return;
 
+        // First check localStorage for tokens (from GoogleCalendarConnect)
+        const localTokens = localStorage.getItem('googleTokens');
+        if (localTokens) {
+          const parsedTokens = JSON.parse(localTokens);
+          setUserTokens(parsedTokens);
+          setGoogleConnected(true);
+          return; // If we found tokens in localStorage, no need to check Firestore
+        }
+
+        // If no tokens in localStorage, check Firestore
         const userRef = collection(db, 'users');
         const q = query(userRef, where('uid', '==', currentUser.uid));
         const querySnapshot = await getDocs(q);
@@ -110,6 +123,8 @@ const CalendarView = () => {
           if (userData.tokens) {
             setUserTokens(userData.tokens);
             setGoogleConnected(true);
+            // Also store in localStorage for consistency
+            localStorage.setItem('googleTokens', JSON.stringify(userData.tokens));
           }
         }
       } catch (err) {
