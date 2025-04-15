@@ -23,9 +23,9 @@ const createOAuth2Client = () => {
   // Using the FTFC Client ID from Google Cloud Console
   const clientId = '815708531852-scs6t2uph7ci2vkgpfvn7uq5q7406s20.apps.googleusercontent.com';
 
-  // Use the exact redirect URI that Google is expecting
-  // This is the URI that was detected in the error message
-  const redirectUri = 'https://ftfc-start.web.app/oauth2callback';
+  // Use a redirect URI that's already registered in Google Cloud Console
+  // This is one of the URIs you mentioned was already set up
+  const redirectUri = 'https://ftfc-start.web.app/api/google/oauth-callback';
 
   console.log('Creating OAuth2 client with:', { clientId, redirectUri });
 
