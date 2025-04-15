@@ -220,8 +220,8 @@ const TeamLogin = () => {
           </div>
         </form>
 
-        <div style={{ margin: '20px 0', textAlign: 'center' }}>
-          <p style={{ margin: '10px 0', color: '#94a3b8' }}>- OR -</p>
+        <div style={{ margin: '32px 0', textAlign: 'center' }}>
+          <p style={{ margin: '16px 0', color: '#94a3b8' }}>- OR -</p>
           <button
             type="button"
             onClick={handleGoogleSignIn}
@@ -232,7 +232,7 @@ const TeamLogin = () => {
               justifyContent: 'center',
               gap: '10px',
               width: '100%',
-              padding: '12px',
+              padding: '14px',
               backgroundColor: '#ffffff',
               color: '#333333',
               border: '1px solid #d1d5db',
@@ -270,7 +270,7 @@ const TeamLogin = () => {
           background-color: #1e293b;
           border-radius: 8px;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-          padding: 32px;
+          padding: 40px;
         }
 
         .login-header {
@@ -296,7 +296,7 @@ const TeamLogin = () => {
         }
 
         .form-group {
-          margin-bottom: 20px;
+          margin-bottom: 28px;
         }
 
         .form-group label {
@@ -332,21 +332,23 @@ const TeamLogin = () => {
 
         .input-icon {
           position: absolute;
-          left: 12px;
+          left: 16px;
           top: 50%;
           transform: translateY(-50%);
           color: #94a3b8;
+          font-size: 16px;
         }
 
         input {
           width: 100%;
-          padding: 12px 12px 12px 40px;
+          padding: 14px 14px 14px 42px;
           background-color: #0f172a;
           border: 1px solid rgba(255, 255, 255, 0.1);
           border-radius: 4px;
           color: #ffffff;
-          font-size: 14px;
+          font-size: 15px;
           transition: border-color 0.2s ease;
+          margin-bottom: 4px;
         }
 
         input:focus {
@@ -374,7 +376,7 @@ const TeamLogin = () => {
 
         .login-button {
           width: 100%;
-          padding: 12px;
+          padding: 14px;
           background-color: #f59e0b;
           color: #0f172a;
           border: none;
@@ -383,6 +385,7 @@ const TeamLogin = () => {
           font-weight: 600;
           cursor: pointer;
           transition: background-color 0.2s ease;
+          margin-top: 8px;
         }
 
         .login-button:hover {
@@ -398,6 +401,7 @@ const TeamLogin = () => {
           text-align: center;
           color: #94a3b8;
           font-size: 14px;
+          margin-top: 24px;
         }
 
         .login-footer p {
