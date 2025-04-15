@@ -250,21 +250,34 @@ const InvestorDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredInvestors.map(investor => (
-                <tr key={investor.id} onClick={() => handleInvestorClick(investor.id)}>
-                  <td>{investor.name}</td>
-                  <td>{investor.firm}</td>
-                  <td>
-                    <span className={`${styles.statusBadge} ${getStatusColorClass(investor.status)}`}>
-                      {investor.status}
-                    </span>
+              {filteredInvestors.length > 0 ? (
+                filteredInvestors.map(investor => (
+                  <tr key={investor.id} onClick={() => handleInvestorClick(investor.id)}>
+                    <td>{investor.name || 'N/A'}</td>
+                    <td>{investor.firm || 'N/A'}</td>
+                    <td>
+                      <span className={`${styles.statusBadge} ${getStatusColorClass(investor.status)}`}>
+                        {investor.status || 'N/A'}
+                      </span>
+                    </td>
+                    <td>{investor.investmentRange || 'N/A'}</td>
+                    <td>{investor.preferredStage || 'N/A'}</td>
+                    <td>{investor.totalInvested !== undefined ? `$${investor.totalInvested.toLocaleString()}` : 'N/A'}</td>
+                    <td>{investor.deals !== undefined ? investor.deals : 'N/A'}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr className="empty-table-row">
+                  <td colSpan="7" className="empty-table-cell">
+                    <div className="empty-table-message">
+                      <p>No investors present</p>
+                      <button className="action-button primary-button" onClick={handleCreateInvestor}>
+                        <FaUserPlus /> Add Investor
+                      </button>
+                    </div>
                   </td>
-                  <td>{investor.investmentRange}</td>
-                  <td>{investor.preferredStage}</td>
-                  <td>${investor.totalInvested.toLocaleString()}</td>
-                  <td>{investor.deals}</td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

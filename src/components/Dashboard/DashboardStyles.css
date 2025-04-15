@@ -319,3 +319,34 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Empty Table Styles */
+.empty-table-row {
+  height: 200px;
+}
+
+.empty-table-row:hover {
+  background-color: transparent !important;
+  cursor: default !important;
+}
+
+.empty-table-cell {
+  text-align: center;
+  vertical-align: middle;
+  padding: var(--spacing-xl) !important;
+}
+
+.empty-table-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+}
+
+.empty-table-message p {
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+}

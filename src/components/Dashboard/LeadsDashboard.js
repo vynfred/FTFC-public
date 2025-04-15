@@ -254,21 +254,34 @@ const LeadsDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredLeads.map(lead => (
-                <tr key={lead.id} onClick={() => handleLeadClick(lead.id)}>
-                  <td className="col-md">{lead.name}</td>
-                  <td className="col-md">{lead.company}</td>
-                  <td className="col-sm">
-                    <span className={`status-badge ${lead.status === 'New' ? 'status-new' : lead.status === 'Qualified' ? 'status-qualified' : 'status-negotiation'}`}>
-                      {lead.status}
-                    </span>
+              {filteredLeads.length > 0 ? (
+                filteredLeads.map(lead => (
+                  <tr key={lead.id} onClick={() => handleLeadClick(lead.id)}>
+                    <td className="col-md">{lead.name || 'N/A'}</td>
+                    <td className="col-md">{lead.company || 'N/A'}</td>
+                    <td className="col-sm">
+                      <span className={`status-badge ${lead.status === 'New' ? 'status-new' : lead.status === 'Qualified' ? 'status-qualified' : 'status-negotiation'}`}>
+                        {lead.status || 'N/A'}
+                      </span>
+                    </td>
+                    <td className="col-sm">{lead.value || 'N/A'}</td>
+                    <td className="col-md">{lead.lastContact ? new Date(lead.lastContact).toLocaleDateString() : 'N/A'}</td>
+                    <td className="col-md">{lead.source || 'N/A'}</td>
+                    <td className="col-md">{lead.assignedTo || 'N/A'}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr className="empty-table-row">
+                  <td colSpan="7" className="empty-table-cell">
+                    <div className="empty-table-message">
+                      <p>No leads present</p>
+                      <button className="action-button primary-button" onClick={handleCreateLead}>
+                        <FaUserPlus /> Add Lead
+                      </button>
+                    </div>
                   </td>
-                  <td className="col-sm">{lead.value}</td>
-                  <td className="col-md">{new Date(lead.lastContact).toLocaleDateString()}</td>
-                  <td className="col-md">{lead.source}</td>
-                  <td className="col-md">{lead.assignedTo}</td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

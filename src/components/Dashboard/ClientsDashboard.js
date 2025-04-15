@@ -302,28 +302,43 @@ const ClientsDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredClients.map(client => (
-                <tr key={client.id} onClick={() => handleClientClick(client.id)}>
-                  <td>{client.name}</td>
-                  <td>
-                    <span className={`${styles.statusBadge} ${getStatusColor(client.status)}`}>
-                      {client.status}
-                    </span>
-                  </td>
-                  <td>{client.revenue}</td>
-                  <td>{new Date(client.lastContact).toLocaleDateString()}</td>
-                  <td>
-                    <div className={styles.progressContainer}>
-                      <div
-                        className={styles.progressBar}
-                        style={{ width: client.milestoneStatus }}
-                      ></div>
-                      <span className={styles.progressText}>{client.milestoneStatus}</span>
+              {filteredClients.length > 0 ? (
+                filteredClients.map(client => (
+                  <tr key={client.id} onClick={() => handleClientClick(client.id)}>
+                    <td>{client.name || 'N/A'}</td>
+                    <td>
+                      <span className={`${styles.statusBadge} ${getStatusColor(client.status)}`}>
+                        {client.status || 'N/A'}
+                      </span>
+                    </td>
+                    <td>{client.revenue || 'N/A'}</td>
+                    <td>{client.lastContact ? new Date(client.lastContact).toLocaleDateString() : 'N/A'}</td>
+                    <td>
+                      {client.milestoneStatus ? (
+                        <div className={styles.progressContainer}>
+                          <div
+                            className={styles.progressBar}
+                            style={{ width: client.milestoneStatus }}
+                          ></div>
+                          <span className={styles.progressText}>{client.milestoneStatus}</span>
+                        </div>
+                      ) : 'N/A'}
+                    </td>
+                    <td>{client.industry || 'N/A'}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr className="empty-table-row">
+                  <td colSpan="6" className="empty-table-cell">
+                    <div className="empty-table-message">
+                      <p>No clients present</p>
+                      <button className="action-button primary-button" onClick={handleCreateClient}>
+                        <FaUserPlus /> Create Client
+                      </button>
                     </div>
                   </td>
-                  <td>{client.industry}</td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
