@@ -118,6 +118,7 @@ function App() {
           {/* Google OAuth Callback Routes */}
           <Route path="/api/google/oauth-callback" element={<GoogleOAuthCallback />} />
           <Route path="/api/google-drive/oauth-callback" element={<GoogleDriveCallback />} />
+          <Route path="/oauth2callback" element={<GoogleOAuthCallback />} />
         </Route>
 
         {/* Client Portal Routes */}
