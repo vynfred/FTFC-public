@@ -20,11 +20,12 @@ import { google } from 'googleapis';
 const createOAuth2Client = () => {
   // Use a direct approach without relying on environment variables
   // This ensures consistent client ID and redirect URI across environments
+  // Using the FTFC Client ID from Google Cloud Console
   const clientId = '815708531852-scs6t2uph7ci2vkgpfvn7uq5q7406s20.apps.googleusercontent.com';
 
   // Use a simple redirect URI that's registered in Google Cloud Console
   // This should be one of the authorized redirect URIs in your Google Cloud Console
-  const redirectUri = 'https://ftfc-start.web.app';
+  const redirectUri = 'https://ftfc-start.web.app/oauth2callback';
 
   console.log('Creating OAuth2 client with:', { clientId, redirectUri });
 

@@ -11,8 +11,9 @@
 export const getGoogleAuthUrl = () => {
   // Use a direct approach without relying on environment variables
   // This ensures consistent client ID and redirect URI across environments
+  // Using the FTFC Client ID from Google Cloud Console
   const clientId = '815708531852-scs6t2uph7ci2vkgpfvn7uq5q7406s20.apps.googleusercontent.com';
-  const redirectUri = 'https://ftfc-start.web.app';
+  const redirectUri = 'https://ftfc-start.web.app/oauth2callback';
 
   console.log('Creating Google Drive OAuth URL with:', { clientId, redirectUri });
 
@@ -55,7 +56,7 @@ export const getTokensFromCode = async (code) => {
   // Use the same client ID and redirect URI as in getGoogleAuthUrl
   const clientId = '815708531852-scs6t2uph7ci2vkgpfvn7uq5q7406s20.apps.googleusercontent.com';
   const clientSecret = process.env.REACT_APP_GOOGLE_CLIENT_SECRET;
-  const redirectUri = 'https://ftfc-start.web.app';
+  const redirectUri = 'https://ftfc-start.web.app/oauth2callback';
 
   console.log('Exchanging code for tokens with:', { clientId, redirectUri });
 
