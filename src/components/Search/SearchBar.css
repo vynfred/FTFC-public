@@ -1,0 +1,47 @@
+/* SearchBar component styles */
+.search-bar-container {
+  @apply relative flex items-center w-full max-w-md;
+}
+
+.search-icon-wrapper {
+  @apply absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400;
+}
+
+.search-icon {
+  @apply h-4 w-4;
+}
+
+.search-input {
+  @apply w-full py-2 pl-10 pr-4 text-sm bg-gray-800 border border-gray-700 rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-400;
+}
+
+.search-button {
+  @apply bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-r-md text-sm font-medium transition-colors duration-200;
+}
+
+/* Hide the button on small screens or when specified */
+.search-bar-container.no-button .search-button {
+  @apply hidden;
+}
+
+.search-bar-container.no-button .search-input {
+  @apply rounded-r-md;
+}
+
+/* Dark mode styles */
+.dark .search-input {
+  @apply bg-gray-800 border-gray-700 text-white placeholder-gray-400;
+}
+
+.dark .search-icon {
+  @apply text-gray-400;
+}
+
+/* Light mode styles */
+.light .search-input {
+  @apply bg-white border-gray-300 text-gray-800 placeholder-gray-500;
+}
+
+.light .search-icon {
+  @apply text-gray-500;
+}
