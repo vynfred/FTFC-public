@@ -45,8 +45,15 @@ const GoogleCalendarConnect = ({ onConnect, onDisconnect }) => {
 
   // Handle connect button click
   const handleConnect = () => {
-    // Get auth URL and redirect
-    const authUrl = getAuthUrl();
+    // Get auth URL with calendar-specific scopes
+    const scopes = [
+      'https://www.googleapis.com/auth/userinfo.email',
+      'https://www.googleapis.com/auth/userinfo.profile',
+      'https://www.googleapis.com/auth/calendar',
+      'https://www.googleapis.com/auth/calendar.events'
+    ];
+    const authUrl = getAuthUrl(scopes);
+    console.log('Redirecting to Google OAuth URL:', authUrl);
     window.location.href = authUrl;
   };
 

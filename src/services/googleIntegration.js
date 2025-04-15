@@ -18,10 +18,18 @@ import { google } from 'googleapis';
 
 // Create OAuth2 client
 const createOAuth2Client = () => {
+  // Log the client ID and redirect URI for debugging
+  console.log('Using Google Client ID:', process.env.REACT_APP_GOOGLE_CLIENT_ID);
+  console.log('Using Google Redirect URI:', process.env.REACT_APP_GOOGLE_REDIRECT_URI);
+
+  // Ensure we're using the correct client ID from the environment
+  const clientId = '815708531852-scs6t2uph7ci2vkgpfvn7uq5q7406s20.apps.googleusercontent.com';
+  const redirectUri = 'https://ftfc-start.web.app/oauth2callback';
+
   return new google.auth.OAuth2(
-    process.env.REACT_APP_GOOGLE_CLIENT_ID,
+    clientId,
     process.env.REACT_APP_GOOGLE_CLIENT_SECRET,
-    process.env.REACT_APP_GOOGLE_REDIRECT_URI
+    redirectUri
   );
 };
 
