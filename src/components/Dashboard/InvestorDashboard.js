@@ -172,6 +172,9 @@ const InvestorDashboard = () => {
 
   return (
     <div className="dashboard-container">
+      <div className="dashboard-header">
+        <h1>Investors</h1>
+      </div>
       {/* Investor Statistics Section */}
       <DashboardSection title="Investor Overview">
         <div className="stats-grid">

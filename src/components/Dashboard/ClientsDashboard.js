@@ -227,6 +227,9 @@ const ClientsDashboard = () => {
 
   return (
     <div className="dashboard-container">
+      <div className="dashboard-header">
+        <h1>Clients</h1>
+      </div>
       {/* Client Statistics Section */}
       <DashboardSection title="Client Overview">
         <div className="stats-grid">

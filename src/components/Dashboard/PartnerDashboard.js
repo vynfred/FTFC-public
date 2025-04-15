@@ -172,6 +172,9 @@ const PartnerDashboard = () => {
 
   return (
     <div className="dashboard-container">
+      <div className="dashboard-header">
+        <h1>Partners</h1>
+      </div>
       {/* Partner Statistics Section */}
       <DashboardSection title="Partner Overview">
         <div className="stats-grid">
