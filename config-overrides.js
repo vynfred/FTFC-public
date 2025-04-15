@@ -39,6 +39,8 @@ module.exports = function override(config, env) {
       },
     },
   };
+  // We're not using aliases for now as they can cause circular dependencies
+
   // Add fallbacks for Node.js core modules
   config.resolve.fallback = {
     ...config.resolve.fallback,
@@ -55,7 +57,7 @@ module.exports = function override(config, env) {
     "crypto": require.resolve("crypto-browserify"),
     "querystring": require.resolve("querystring-es3"),
     "events": require.resolve("events/"),
-    "process": require.resolve("process/browser"),
+    "process": require.resolve("process/browser.js"),
     "fs": false,
     "net": false,
     "tls": false,
@@ -103,7 +105,7 @@ module.exports = function override(config, env) {
   config.plugins.push(
     new NodePolyfillPlugin(),
     new webpack.ProvidePlugin({
-      process: 'process/browser',
+      process: 'process/browser.js',
       Buffer: ['buffer', 'Buffer'],
     })
   );
