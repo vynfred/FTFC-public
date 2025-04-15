@@ -20,19 +20,33 @@ const GoogleDriveConnect = ({ onConnect, onDisconnect }) => {
     const checkConnection = async () => {
       try {
         const status = await getGoogleDriveStatus();
+        const driveConnected = localStorage.getItem('googleDriveConnected');
+        console.log('GoogleDriveConnect: Drive connected flag:', driveConnected);
 
-        setIsConnected(status.connected);
-        if (status.connected && status.email) {
-          setUserEmail(status.email);
+        if (status.connected && driveConnected === 'true') {
+          setIsConnected(true);
+          if (status.email) {
+            setUserEmail(status.email);
 
-          // Call onConnect callback if provided
-          if (onConnect) {
-            onConnect();
+            // Call onConnect callback if provided
+            if (onConnect) {
+              onConnect();
+            }
+          }
+        } else {
+          setIsConnected(false);
+          console.log('GoogleDriveConnect: Not connected or missing connection flag');
+
+          // Clear any stale status if the connection flag is not set
+          if (status.connected && driveConnected !== 'true') {
+            console.log('GoogleDriveConnect: Found connected status but no connection flag, disconnecting');
+            await disconnectGoogleDrive();
           }
         }
       } catch (error) {
         console.error('Error checking Google Drive connection:', error);
         setIsConnected(false);
+        localStorage.removeItem('googleDriveConnected');
       } finally {
         setIsLoading(false);
       }
@@ -71,6 +85,10 @@ const GoogleDriveConnect = ({ onConnect, onDisconnect }) => {
       await disconnectGoogleDrive();
       setIsConnected(false);
       setUserEmail('');
+
+      // Clear connection flags
+      localStorage.removeItem('googleDriveConnected');
+      localStorage.removeItem('googleCalendarConnected');
 
       // Call onDisconnect callback if provided
       if (onDisconnect) {

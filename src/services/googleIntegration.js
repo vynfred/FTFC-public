@@ -80,6 +80,12 @@ export const exchangeCodeForTokens = async (code) => {
 
   try {
     const { tokens } = await oauth2Client.getToken(code);
+
+    // Store tokens and set connection flags
+    localStorage.setItem('googleTokens', JSON.stringify(tokens));
+    localStorage.setItem('googleCalendarConnected', 'true');
+    localStorage.setItem('googleDriveConnected', 'true');
+
     return tokens;
   } catch (error) {
     console.error('Error getting tokens:', error);

@@ -80,7 +80,14 @@ export const getTokensFromCode = async (code) => {
     throw new Error(errorData.error_description || 'Failed to get tokens');
   }
 
-  return response.json();
+  const tokens = await response.json();
+
+  // Also store the tokens for Google Calendar and set the connection flags
+  localStorage.setItem('googleTokens', JSON.stringify(tokens));
+  localStorage.setItem('googleCalendarConnected', 'true');
+  localStorage.setItem('googleDriveConnected', 'true');
+
+  return tokens;
 };
 
 /**
@@ -93,6 +100,7 @@ export const connectGoogleDrive = async (tokens) => {
     // In a real implementation, this would call a Cloud Function
     // For now, we'll just store the tokens in localStorage
     localStorage.setItem('googleDriveTokens', JSON.stringify(tokens));
+    localStorage.setItem('googleDriveConnected', 'true');
     return { success: true };
   } catch (error) {
     console.error('Error connecting Google Drive:', error);
@@ -109,6 +117,7 @@ export const disconnectGoogleDrive = async () => {
     // In a real implementation, this would call a Cloud Function
     // For now, we'll just remove the tokens from localStorage
     localStorage.removeItem('googleDriveTokens');
+    localStorage.removeItem('googleDriveConnected');
     return { success: true };
   } catch (error) {
     console.error('Error disconnecting Google Drive:', error);
@@ -125,9 +134,11 @@ export const getGoogleDriveStatus = async () => {
     // In a real implementation, this would call a Cloud Function
     // For now, we'll just check if tokens exist in localStorage
     const tokens = localStorage.getItem('googleDriveTokens');
+    const driveConnected = localStorage.getItem('googleDriveConnected');
     console.log('getGoogleDriveStatus: Checking tokens in localStorage:', tokens ? 'Found' : 'Not found');
+    console.log('getGoogleDriveStatus: Drive connected flag:', driveConnected);
 
-    if (tokens) {
+    if (tokens && driveConnected === 'true') {
       // Try to parse the tokens to make sure they're valid
       const parsedTokens = JSON.parse(tokens);
       console.log('getGoogleDriveStatus: Parsed tokens successfully');
@@ -138,11 +149,18 @@ export const getGoogleDriveStatus = async () => {
       };
     }
 
+    // If we have tokens but no connection flag, clear the tokens
+    if (tokens && driveConnected !== 'true') {
+      console.log('getGoogleDriveStatus: Found tokens but no connection flag, clearing tokens');
+      localStorage.removeItem('googleDriveTokens');
+    }
+
     return { connected: false, email: null };
   } catch (error) {
     console.error('Error getting Google Drive status:', error);
-    // Clear invalid tokens
+    // Clear invalid tokens and connection flag
     localStorage.removeItem('googleDriveTokens');
+    localStorage.removeItem('googleDriveConnected');
     return { connected: false };
   }
 };
