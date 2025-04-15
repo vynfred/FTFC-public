@@ -1,9 +1,14 @@
+// Import our custom SearchIcon component
+import SearchIcon from './SearchIcon';
+
 // Import all icons from react-icons/fa
 import * as ReactIcons from 'react-icons/fa';
 
-// Re-export all icons from react-icons/fa
+// Export our custom SearchIcon
+export { SearchIcon };
+
+// Re-export all other icons from react-icons/fa
 export const {
-  FaSearch,
   FaChartBar,
   FaSort,
   FaSortDown,

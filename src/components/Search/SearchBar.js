@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { FaSearch } from 'react-icons/fa';
+import SearchIcon from '../icons/SearchIcon';
 import './SearchBar.css';
 
 /**
- * A reusable search bar component with FaSearch icon
+ * A reusable search bar component with SearchIcon
  * 
  * @param {Object} props
  * @param {string} props.placeholder - Placeholder text for the search input
@@ -43,7 +43,7 @@ const SearchBar = ({
       onSubmit={handleSubmit}
     >
       <div className="search-icon-wrapper">
-        <FaSearch className="search-icon" />
+        <SearchIcon className="search-icon" />
       </div>
       <input
         type="text"

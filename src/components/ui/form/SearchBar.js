@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaSearch } from 'react-icons/fa';
+import SearchIcon from '../../icons/SearchIcon';
 import styles from './Form.module.css';
 
 /**
@@ -21,7 +21,7 @@ const SearchBar = ({
   return (
     <div className={`${styles.searchContainer} ${className}`}>
       <div className={styles.searchIconWrapper}>
-        <FaSearch className={styles.searchIcon} />
+        <SearchIcon className={styles.searchIcon} />
       </div>
       <input
         type="text"
