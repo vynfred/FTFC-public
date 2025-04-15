@@ -6,6 +6,10 @@ import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 // Import our consolidated CSS
 import './styles/index.css';
 
+// Initialize global FaSearch to prevent reference errors
+import initGlobalFaSearch from './components/common/GlobalFaSearch';
+initGlobalFaSearch();
+
 // Import Chart.js configuration if it exists
 try {
   require('./config/chartConfig');
