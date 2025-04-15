@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import { clearTokens, getAuthUrl, getStoredTokens, getUserProfile } from '../../services/googleIntegration';
 import styles from './GoogleIntegrations.module.css';
 
@@ -52,9 +53,24 @@ const GoogleCalendarConnect = ({ onConnect, onDisconnect }) => {
       'https://www.googleapis.com/auth/calendar',
       'https://www.googleapis.com/auth/calendar.events'
     ];
+
+    // Store the current user's email in localStorage to help with the OAuth flow
+    const { user } = useAuth();
+    if (user && user.email) {
+      localStorage.setItem('userEmail', user.email);
+    }
+
+    // Generate the auth URL and redirect
     const authUrl = getAuthUrl(scopes);
     console.log('Redirecting to Google OAuth URL:', authUrl);
-    window.location.href = authUrl;
+
+    // Use window.open instead of location.href to avoid potential ad blocker issues
+    const authWindow = window.open(authUrl, '_blank', 'width=600,height=700');
+
+    // Check if the window was blocked by a popup blocker
+    if (!authWindow || authWindow.closed || typeof authWindow.closed === 'undefined') {
+      alert('Please allow popups for this site to connect to Google Calendar.');
+    }
   };
 
   // Handle disconnect button click

@@ -18,17 +18,19 @@ import { google } from 'googleapis';
 
 // Create OAuth2 client
 const createOAuth2Client = () => {
-  // Log the client ID and redirect URI for debugging
-  console.log('Using Google Client ID:', process.env.REACT_APP_GOOGLE_CLIENT_ID);
-  console.log('Using Google Redirect URI:', process.env.REACT_APP_GOOGLE_REDIRECT_URI);
-
-  // Ensure we're using the correct client ID from the environment
+  // Use a direct approach without relying on environment variables
+  // This ensures consistent client ID and redirect URI across environments
   const clientId = '815708531852-scs6t2uph7ci2vkgpfvn7uq5q7406s20.apps.googleusercontent.com';
-  const redirectUri = 'https://ftfc-start.web.app/oauth2callback';
+
+  // Use a simple redirect URI that's registered in Google Cloud Console
+  // This should be one of the authorized redirect URIs in your Google Cloud Console
+  const redirectUri = 'https://ftfc-start.web.app';
+
+  console.log('Creating OAuth2 client with:', { clientId, redirectUri });
 
   return new google.auth.OAuth2(
     clientId,
-    process.env.REACT_APP_GOOGLE_CLIENT_SECRET,
+    null, // Client secret is not needed for client-side auth
     redirectUri
   );
 };
@@ -54,11 +56,14 @@ export const getAuthUrl = (scopes = []) => {
 
   const authScopes = scopes.length > 0 ? scopes : defaultScopes;
 
-  // Generate auth URL
+  // Generate auth URL with additional parameters to improve reliability
   const authUrl = oauth2Client.generateAuthUrl({
     access_type: 'offline', // Get refresh token
     scope: authScopes,
-    prompt: 'consent' // Force consent screen to always appear
+    prompt: 'consent', // Force consent screen to always appear
+    include_granted_scopes: true, // Include previously granted scopes
+    login_hint: localStorage.getItem('userEmail') || '', // Pre-fill user email if available
+    state: Date.now().toString(), // Add state parameter to prevent CSRF
   });
 
   return authUrl;
