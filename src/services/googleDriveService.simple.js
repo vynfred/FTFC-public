@@ -9,8 +9,12 @@
  * @returns {String} - Authorization URL
  */
 export const getGoogleAuthUrl = () => {
-  const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-  const redirectUri = process.env.REACT_APP_GOOGLE_REDIRECT_URI;
+  // Use a direct approach without relying on environment variables
+  // This ensures consistent client ID and redirect URI across environments
+  const clientId = '815708531852-scs6t2uph7ci2vkgpfvn7uq5q7406s20.apps.googleusercontent.com';
+  const redirectUri = 'https://ftfc-start.web.app';
+
+  console.log('Creating Google Drive OAuth URL with:', { clientId, redirectUri });
 
   // Define all required scopes
   const scopes = [
@@ -24,21 +28,10 @@ export const getGoogleAuthUrl = () => {
     'https://www.googleapis.com/auth/drive.meet.readonly',
     'https://www.googleapis.com/auth/drive.file',
     'https://www.googleapis.com/auth/drive.appdata',
-    'https://www.googleapis.com/auth/drive.activity.readonly',
-
-    // Calendar scopes
-    'https://www.googleapis.com/auth/calendar.app.created',
-    'https://www.googleapis.com/auth/calendar.calendarlist.readonly',
-    'https://www.googleapis.com/auth/calendar.events.readonly',
-
-    // Meet scopes
-    'https://www.googleapis.com/auth/meetings.space.readonly',
-
-    // Activity scope
-    'https://www.googleapis.com/auth/activity'
+    'https://www.googleapis.com/auth/drive.activity.readonly'
   ];
 
-  // Build auth URL
+  // Build auth URL with additional parameters to improve reliability
   const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
   authUrl.searchParams.append('client_id', clientId);
   authUrl.searchParams.append('redirect_uri', redirectUri);
@@ -46,6 +39,9 @@ export const getGoogleAuthUrl = () => {
   authUrl.searchParams.append('scope', scopes.join(' '));
   authUrl.searchParams.append('access_type', 'offline');
   authUrl.searchParams.append('prompt', 'consent');
+  authUrl.searchParams.append('include_granted_scopes', 'true');
+  authUrl.searchParams.append('login_hint', localStorage.getItem('userEmail') || '');
+  authUrl.searchParams.append('state', Date.now().toString());
 
   return authUrl.toString();
 };
@@ -56,9 +52,12 @@ export const getGoogleAuthUrl = () => {
  * @returns {Promise<Object>} - Tokens object
  */
 export const getTokensFromCode = async (code) => {
-  const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+  // Use the same client ID and redirect URI as in getGoogleAuthUrl
+  const clientId = '815708531852-scs6t2uph7ci2vkgpfvn7uq5q7406s20.apps.googleusercontent.com';
   const clientSecret = process.env.REACT_APP_GOOGLE_CLIENT_SECRET;
-  const redirectUri = process.env.REACT_APP_GOOGLE_REDIRECT_URI;
+  const redirectUri = 'https://ftfc-start.web.app';
+
+  console.log('Exchanging code for tokens with:', { clientId, redirectUri });
 
   const tokenUrl = 'https://oauth2.googleapis.com/token';
   const response = await fetch(tokenUrl, {

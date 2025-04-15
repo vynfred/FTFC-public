@@ -47,9 +47,22 @@ const GoogleDriveConnect = ({ onConnect, onDisconnect }) => {
 
   // Handle connect button click
   const handleConnect = () => {
-    // Get auth URL and redirect
+    // Store the current user's email in localStorage to help with the OAuth flow
+    if (user && user.email) {
+      localStorage.setItem('userEmail', user.email);
+    }
+
+    // Get auth URL with drive-specific scopes
     const authUrl = getGoogleAuthUrl();
-    window.location.href = authUrl;
+    console.log('Redirecting to Google Drive OAuth URL:', authUrl);
+
+    // Use window.open instead of location.href to avoid potential ad blocker issues
+    const authWindow = window.open(authUrl, '_blank', 'width=600,height=700');
+
+    // Check if the window was blocked by a popup blocker
+    if (!authWindow || authWindow.closed || typeof authWindow.closed === 'undefined') {
+      alert('Please allow popups for this site to connect to Google Drive.');
+    }
   };
 
   // Handle disconnect button click
