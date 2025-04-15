@@ -104,28 +104,42 @@ const CalendarView = () => {
       try {
         if (!currentUser) return;
 
+        console.log('Checking for Google tokens...');
+
         // First check localStorage for tokens (from GoogleCalendarConnect)
         const localTokens = localStorage.getItem('googleTokens');
+        console.log('Local storage tokens:', localTokens ? 'Found' : 'Not found');
+
         if (localTokens) {
           const parsedTokens = JSON.parse(localTokens);
+          console.log('Parsed tokens:', parsedTokens);
           setUserTokens(parsedTokens);
           setGoogleConnected(true);
+          console.log('Set googleConnected to TRUE from localStorage tokens');
           return; // If we found tokens in localStorage, no need to check Firestore
         }
 
         // If no tokens in localStorage, check Firestore
+        console.log('Checking Firestore for tokens...');
         const userRef = collection(db, 'users');
         const q = query(userRef, where('uid', '==', currentUser.uid));
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
           const userData = querySnapshot.docs[0].data();
+          console.log('Firestore user data:', userData);
           if (userData.tokens) {
+            console.log('Found tokens in Firestore');
             setUserTokens(userData.tokens);
             setGoogleConnected(true);
+            console.log('Set googleConnected to TRUE from Firestore tokens');
             // Also store in localStorage for consistency
             localStorage.setItem('googleTokens', JSON.stringify(userData.tokens));
+          } else {
+            console.log('No tokens found in Firestore');
           }
+        } else {
+          console.log('No user document found in Firestore');
         }
       } catch (err) {
         console.error('Error fetching user tokens:', err);
@@ -139,15 +153,19 @@ const CalendarView = () => {
   // Fetch calendar events
   useEffect(() => {
     const fetchEvents = async () => {
+      console.log('Attempting to fetch events, userTokens:', userTokens ? 'Present' : 'Missing');
       if (!userTokens) return;
 
       try {
         setLoading(true);
+        console.log('Setting loading to true, googleConnected:', googleConnected);
 
         // Get date range for current view
         const { startDate, endDate } = getDateRange();
+        console.log('Date range:', { startDate, endDate });
 
         // Get events from Google Calendar
+        console.log('Calling listCalendarEvents with tokens:', userTokens);
         const eventsList = await listCalendarEvents(
           userTokens,
           startDate,
@@ -155,18 +173,23 @@ const CalendarView = () => {
           showAllEvents
         );
 
+        console.log('Received events:', eventsList ? eventsList.length : 0);
         setEvents(eventsList || []);
       } catch (err) {
         console.error('Error fetching events:', err);
         setError('Failed to fetch calendar events');
       } finally {
         setLoading(false);
+        console.log('Setting loading to false');
       }
     };
 
+    console.log('Calendar events effect running, googleConnected:', googleConnected, 'userTokens:', userTokens ? 'Present' : 'Missing');
     if (googleConnected && userTokens) {
+      console.log('Conditions met, fetching events');
       fetchEvents();
     } else {
+      console.log('Conditions not met, not fetching events');
       setLoading(false);
     }
   }, [googleConnected, userTokens, getDateRange, showAllEvents]);

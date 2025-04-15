@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { exchangeCodeForTokens as getTokensFromCode, storeTokens } from '../../services/googleIntegration';
+import { exchangeCodeForTokens as getTokensFromCode, storeTokensInLocalStorage } from '../../services/googleIntegration';
 import styles from './GoogleIntegrations.module.css';
 
 /**
@@ -19,6 +19,7 @@ const GoogleOAuthCallback = ({ redirectPath = '/dashboard' }) => {
   useEffect(() => {
     const processOAuthCallback = async () => {
       try {
+        console.log('GoogleOAuthCallback: Processing OAuth callback');
         // Get code from URL
         const urlParams = new URLSearchParams(location.search);
         const code = urlParams.get('code');
@@ -28,17 +29,22 @@ const GoogleOAuthCallback = ({ redirectPath = '/dashboard' }) => {
           throw new Error(error || 'No authorization code found');
         }
 
+        console.log('GoogleOAuthCallback: Got code, exchanging for tokens');
         // Exchange code for tokens
         const tokens = await getTokensFromCode(code);
+        console.log('GoogleOAuthCallback: Received tokens:', tokens ? 'Success' : 'Failed');
 
-        // Store tokens
-        storeTokens(tokens);
+        // Store tokens in localStorage
+        console.log('GoogleOAuthCallback: Storing tokens in localStorage');
+        localStorage.setItem('googleTokens', JSON.stringify(tokens));
 
         // Update status
         setStatus('success');
+        console.log('GoogleOAuthCallback: Set status to success');
 
         // Redirect after a short delay
         setTimeout(() => {
+          console.log('GoogleOAuthCallback: Redirecting to', redirectPath);
           navigate(redirectPath);
         }, 2000);
       } catch (error) {

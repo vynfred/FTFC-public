@@ -18,26 +18,36 @@ const GoogleCalendarConnect = ({ onConnect, onDisconnect }) => {
   useEffect(() => {
     const checkConnection = async () => {
       try {
+        console.log('GoogleCalendarConnect: Checking connection status');
         const tokens = getStoredTokens();
+        console.log('GoogleCalendarConnect: Tokens from storage:', tokens ? 'Found' : 'Not found');
 
         if (tokens) {
           // Get user profile to verify connection
+          console.log('GoogleCalendarConnect: Getting user profile with tokens');
           const profile = await getUserProfile(tokens);
+          console.log('GoogleCalendarConnect: Got profile:', profile);
           setUserProfile(profile);
           setIsConnected(true);
+          console.log('GoogleCalendarConnect: Set isConnected to TRUE');
 
           // Call onConnect callback if provided
           if (onConnect) {
+            console.log('GoogleCalendarConnect: Calling onConnect callback');
             onConnect(tokens, profile);
           }
+        } else {
+          console.log('GoogleCalendarConnect: No tokens found, not connected');
         }
       } catch (error) {
         console.error('Error checking Google connection:', error);
         // Clear invalid tokens
+        console.log('GoogleCalendarConnect: Clearing invalid tokens');
         clearTokens();
         setIsConnected(false);
       } finally {
         setIsLoading(false);
+        console.log('GoogleCalendarConnect: Set isLoading to FALSE');
       }
     };
 
