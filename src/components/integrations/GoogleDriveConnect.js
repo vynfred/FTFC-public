@@ -21,12 +21,19 @@ const GoogleDriveConnect = ({ onConnect, onDisconnect }) => {
       try {
         const status = await getGoogleDriveStatus();
         const driveConnected = localStorage.getItem('googleDriveConnected');
-        console.log('GoogleDriveConnect: Drive connected flag:', driveConnected);
+        const sessionDriveConnected = sessionStorage.getItem('googleDriveConnected');
+        console.log('GoogleDriveConnect: Drive connected flag (localStorage):', driveConnected);
+        console.log('GoogleDriveConnect: Drive connected flag (sessionStorage):', sessionDriveConnected);
 
-        if (status.connected && driveConnected === 'true') {
+        // Check if we have a connected status and either localStorage or sessionStorage flag is true
+        if (status.connected && (driveConnected === 'true' || sessionDriveConnected === 'true')) {
           setIsConnected(true);
           if (status.email) {
             setUserEmail(status.email);
+
+            // Ensure both storage locations have the flag set
+            localStorage.setItem('googleDriveConnected', 'true');
+            sessionStorage.setItem('googleDriveConnected', 'true');
 
             // Call onConnect callback if provided
             if (onConnect) {
@@ -34,19 +41,30 @@ const GoogleDriveConnect = ({ onConnect, onDisconnect }) => {
             }
           }
         } else {
-          setIsConnected(false);
-          console.log('GoogleDriveConnect: Not connected or missing connection flag');
+          // If we have a connected status but no flag, try to set the flag
+          if (status.connected && !driveConnected && !sessionDriveConnected) {
+            console.log('GoogleDriveConnect: Found connected status but no connection flag, setting flags');
+            localStorage.setItem('googleDriveConnected', 'true');
+            sessionStorage.setItem('googleDriveConnected', 'true');
+            setIsConnected(true);
+            if (status.email) {
+              setUserEmail(status.email);
 
-          // Clear any stale status if the connection flag is not set
-          if (status.connected && driveConnected !== 'true') {
-            console.log('GoogleDriveConnect: Found connected status but no connection flag, disconnecting');
-            await disconnectGoogleDrive();
+              // Call onConnect callback if provided
+              if (onConnect) {
+                onConnect();
+              }
+            }
+          } else {
+            setIsConnected(false);
+            console.log('GoogleDriveConnect: Not connected or missing connection flag');
           }
         }
       } catch (error) {
         console.error('Error checking Google Drive connection:', error);
         setIsConnected(false);
         localStorage.removeItem('googleDriveConnected');
+        sessionStorage.removeItem('googleDriveConnected');
       } finally {
         setIsLoading(false);
       }
@@ -86,9 +104,15 @@ const GoogleDriveConnect = ({ onConnect, onDisconnect }) => {
       setIsConnected(false);
       setUserEmail('');
 
-      // Clear connection flags
+      // Clear connection flags from both localStorage and sessionStorage
       localStorage.removeItem('googleDriveConnected');
       localStorage.removeItem('googleCalendarConnected');
+      sessionStorage.removeItem('googleDriveConnected');
+      sessionStorage.removeItem('googleCalendarConnected');
+
+      // Clear tokens
+      localStorage.removeItem('googleTokens');
+      localStorage.removeItem('googleDriveTokens');
 
       // Call onDisconnect callback if provided
       if (onDisconnect) {

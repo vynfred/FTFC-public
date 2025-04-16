@@ -37,7 +37,9 @@ const GoogleOAuthCallback = ({ redirectPath = '/dashboard' }) => {
         // Store tokens in localStorage
         console.log('GoogleOAuthCallback: Storing tokens in localStorage');
         try {
+          // Store tokens in multiple locations to ensure they're available
           localStorage.setItem('googleTokens', JSON.stringify(tokens));
+          localStorage.setItem('googleDriveTokens', JSON.stringify(tokens));
           console.log('GoogleOAuthCallback: Successfully stored tokens in localStorage');
 
           // Store flags to indicate successful connection
@@ -47,11 +49,35 @@ const GoogleOAuthCallback = ({ redirectPath = '/dashboard' }) => {
           localStorage.setItem('googleDriveConnected', 'true');
           console.log('GoogleOAuthCallback: Set googleDriveConnected flag to true');
 
+          // Store in sessionStorage as well for redundancy
+          sessionStorage.setItem('googleCalendarConnected', 'true');
+          sessionStorage.setItem('googleDriveConnected', 'true');
+
           // Verify the flags were set
           const calendarFlag = localStorage.getItem('googleCalendarConnected');
           const driveFlag = localStorage.getItem('googleDriveConnected');
           console.log('GoogleOAuthCallback: Verification - Calendar flag:', calendarFlag);
           console.log('GoogleOAuthCallback: Verification - Drive flag:', driveFlag);
+
+          // Store user email if available
+          if (tokens.id_token) {
+            try {
+              // Parse the ID token to get user info
+              const base64Url = tokens.id_token.split('.')[1];
+              const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+              const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+              }).join(''));
+
+              const payload = JSON.parse(jsonPayload);
+              if (payload.email) {
+                localStorage.setItem('userEmail', payload.email);
+                console.log('GoogleOAuthCallback: Stored user email:', payload.email);
+              }
+            } catch (tokenError) {
+              console.error('GoogleOAuthCallback: Error parsing ID token:', tokenError);
+            }
+          }
         } catch (storageError) {
           console.error('GoogleOAuthCallback: Error storing in localStorage:', storageError);
           setError('Failed to store connection data. Please check your browser settings.');

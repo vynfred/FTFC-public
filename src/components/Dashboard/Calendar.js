@@ -38,17 +38,25 @@ const Calendar = () => {
         console.log('Calendar: Checking localStorage for tokens and connection flags');
         const localTokens = localStorage.getItem('googleTokens');
         const calendarConnected = localStorage.getItem('googleCalendarConnected');
+        const sessionCalendarConnected = sessionStorage.getItem('googleCalendarConnected');
 
         console.log('Calendar: Found tokens in localStorage:', localTokens ? 'Yes' : 'No');
-        console.log('Calendar: Calendar connected flag:', calendarConnected);
+        console.log('Calendar: Calendar connected flag (localStorage):', calendarConnected);
+        console.log('Calendar: Calendar connected flag (sessionStorage):', sessionCalendarConnected);
 
-        if (localTokens && calendarConnected === 'true') {
-          console.log('Calendar: Both tokens and connection flag found, parsing tokens');
+        // Check if we have tokens and either localStorage or sessionStorage flag is true
+        if (localTokens && (calendarConnected === 'true' || sessionCalendarConnected === 'true')) {
+          console.log('Calendar: Tokens and connection flag found, parsing tokens');
           try {
             const parsedTokens = JSON.parse(localTokens);
             console.log('Calendar: Successfully parsed tokens');
             setUserTokens(parsedTokens);
             setGoogleConnected(true);
+
+            // Ensure both storage locations have the flag set
+            localStorage.setItem('googleCalendarConnected', 'true');
+            sessionStorage.setItem('googleCalendarConnected', 'true');
+
             console.log('Calendar: Google Calendar is connected');
             return; // If we found tokens in localStorage, no need to check Firestore
           } catch (parseError) {
@@ -56,13 +64,30 @@ const Calendar = () => {
             // Clear invalid tokens
             localStorage.removeItem('googleTokens');
             localStorage.removeItem('googleCalendarConnected');
+            sessionStorage.removeItem('googleCalendarConnected');
           }
         } else {
           console.log('Calendar: Missing tokens or connection flag');
           if (localTokens) {
             console.log('Calendar: Found tokens but no connection flag');
+
+            // If we have tokens but no flag, try to set the flag
+            try {
+              // Verify tokens are valid by parsing them
+              JSON.parse(localTokens);
+              console.log('Calendar: Tokens are valid, setting connection flag');
+              localStorage.setItem('googleCalendarConnected', 'true');
+              sessionStorage.setItem('googleCalendarConnected', 'true');
+              setUserTokens(JSON.parse(localTokens));
+              setGoogleConnected(true);
+              return;
+            } catch (error) {
+              console.error('Calendar: Error validating tokens:', error);
+              // Clear invalid tokens
+              localStorage.removeItem('googleTokens');
+            }
           }
-          if (calendarConnected === 'true') {
+          if (calendarConnected === 'true' || sessionCalendarConnected === 'true') {
             console.log('Calendar: Found connection flag but no tokens');
           }
         }

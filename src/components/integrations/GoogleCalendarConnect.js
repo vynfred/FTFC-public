@@ -21,10 +21,13 @@ const GoogleCalendarConnect = ({ onConnect, onDisconnect }) => {
         console.log('GoogleCalendarConnect: Checking connection status');
         const tokens = getStoredTokens();
         const calendarConnected = localStorage.getItem('googleCalendarConnected');
+        const sessionCalendarConnected = sessionStorage.getItem('googleCalendarConnected');
         console.log('GoogleCalendarConnect: Tokens from storage:', tokens ? 'Found' : 'Not found');
-        console.log('GoogleCalendarConnect: Calendar connected flag:', calendarConnected);
+        console.log('GoogleCalendarConnect: Calendar connected flag (localStorage):', calendarConnected);
+        console.log('GoogleCalendarConnect: Calendar connected flag (sessionStorage):', sessionCalendarConnected);
 
-        if (tokens && calendarConnected === 'true') {
+        // Check if we have tokens and either localStorage or sessionStorage flag is true
+        if (tokens && (calendarConnected === 'true' || sessionCalendarConnected === 'true')) {
           // Get user profile to verify connection
           console.log('GoogleCalendarConnect: Getting user profile with tokens');
           const profile = await getUserProfile(tokens);
@@ -33,6 +36,10 @@ const GoogleCalendarConnect = ({ onConnect, onDisconnect }) => {
           setIsConnected(true);
           console.log('GoogleCalendarConnect: Set isConnected to TRUE');
 
+          // Ensure both storage locations have the flag set
+          localStorage.setItem('googleCalendarConnected', 'true');
+          sessionStorage.setItem('googleCalendarConnected', 'true');
+
           // Call onConnect callback if provided
           if (onConnect) {
             console.log('GoogleCalendarConnect: Calling onConnect callback');
@@ -40,10 +47,30 @@ const GoogleCalendarConnect = ({ onConnect, onDisconnect }) => {
           }
         } else {
           console.log('GoogleCalendarConnect: No tokens or connection flag found, not connected');
-          // Clear any stale tokens if the connection flag is not set
-          if (tokens && calendarConnected !== 'true') {
-            console.log('GoogleCalendarConnect: Found tokens but no connection flag, clearing tokens');
-            clearTokens();
+          // If we have tokens but no flag, try to set the flag
+          if (tokens && !calendarConnected && !sessionCalendarConnected) {
+            try {
+              // Verify tokens are valid by getting user profile
+              console.log('GoogleCalendarConnect: Found tokens but no connection flag, verifying tokens');
+              const profile = await getUserProfile(tokens);
+              if (profile) {
+                console.log('GoogleCalendarConnect: Tokens are valid, setting connection flag');
+                localStorage.setItem('googleCalendarConnected', 'true');
+                sessionStorage.setItem('googleCalendarConnected', 'true');
+                setUserProfile(profile);
+                setIsConnected(true);
+
+                // Call onConnect callback if provided
+                if (onConnect) {
+                  console.log('GoogleCalendarConnect: Calling onConnect callback');
+                  onConnect(tokens, profile);
+                }
+                return;
+              }
+            } catch (verifyError) {
+              console.error('GoogleCalendarConnect: Error verifying tokens:', verifyError);
+              clearTokens();
+            }
           }
         }
       } catch (error) {
@@ -53,6 +80,8 @@ const GoogleCalendarConnect = ({ onConnect, onDisconnect }) => {
         clearTokens();
         localStorage.removeItem('googleCalendarConnected');
         localStorage.removeItem('googleDriveConnected');
+        sessionStorage.removeItem('googleCalendarConnected');
+        sessionStorage.removeItem('googleDriveConnected');
         setIsConnected(false);
       } finally {
         setIsLoading(false);
@@ -97,9 +126,16 @@ const GoogleCalendarConnect = ({ onConnect, onDisconnect }) => {
   const handleDisconnect = () => {
     // Clear tokens
     clearTokens();
-    // Clear connection flags
+
+    // Clear connection flags from both localStorage and sessionStorage
     localStorage.removeItem('googleCalendarConnected');
     localStorage.removeItem('googleDriveConnected');
+    sessionStorage.removeItem('googleCalendarConnected');
+    sessionStorage.removeItem('googleDriveConnected');
+
+    // Clear all tokens
+    localStorage.removeItem('googleTokens');
+    localStorage.removeItem('googleDriveTokens');
 
     setIsConnected(false);
     setUserProfile(null);

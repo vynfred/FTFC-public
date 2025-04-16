@@ -33,25 +33,37 @@ const UserProfile = () => {
   useEffect(() => {
     console.log('UserProfile: Checking for Google connections');
 
-    // Check if Google Drive is connected
+    // Check if Google Drive is connected (check both localStorage and sessionStorage)
     const driveConnected = localStorage.getItem('googleDriveConnected');
-    console.log('UserProfile: Drive connected flag:', driveConnected);
+    const sessionDriveConnected = sessionStorage.getItem('googleDriveConnected');
+    console.log('UserProfile: Drive connected flag (localStorage):', driveConnected);
+    console.log('UserProfile: Drive connected flag (sessionStorage):', sessionDriveConnected);
 
-    if (driveConnected === 'true') {
+    if (driveConnected === 'true' || sessionDriveConnected === 'true') {
       setIsGoogleDriveConnected(true);
       console.log('UserProfile: Google Drive is connected');
+
+      // Ensure both storage locations have the flag set
+      localStorage.setItem('googleDriveConnected', 'true');
+      sessionStorage.setItem('googleDriveConnected', 'true');
     } else {
       console.log('UserProfile: Google Drive is NOT connected');
       setIsGoogleDriveConnected(false);
     }
 
-    // Check if Google Calendar is connected
+    // Check if Google Calendar is connected (check both localStorage and sessionStorage)
     const calendarConnected = localStorage.getItem('googleCalendarConnected');
-    console.log('UserProfile: Calendar connected flag:', calendarConnected);
+    const sessionCalendarConnected = sessionStorage.getItem('googleCalendarConnected');
+    console.log('UserProfile: Calendar connected flag (localStorage):', calendarConnected);
+    console.log('UserProfile: Calendar connected flag (sessionStorage):', sessionCalendarConnected);
 
-    if (calendarConnected === 'true') {
+    if (calendarConnected === 'true' || sessionCalendarConnected === 'true') {
       setIsGoogleCalendarConnected(true);
       console.log('UserProfile: Google Calendar is connected');
+
+      // Ensure both storage locations have the flag set
+      localStorage.setItem('googleCalendarConnected', 'true');
+      sessionStorage.setItem('googleCalendarConnected', 'true');
     } else {
       console.log('UserProfile: Google Calendar is NOT connected');
       setIsGoogleCalendarConnected(false);
@@ -59,7 +71,36 @@ const UserProfile = () => {
 
     // Check for tokens
     const tokens = localStorage.getItem('googleTokens');
+    const driveTokens = localStorage.getItem('googleDriveTokens');
     console.log('UserProfile: Tokens in localStorage:', tokens ? 'Yes' : 'No');
+    console.log('UserProfile: Drive tokens in localStorage:', driveTokens ? 'Yes' : 'No');
+
+    // If we have tokens but no connection flags, try to set the flags
+    if (tokens && (!calendarConnected && !sessionCalendarConnected)) {
+      try {
+        // Verify tokens are valid by parsing them
+        JSON.parse(tokens);
+        console.log('UserProfile: Tokens are valid, setting calendar connection flag');
+        localStorage.setItem('googleCalendarConnected', 'true');
+        sessionStorage.setItem('googleCalendarConnected', 'true');
+        setIsGoogleCalendarConnected(true);
+      } catch (error) {
+        console.error('UserProfile: Error validating tokens:', error);
+      }
+    }
+
+    if (driveTokens && (!driveConnected && !sessionDriveConnected)) {
+      try {
+        // Verify tokens are valid by parsing them
+        JSON.parse(driveTokens);
+        console.log('UserProfile: Drive tokens are valid, setting drive connection flag');
+        localStorage.setItem('googleDriveConnected', 'true');
+        sessionStorage.setItem('googleDriveConnected', 'true');
+        setIsGoogleDriveConnected(true);
+      } catch (error) {
+        console.error('UserProfile: Error validating drive tokens:', error);
+      }
+    }
   }, []);
 
   useEffect(() => {
