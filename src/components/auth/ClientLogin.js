@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { FaEnvelope, FaLock } from 'react-icons/fa';
+import { FaEnvelope, FaGoogle, FaLock } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { auth } from '../../firebase-config';
 
 const ClientLogin = () => {
   const [formData, setFormData] = useState({
@@ -79,6 +80,39 @@ const ClientLogin = () => {
     } catch (error) {
       setErrors({ general: 'Login failed. Please check your credentials and try again.' });
     } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Alternative method for Google sign-in using redirect
+  const handleGoogleSignInRedirect = async () => {
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      console.log('ClientLogin: Starting Google sign-in with redirect...');
+      // Set a flag in localStorage to indicate we're doing a redirect
+      localStorage.setItem('googleRedirectInProgress', 'true');
+      localStorage.setItem('googleRedirectTimestamp', Date.now().toString());
+
+      // Store the intended role
+      localStorage.setItem('intendedUserRole', 'client');
+
+      // Store the client ID in localStorage to ensure consistency
+      localStorage.setItem('googleClientId', process.env.REACT_APP_GOOGLE_CLIENT_ID);
+
+      // Use the redirect method
+      await auth.signInWithGoogleRedirect();
+
+      // Note: This will redirect the page, so the code below will only run if the redirect fails
+      console.log('Redirect did not happen as expected');
+    } catch (error) {
+      console.error('ClientLogin: Google sign-in redirect error:', error);
+      localStorage.removeItem('googleRedirectInProgress');
+      localStorage.removeItem('googleRedirectTimestamp');
+      localStorage.removeItem('intendedUserRole');
+      localStorage.removeItem('googleClientId');
+      setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });
       setIsLoading(false);
     }
   };
@@ -175,7 +209,7 @@ const ClientLogin = () => {
           <p style={{ margin: '16px 0', color: '#94a3b8' }}>- OR -</p>
           <button
             type="button"
-            onClick={handleGoogleSignIn}
+            onClick={handleGoogleSignInRedirect}
             disabled={isLoading}
             style={{
               display: 'flex',
