@@ -36,9 +36,19 @@ const GoogleOAuthCallback = ({ redirectPath = '/dashboard' }) => {
         console.log('GoogleOAuthCallback: Received state:', state);
         console.log('GoogleOAuthCallback: Stored state:', storedState);
 
-        if (state && storedState && state !== storedState) {
-          console.error('GoogleOAuthCallback: State mismatch, possible CSRF attack');
-          throw new Error('Invalid state parameter. Please try again.');
+        if (state && storedState) {
+          if (state !== storedState) {
+            console.error('GoogleOAuthCallback: State mismatch, possible CSRF attack');
+            throw new Error('Invalid state parameter. Please try again.');
+          } else {
+            console.log('GoogleOAuthCallback: State verification successful');
+          }
+        } else if (!state) {
+          console.warn('GoogleOAuthCallback: No state parameter received from Google');
+          // Continue but log a warning
+        } else if (!storedState) {
+          console.warn('GoogleOAuthCallback: No stored state found');
+          // Continue but log a warning
         }
 
         console.log('GoogleOAuthCallback: Got code, exchanging for tokens');

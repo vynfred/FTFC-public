@@ -116,56 +116,43 @@ export const AuthProvider = ({ children }) => {
           setIsAuthenticated(true);
 
           // Check if we need to redirect after successful authentication
-          const authState = localStorage.getItem('googleAuthState');
-          const authTimestamp = localStorage.getItem('googleAuthTimestamp');
           const googleSignInSuccess = localStorage.getItem('googleSignInSuccess') || sessionStorage.getItem('googleSignInSuccess');
           const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
 
           console.log('Auth state check:', {
-            authState: authState ? 'Found' : 'Not found',
-            authTimestamp: authTimestamp ? 'Found' : 'Not found',
             googleSignInSuccess: googleSignInSuccess ? 'Found' : 'Not found',
             userRole
           });
 
-          // Clean up auth state flags
-          localStorage.removeItem('googleAuthState');
-          localStorage.removeItem('googleAuthTimestamp');
+          // Clean up any legacy flags
           localStorage.removeItem('googleRedirectInProgress'); // Legacy
           localStorage.removeItem('googleRedirectTimestamp'); // Legacy
 
-          // If we have a recent auth timestamp (within the last 5 minutes), this is likely a successful redirect
-          if (authTimestamp) {
-            const timestamp = parseInt(authTimestamp, 10);
-            const now = Date.now();
-            const fiveMinutesInMs = 5 * 60 * 1000;
+          // If this is a successful sign-in, redirect to the appropriate portal
+          if (googleSignInSuccess === 'true') {
+            console.log('Successful authentication detected, redirecting to appropriate portal');
 
-            if (now - timestamp < fiveMinutesInMs) {
-              console.log('Recent authentication detected, redirecting to appropriate portal');
-
-              // Import navigate function
-              const { navigate } = await import('react-router-dom');
-
-              // Redirect based on user role
-              switch (userRole) {
-                case 'client':
-                  window.location.href = '/client-portal';
-                  break;
-                case 'investor':
-                  window.location.href = '/investor-portal';
-                  break;
-                case 'partner':
-                  window.location.href = '/partner-portal';
-                  break;
-                case 'team':
-                default:
-                  window.location.href = '/dashboard';
-                  break;
-              }
+            // Redirect based on user role
+            switch (userRole) {
+              case 'client':
+                console.log('Redirecting to client portal');
+                window.location.href = '/client-portal';
+                break;
+              case 'investor':
+                console.log('Redirecting to investor portal');
+                window.location.href = '/investor-portal';
+                break;
+              case 'partner':
+                console.log('Redirecting to partner portal');
+                window.location.href = '/partner-portal';
+                break;
+              case 'team':
+              default:
+                console.log('Redirecting to dashboard');
+                window.location.href = '/dashboard';
+                break;
             }
-          }
 
-          if (googleSignInSuccess) {
             // Clear the flag
             localStorage.removeItem('googleSignInSuccess');
             sessionStorage.removeItem('googleSignInSuccess');

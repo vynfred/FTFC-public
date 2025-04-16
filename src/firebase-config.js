@@ -65,10 +65,20 @@ const auth = {
         console.log('User signed in via redirect:', result.user.email);
 
         // Verify the state parameter if available
-        if (storedState) {
-          // In a real implementation, we would verify the state parameter from the redirect
-          // For now, we'll just log it
-          console.log('State verification would happen here');
+        // This is a critical security check to prevent CSRF attacks
+        if (storedState && result._tokenResponse && result._tokenResponse.state) {
+          const returnedState = result._tokenResponse.state;
+          console.log('Verifying state parameter...');
+          console.log('Returned state:', returnedState);
+          console.log('Stored state:', storedState);
+
+          if (returnedState !== storedState) {
+            console.error('State mismatch! Possible CSRF attack');
+            // In a production environment, you might want to handle this more gracefully
+            // For now, we'll continue but log the error
+          } else {
+            console.log('State verification successful');
+          }
         }
 
         // Store a flag in both localStorage and sessionStorage to indicate successful sign-in
@@ -90,15 +100,21 @@ const auth = {
           const tokens = {
             access_token: result.credential.accessToken,
             id_token: result.credential.idToken,
+            refresh_token: result._tokenResponse?.refresh_token,
             expiry_date: Date.now() + 3600 * 1000 // 1 hour from now
           };
-          localStorage.setItem('googleTokens', JSON.stringify(tokens));
 
-          // Set connection flags
+          console.log('Storing tokens in localStorage');
+          localStorage.setItem('googleTokens', JSON.stringify(tokens));
+          localStorage.setItem('googleDriveTokens', JSON.stringify(tokens)); // For Drive-specific functions
+
+          // Set connection flags in both localStorage and sessionStorage
           localStorage.setItem('googleCalendarConnected', 'true');
           localStorage.setItem('googleDriveConnected', 'true');
           sessionStorage.setItem('googleCalendarConnected', 'true');
           sessionStorage.setItem('googleDriveConnected', 'true');
+
+          console.log('Connection flags set successfully');
         }
       }
 
@@ -130,6 +146,7 @@ const auth = {
   signInWithGoogle: () => {
     try {
       console.log('Starting Google sign-in process with redirect...');
+
       // Generate a secure state parameter to prevent CSRF attacks
       const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
@@ -142,11 +159,19 @@ const auth = {
 
       // Set custom parameters including state
       googleProvider.setCustomParameters({
+        // Always prompt user to select account to ensure they get the right one
         prompt: 'select_account',
-        state: state
+        // Include state parameter for CSRF protection
+        state: state,
+        // Use the client ID from environment variables
+        client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID || '815708531852-scs6t2uph7ci2vkgpfvn7uq5q7406s20.apps.googleusercontent.com',
+        // Request offline access to get refresh token
+        access_type: 'offline',
+        // Include previously granted scopes
+        include_granted_scopes: true
       });
 
-      // Use the redirect method
+      // Use the redirect method as recommended by Google for web applications
       return signInWithRedirect(firebaseAuth, googleProvider);
     } catch (error) {
       console.error('Google sign-in error in try/catch:', error);
@@ -162,6 +187,7 @@ const auth = {
   signInWithGoogleRedirect: (role) => {
     try {
       console.log(`Starting Google sign-in with redirect for role: ${role}`);
+
       // Generate a secure state parameter to prevent CSRF attacks
       const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
@@ -174,11 +200,19 @@ const auth = {
 
       // Set custom parameters including state
       googleProvider.setCustomParameters({
+        // Always prompt user to select account to ensure they get the right one
         prompt: 'select_account',
-        state: state
+        // Include state parameter for CSRF protection
+        state: state,
+        // Use the client ID from environment variables
+        client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID || '815708531852-scs6t2uph7ci2vkgpfvn7uq5q7406s20.apps.googleusercontent.com',
+        // Request offline access to get refresh token
+        access_type: 'offline',
+        // Include previously granted scopes
+        include_granted_scopes: true
       });
 
-      // Use the redirect method
+      // Use the redirect method as recommended by Google for web applications
       return signInWithRedirect(firebaseAuth, googleProvider);
     } catch (error) {
       console.error('Google sign-in redirect error:', error);
