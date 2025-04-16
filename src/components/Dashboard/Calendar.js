@@ -35,15 +35,36 @@ const Calendar = () => {
         if (!currentUser) return;
 
         // First check localStorage for tokens (from GoogleCalendarConnect)
+        console.log('Calendar: Checking localStorage for tokens and connection flags');
         const localTokens = localStorage.getItem('googleTokens');
         const calendarConnected = localStorage.getItem('googleCalendarConnected');
 
+        console.log('Calendar: Found tokens in localStorage:', localTokens ? 'Yes' : 'No');
+        console.log('Calendar: Calendar connected flag:', calendarConnected);
+
         if (localTokens && calendarConnected === 'true') {
-          const parsedTokens = JSON.parse(localTokens);
-          setUserTokens(parsedTokens);
-          setGoogleConnected(true);
-          console.log('Calendar: Google Calendar is connected');
-          return; // If we found tokens in localStorage, no need to check Firestore
+          console.log('Calendar: Both tokens and connection flag found, parsing tokens');
+          try {
+            const parsedTokens = JSON.parse(localTokens);
+            console.log('Calendar: Successfully parsed tokens');
+            setUserTokens(parsedTokens);
+            setGoogleConnected(true);
+            console.log('Calendar: Google Calendar is connected');
+            return; // If we found tokens in localStorage, no need to check Firestore
+          } catch (parseError) {
+            console.error('Calendar: Error parsing tokens:', parseError);
+            // Clear invalid tokens
+            localStorage.removeItem('googleTokens');
+            localStorage.removeItem('googleCalendarConnected');
+          }
+        } else {
+          console.log('Calendar: Missing tokens or connection flag');
+          if (localTokens) {
+            console.log('Calendar: Found tokens but no connection flag');
+          }
+          if (calendarConnected === 'true') {
+            console.log('Calendar: Found connection flag but no tokens');
+          }
         }
 
         // If no tokens in localStorage, check Firestore

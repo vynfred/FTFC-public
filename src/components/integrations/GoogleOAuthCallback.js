@@ -36,11 +36,26 @@ const GoogleOAuthCallback = ({ redirectPath = '/dashboard' }) => {
 
         // Store tokens in localStorage
         console.log('GoogleOAuthCallback: Storing tokens in localStorage');
-        localStorage.setItem('googleTokens', JSON.stringify(tokens));
+        try {
+          localStorage.setItem('googleTokens', JSON.stringify(tokens));
+          console.log('GoogleOAuthCallback: Successfully stored tokens in localStorage');
 
-        // Store a flag to indicate successful connection
-        localStorage.setItem('googleCalendarConnected', 'true');
-        localStorage.setItem('googleDriveConnected', 'true');
+          // Store flags to indicate successful connection
+          localStorage.setItem('googleCalendarConnected', 'true');
+          console.log('GoogleOAuthCallback: Set googleCalendarConnected flag to true');
+
+          localStorage.setItem('googleDriveConnected', 'true');
+          console.log('GoogleOAuthCallback: Set googleDriveConnected flag to true');
+
+          // Verify the flags were set
+          const calendarFlag = localStorage.getItem('googleCalendarConnected');
+          const driveFlag = localStorage.getItem('googleDriveConnected');
+          console.log('GoogleOAuthCallback: Verification - Calendar flag:', calendarFlag);
+          console.log('GoogleOAuthCallback: Verification - Drive flag:', driveFlag);
+        } catch (storageError) {
+          console.error('GoogleOAuthCallback: Error storing in localStorage:', storageError);
+          setError('Failed to store connection data. Please check your browser settings.');
+        }
 
         // Get the return path from localStorage or use default
         const returnPath = localStorage.getItem('googleAuthReturnPath') || redirectPath;

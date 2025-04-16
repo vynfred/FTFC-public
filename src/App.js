@@ -114,6 +114,7 @@ function App() {
 
           {/* Lead Form Test Route */}
           <Route path="/lead-form-test" element={<LeadFormTest />} />
+          <Route path="/debug/storage" element={<LocalStorageDebug />} />
 
           {/* Google OAuth Callback Routes */}
           <Route path="/api/google/oauth-callback" element={<GoogleOAuthCallback />} />

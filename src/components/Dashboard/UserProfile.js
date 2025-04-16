@@ -31,19 +31,35 @@ const UserProfile = () => {
   // Fetch user data from Firestore
   // Check for Google connections
   useEffect(() => {
+    console.log('UserProfile: Checking for Google connections');
+
     // Check if Google Drive is connected
     const driveConnected = localStorage.getItem('googleDriveConnected');
+    console.log('UserProfile: Drive connected flag:', driveConnected);
+
     if (driveConnected === 'true') {
       setIsGoogleDriveConnected(true);
       console.log('UserProfile: Google Drive is connected');
+    } else {
+      console.log('UserProfile: Google Drive is NOT connected');
+      setIsGoogleDriveConnected(false);
     }
 
     // Check if Google Calendar is connected
     const calendarConnected = localStorage.getItem('googleCalendarConnected');
+    console.log('UserProfile: Calendar connected flag:', calendarConnected);
+
     if (calendarConnected === 'true') {
       setIsGoogleCalendarConnected(true);
       console.log('UserProfile: Google Calendar is connected');
+    } else {
+      console.log('UserProfile: Google Calendar is NOT connected');
+      setIsGoogleCalendarConnected(false);
     }
+
+    // Check for tokens
+    const tokens = localStorage.getItem('googleTokens');
+    console.log('UserProfile: Tokens in localStorage:', tokens ? 'Yes' : 'No');
   }, []);
 
   useEffect(() => {
