@@ -94,14 +94,6 @@ const GoogleCalendarConnect = ({ onConnect, onDisconnect }) => {
 
   // Handle connect button click
   const handleConnect = () => {
-    // Get auth URL with calendar-specific scopes
-    const scopes = [
-      'https://www.googleapis.com/auth/userinfo.email',
-      'https://www.googleapis.com/auth/userinfo.profile',
-      'https://www.googleapis.com/auth/calendar',
-      'https://www.googleapis.com/auth/calendar.events'
-    ];
-
     // Store the current user's email in localStorage to help with the OAuth flow
     const { user } = useAuth();
     if (user && user.email) {
@@ -109,14 +101,9 @@ const GoogleCalendarConnect = ({ onConnect, onDisconnect }) => {
       console.log('GoogleCalendarConnect: Stored user email in localStorage:', user.email);
     }
 
-    // Store the current path to return to after authentication
-    const currentPath = window.location.pathname;
-    localStorage.setItem('googleAuthReturnPath', currentPath);
-    console.log('GoogleCalendarConnect: Stored return path:', currentPath);
-
-    // Generate the auth URL and redirect
-    const authUrl = getAuthUrl(scopes);
-    console.log('GoogleCalendarConnect: Redirecting to Google OAuth URL:', authUrl);
+    // Generate the auth URL with calendar-specific options
+    const authUrl = getAuthUrl([], { calendar: true });
+    console.log('GoogleCalendarConnect: Redirecting to Google OAuth URL');
 
     // Redirect directly to the auth URL
     window.location.href = authUrl;
@@ -124,19 +111,10 @@ const GoogleCalendarConnect = ({ onConnect, onDisconnect }) => {
 
   // Handle disconnect button click
   const handleDisconnect = () => {
-    // Clear tokens
+    // Clear all tokens and connection flags
     clearTokens();
 
-    // Clear connection flags from both localStorage and sessionStorage
-    localStorage.removeItem('googleCalendarConnected');
-    localStorage.removeItem('googleDriveConnected');
-    sessionStorage.removeItem('googleCalendarConnected');
-    sessionStorage.removeItem('googleDriveConnected');
-
-    // Clear all tokens
-    localStorage.removeItem('googleTokens');
-    localStorage.removeItem('googleDriveTokens');
-
+    // Update component state
     setIsConnected(false);
     setUserProfile(null);
 

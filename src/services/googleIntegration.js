@@ -39,42 +39,79 @@ const createOAuth2Client = () => {
  * @param {Array} scopes - Array of OAuth scopes to request
  * @returns {String} - Authorization URL
  */
-export const getAuthUrl = (scopes = []) => {
+export const getAuthUrl = (scopes = [], options = {}) => {
   const oauth2Client = createOAuth2Client();
 
-  // Default scopes if none provided
+  // Default scopes if none provided - using the most common scopes needed
   const defaultScopes = [
     'https://www.googleapis.com/auth/userinfo.email',
-    'https://www.googleapis.com/auth/userinfo.profile',
-    'https://www.googleapis.com/auth/calendar',
-    'https://www.googleapis.com/auth/calendar.events',
-    'https://www.googleapis.com/auth/drive.readonly',
-    'https://www.googleapis.com/auth/drive.metadata.readonly',
-    'https://www.googleapis.com/auth/documents.readonly'
+    'https://www.googleapis.com/auth/userinfo.profile'
   ];
 
+  // Add Calendar scopes if requested
+  if (options.calendar) {
+    defaultScopes.push('https://www.googleapis.com/auth/calendar');
+    defaultScopes.push('https://www.googleapis.com/auth/calendar.events');
+  }
+
+  // Add Drive scopes if requested
+  if (options.drive) {
+    defaultScopes.push('https://www.googleapis.com/auth/drive.readonly');
+    defaultScopes.push('https://www.googleapis.com/auth/drive.metadata.readonly');
+    defaultScopes.push('https://www.googleapis.com/auth/documents.readonly');
+  }
+
+  // Use provided scopes or defaults
   const authScopes = scopes.length > 0 ? scopes : defaultScopes;
 
   // Generate a secure state parameter to prevent CSRF attacks
-  const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  // Using crypto API if available for better randomness
+  let state;
+  if (window.crypto && window.crypto.getRandomValues) {
+    const randomBytes = new Uint8Array(16);
+    window.crypto.getRandomValues(randomBytes);
+    state = Array.from(randomBytes, byte => byte.toString(16).padStart(2, '0')).join('');
+  } else {
+    // Fallback to less secure but still acceptable method
+    state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  }
 
   // Store state in localStorage to verify when the redirect completes
   localStorage.setItem('googleApiAuthState', state);
   localStorage.setItem('googleApiAuthTimestamp', Date.now().toString());
+
+  // Store requested scopes for verification later
+  localStorage.setItem('googleApiRequestedScopes', JSON.stringify(authScopes));
 
   // Store the current path to return to after authentication
   const currentPath = window.location.pathname;
   localStorage.setItem('googleAuthReturnPath', currentPath);
   console.log('GoogleIntegration: Stored return path:', currentPath);
 
+  // Store any additional options
+  if (options.calendar) localStorage.setItem('googleAuthCalendarRequested', 'true');
+  if (options.drive) localStorage.setItem('googleAuthDriveRequested', 'true');
+
   // Generate auth URL with additional parameters to improve reliability
   const authUrl = oauth2Client.generateAuthUrl({
-    access_type: 'offline', // Get refresh token
+    // Request offline access to get a refresh token
+    access_type: 'offline',
+
+    // Specify the scopes we need
     scope: authScopes,
-    prompt: 'consent', // Force consent screen to always appear
-    include_granted_scopes: true, // Include previously granted scopes
-    login_hint: localStorage.getItem('userEmail') || '', // Pre-fill user email if available
-    state: state, // Add state parameter to prevent CSRF
+
+    // Force consent screen to always appear to ensure we get refresh token
+    // This is recommended by Google for web applications
+    prompt: 'consent',
+
+    // Include previously granted scopes
+    include_granted_scopes: true,
+
+    // Pre-fill user email if available
+    login_hint: localStorage.getItem('userEmail') || '',
+
+    // Add state parameter to prevent CSRF attacks
+    state: state,
   });
 
   return authUrl;
@@ -93,15 +130,91 @@ export const exchangeCodeForTokens = async (code) => {
     const { tokens } = await oauth2Client.getToken(code);
     console.log('GoogleIntegration: Received tokens successfully');
 
-    // Store tokens in both localStorage and sessionStorage for redundancy
-    localStorage.setItem('googleTokens', JSON.stringify(tokens));
-    localStorage.setItem('googleDriveTokens', JSON.stringify(tokens)); // For Drive-specific functions
+    // Check if we received all expected tokens
+    if (!tokens.access_token) {
+      console.error('GoogleIntegration: No access token received');
+      throw new Error('No access token received from Google');
+    }
 
-    // Set connection flags in both localStorage and sessionStorage
-    localStorage.setItem('googleCalendarConnected', 'true');
-    localStorage.setItem('googleDriveConnected', 'true');
-    sessionStorage.setItem('googleCalendarConnected', 'true');
-    sessionStorage.setItem('googleDriveConnected', 'true');
+    // Log token information (without exposing the actual tokens)
+    console.log('GoogleIntegration: Token information:', {
+      access_token: tokens.access_token ? 'Present' : 'Missing',
+      refresh_token: tokens.refresh_token ? 'Present' : 'Missing',
+      id_token: tokens.id_token ? 'Present' : 'Missing',
+      expiry_date: tokens.expiry_date ? new Date(tokens.expiry_date).toISOString() : 'Missing'
+    });
+
+    // Check if we got a refresh token - this is critical for long-term access
+    if (!tokens.refresh_token) {
+      console.warn('GoogleIntegration: No refresh token received. This may cause issues with long-term access.');
+      // We'll continue anyway, as we might have a refresh token stored from a previous authentication
+    }
+
+    // Get the requested features from localStorage
+    const calendarRequested = localStorage.getItem('googleAuthCalendarRequested') === 'true';
+    const driveRequested = localStorage.getItem('googleAuthDriveRequested') === 'true';
+
+    // Get the requested scopes from localStorage
+    const requestedScopesJson = localStorage.getItem('googleApiRequestedScopes');
+    let requestedScopes = [];
+    if (requestedScopesJson) {
+      try {
+        requestedScopes = JSON.parse(requestedScopesJson);
+      } catch (e) {
+        console.error('GoogleIntegration: Error parsing requested scopes:', e);
+      }
+    }
+
+    // Check if we got all the scopes we requested
+    if (tokens.scope) {
+      const grantedScopes = tokens.scope.split(' ');
+      console.log('GoogleIntegration: Granted scopes:', grantedScopes);
+
+      // Check for calendar scopes
+      const hasCalendarScope = grantedScopes.some(scope =>
+        scope.includes('calendar') || scope.includes('https://www.googleapis.com/auth/calendar'));
+
+      // Check for drive scopes
+      const hasDriveScope = grantedScopes.some(scope =>
+        scope.includes('drive') || scope.includes('https://www.googleapis.com/auth/drive'));
+
+      // Set connection flags based on granted scopes
+      if (hasCalendarScope || calendarRequested) {
+        localStorage.setItem('googleCalendarConnected', 'true');
+        sessionStorage.setItem('googleCalendarConnected', 'true');
+        console.log('GoogleIntegration: Calendar connection enabled');
+      }
+
+      if (hasDriveScope || driveRequested) {
+        localStorage.setItem('googleDriveConnected', 'true');
+        sessionStorage.setItem('googleDriveConnected', 'true');
+        console.log('GoogleIntegration: Drive connection enabled');
+      }
+    } else {
+      // If we don't have scope information, set flags based on what was requested
+      if (calendarRequested) {
+        localStorage.setItem('googleCalendarConnected', 'true');
+        sessionStorage.setItem('googleCalendarConnected', 'true');
+      }
+
+      if (driveRequested) {
+        localStorage.setItem('googleDriveConnected', 'true');
+        sessionStorage.setItem('googleDriveConnected', 'true');
+      }
+    }
+
+    // Store tokens in localStorage with expiration information
+    const tokenData = {
+      ...tokens,
+      // Add a timestamp for when we received the tokens
+      timestamp: Date.now(),
+      // Make sure we have an expiry_date
+      expiry_date: tokens.expiry_date || (Date.now() + 3600 * 1000) // Default to 1 hour if not provided
+    };
+
+    // Store tokens in both localStorage and sessionStorage for redundancy
+    localStorage.setItem('googleTokens', JSON.stringify(tokenData));
+    localStorage.setItem('googleDriveTokens', JSON.stringify(tokenData)); // For Drive-specific functions
 
     // Store user email if available in the ID token
     if (tokens.id_token) {
@@ -126,6 +239,9 @@ export const exchangeCodeForTokens = async (code) => {
     // Clear the state parameters
     localStorage.removeItem('googleApiAuthState');
     localStorage.removeItem('googleApiAuthTimestamp');
+    localStorage.removeItem('googleApiRequestedScopes');
+    localStorage.removeItem('googleAuthCalendarRequested');
+    localStorage.removeItem('googleAuthDriveRequested');
 
     return tokens;
   } catch (error) {
@@ -133,6 +249,9 @@ export const exchangeCodeForTokens = async (code) => {
     // Clean up in case of error
     localStorage.removeItem('googleApiAuthState');
     localStorage.removeItem('googleApiAuthTimestamp');
+    localStorage.removeItem('googleApiRequestedScopes');
+    localStorage.removeItem('googleAuthCalendarRequested');
+    localStorage.removeItem('googleAuthDriveRequested');
     throw error;
   }
 };
@@ -602,10 +721,36 @@ export const getStoredTokens = () => {
 };
 
 /**
- * Clear OAuth tokens from local storage
+ * Clear all Google OAuth tokens and connection flags
  */
 export const clearTokens = () => {
+  console.log('Clearing all Google OAuth tokens and connection flags');
+
+  // Clear tokens
   localStorage.removeItem('googleTokens');
+  localStorage.removeItem('googleDriveTokens');
+  sessionStorage.removeItem('googleTokens');
+  sessionStorage.removeItem('googleDriveTokens');
+
+  // Clear connection flags
+  localStorage.removeItem('googleCalendarConnected');
+  localStorage.removeItem('googleDriveConnected');
+  sessionStorage.removeItem('googleCalendarConnected');
+  sessionStorage.removeItem('googleDriveConnected');
+
+  // Clear any auth state
+  localStorage.removeItem('googleApiAuthState');
+  localStorage.removeItem('googleApiAuthTimestamp');
+  localStorage.removeItem('googleApiRequestedScopes');
+  localStorage.removeItem('googleAuthCalendarRequested');
+  localStorage.removeItem('googleAuthDriveRequested');
+  localStorage.removeItem('googleAuthReturnPath');
+
+  // Clear any legacy items
+  localStorage.removeItem('googleRedirectInProgress');
+  localStorage.removeItem('googleRedirectTimestamp');
+  localStorage.removeItem('intendedUserRole');
+  localStorage.removeItem('googleClientId');
 };
 
 /**
@@ -615,8 +760,17 @@ export const clearTokens = () => {
  */
 export const ensureValidTokens = async (tokens) => {
   if (!tokens) {
+    console.error('No tokens provided to ensureValidTokens');
     throw new Error('No tokens provided');
   }
+
+  // Log token information (without exposing the actual tokens)
+  console.log('ensureValidTokens: Token information:', {
+    access_token: tokens.access_token ? 'Present' : 'Missing',
+    refresh_token: tokens.refresh_token ? 'Present' : 'Missing',
+    id_token: tokens.id_token ? 'Present' : 'Missing',
+    expiry_date: tokens.expiry_date ? new Date(tokens.expiry_date).toISOString() : 'Missing'
+  });
 
   const oauth2Client = createOAuth2Client();
   oauth2Client.setCredentials(tokens);
@@ -625,52 +779,91 @@ export const ensureValidTokens = async (tokens) => {
   const now = Date.now();
   const isExpired = tokens.expiry_date && tokens.expiry_date <= now + 5 * 60 * 1000;
 
-  if (isExpired && tokens.refresh_token) {
-    try {
-      // Refresh token
-      const { credentials } = await oauth2Client.refreshAccessToken();
+  console.log('ensureValidTokens: Token expiry check:', {
+    now: new Date(now).toISOString(),
+    expiry_date: tokens.expiry_date ? new Date(tokens.expiry_date).toISOString() : 'Missing',
+    isExpired: isExpired ? 'Yes' : 'No'
+  });
 
-      // Preserve the refresh_token if it's not in the new credentials
-      if (!credentials.refresh_token && tokens.refresh_token) {
-        credentials.refresh_token = tokens.refresh_token;
-      }
-
-      // Store the refreshed tokens
-      storeTokensInLocalStorage(credentials);
-
-      // Also update in Firestore if user is logged in
+  // If token is expired and we have a refresh token, try to refresh
+  if (isExpired) {
+    if (tokens.refresh_token) {
+      console.log('ensureValidTokens: Token is expired, attempting to refresh');
       try {
-        const { db } = await import('../firebase-config');
-        const { doc, updateDoc, serverTimestamp } = await import('firebase/firestore');
-        const { getAuth } = await import('firebase/auth');
+        // Refresh token
+        const { credentials } = await oauth2Client.refreshAccessToken();
+        console.log('ensureValidTokens: Token refresh successful');
 
-        const auth = getAuth();
-        if (auth.currentUser) {
-          await updateDoc(doc(db, 'users', auth.currentUser.uid), {
-            'googleTokens.access_token': credentials.access_token,
-            'googleTokens.expiry_date': credentials.expiry_date,
-            'googleTokens.id_token': credentials.id_token || tokens.id_token,
-            'googleTokens.token_type': credentials.token_type,
-            'lastUpdated': serverTimestamp()
-          });
+        // Preserve the refresh_token if it's not in the new credentials
+        if (!credentials.refresh_token && tokens.refresh_token) {
+          console.log('ensureValidTokens: Preserving refresh token from original credentials');
+          credentials.refresh_token = tokens.refresh_token;
         }
-      } catch (dbError) {
-        console.error('Error updating tokens in database:', dbError);
-        // Continue even if database update fails
+
+        // Add timestamp and ensure expiry_date
+        const tokenData = {
+          ...credentials,
+          timestamp: Date.now(),
+          expiry_date: credentials.expiry_date || (Date.now() + 3600 * 1000) // Default to 1 hour if not provided
+        };
+
+        // Store the refreshed tokens in both localStorage and sessionStorage
+        localStorage.setItem('googleTokens', JSON.stringify(tokenData));
+        localStorage.setItem('googleDriveTokens', JSON.stringify(tokenData)); // For Drive-specific functions
+
+        // Also update in Firestore if user is logged in
+        try {
+          const { db } = await import('../firebase-config');
+          const { doc, updateDoc, serverTimestamp } = await import('firebase/firestore');
+          const { getAuth } = await import('firebase/auth');
+
+          const auth = getAuth();
+          if (auth.currentUser) {
+            console.log('ensureValidTokens: Updating tokens in Firestore');
+            await updateDoc(doc(db, 'users', auth.currentUser.uid), {
+              'googleTokens.access_token': credentials.access_token,
+              'googleTokens.expiry_date': credentials.expiry_date,
+              'googleTokens.id_token': credentials.id_token || tokens.id_token,
+              'googleTokens.token_type': credentials.token_type,
+              'lastUpdated': serverTimestamp()
+            });
+          }
+        } catch (dbError) {
+          console.error('Error updating tokens in database:', dbError);
+          // Continue even if database update fails
+        }
+
+        return tokenData;
+      } catch (error) {
+        console.error('Error refreshing token:', error);
+
+        // Handle specific error cases
+        if (error.message.includes('invalid_grant')) {
+          console.log('ensureValidTokens: Invalid grant error, clearing tokens');
+          // Clear tokens from both localStorage and sessionStorage
+          localStorage.removeItem('googleTokens');
+          localStorage.removeItem('googleDriveTokens');
+          localStorage.removeItem('googleCalendarConnected');
+          localStorage.removeItem('googleDriveConnected');
+          sessionStorage.removeItem('googleCalendarConnected');
+          sessionStorage.removeItem('googleDriveConnected');
+
+          // Throw a more specific error
+          throw new Error('Your Google authorization has expired. Please reconnect your Google account.');
+        } else if (error.message.includes('network')) {
+          // Network error - might be temporary
+          throw new Error('Network error while refreshing Google token. Please check your internet connection.');
+        } else {
+          // Other errors
+          throw error;
+        }
       }
-
-      return credentials;
-    } catch (error) {
-      console.error('Error refreshing token:', error);
-
-      // Only clear tokens if refresh token is invalid
-      if (error.message.includes('invalid_grant')) {
-        clearTokens();
-      }
-
-      throw error;
+    } else {
+      console.error('ensureValidTokens: Token is expired but no refresh token available');
+      throw new Error('Your Google session has expired and cannot be refreshed. Please reconnect your Google account.');
     }
   }
 
+  // If we get here, the token is still valid
   return tokens;
 };

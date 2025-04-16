@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { disconnectGoogleDrive, getGoogleAuthUrl, getGoogleDriveStatus } from '../../services/googleDriveService.simple';
+import { clearTokens, getAuthUrl, getStoredTokens, getUserProfile } from '../../services/googleIntegration';
 import styles from './GoogleConnect.module.css';
 
 /**
@@ -11,7 +11,7 @@ import styles from './GoogleConnect.module.css';
  */
 const GoogleDriveConnect = ({ onConnect, onDisconnect }) => {
   const [isConnected, setIsConnected] = useState(false);
-  const [userEmail, setUserEmail] = useState('');
+  const [userProfile, setUserProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
 
@@ -19,54 +19,70 @@ const GoogleDriveConnect = ({ onConnect, onDisconnect }) => {
   useEffect(() => {
     const checkConnection = async () => {
       try {
-        const status = await getGoogleDriveStatus();
+        console.log('GoogleDriveConnect: Checking connection status');
+        const tokens = getStoredTokens();
         const driveConnected = localStorage.getItem('googleDriveConnected');
         const sessionDriveConnected = sessionStorage.getItem('googleDriveConnected');
+        console.log('GoogleDriveConnect: Tokens from storage:', tokens ? 'Found' : 'Not found');
         console.log('GoogleDriveConnect: Drive connected flag (localStorage):', driveConnected);
         console.log('GoogleDriveConnect: Drive connected flag (sessionStorage):', sessionDriveConnected);
 
-        // Check if we have a connected status and either localStorage or sessionStorage flag is true
-        if (status.connected && (driveConnected === 'true' || sessionDriveConnected === 'true')) {
+        // Check if we have tokens and either localStorage or sessionStorage flag is true
+        if (tokens && (driveConnected === 'true' || sessionDriveConnected === 'true')) {
+          // Get user profile to verify connection
+          console.log('GoogleDriveConnect: Getting user profile with tokens');
+          const profile = await getUserProfile(tokens);
+          console.log('GoogleDriveConnect: Got profile:', profile);
+          setUserProfile(profile);
           setIsConnected(true);
-          if (status.email) {
-            setUserEmail(status.email);
+          console.log('GoogleDriveConnect: Set isConnected to TRUE');
 
-            // Ensure both storage locations have the flag set
-            localStorage.setItem('googleDriveConnected', 'true');
-            sessionStorage.setItem('googleDriveConnected', 'true');
+          // Ensure both storage locations have the flag set
+          localStorage.setItem('googleDriveConnected', 'true');
+          sessionStorage.setItem('googleDriveConnected', 'true');
 
-            // Call onConnect callback if provided
-            if (onConnect) {
-              onConnect();
-            }
+          // Call onConnect callback if provided
+          if (onConnect) {
+            console.log('GoogleDriveConnect: Calling onConnect callback');
+            onConnect(tokens, profile);
           }
         } else {
-          // If we have a connected status but no flag, try to set the flag
-          if (status.connected && !driveConnected && !sessionDriveConnected) {
-            console.log('GoogleDriveConnect: Found connected status but no connection flag, setting flags');
-            localStorage.setItem('googleDriveConnected', 'true');
-            sessionStorage.setItem('googleDriveConnected', 'true');
-            setIsConnected(true);
-            if (status.email) {
-              setUserEmail(status.email);
+          console.log('GoogleDriveConnect: No tokens or connection flag found, not connected');
+          // If we have tokens but no flag, try to set the flag
+          if (tokens && !driveConnected && !sessionDriveConnected) {
+            try {
+              // Verify tokens are valid by getting user profile
+              console.log('GoogleDriveConnect: Found tokens but no connection flag, verifying tokens');
+              const profile = await getUserProfile(tokens);
+              if (profile) {
+                console.log('GoogleDriveConnect: Tokens are valid, setting connection flag');
+                localStorage.setItem('googleDriveConnected', 'true');
+                sessionStorage.setItem('googleDriveConnected', 'true');
+                setUserProfile(profile);
+                setIsConnected(true);
 
-              // Call onConnect callback if provided
-              if (onConnect) {
-                onConnect();
+                // Call onConnect callback if provided
+                if (onConnect) {
+                  console.log('GoogleDriveConnect: Calling onConnect callback');
+                  onConnect(tokens, profile);
+                }
+                return;
               }
+            } catch (verifyError) {
+              console.error('GoogleDriveConnect: Error verifying tokens:', verifyError);
+              clearTokens();
             }
-          } else {
-            setIsConnected(false);
-            console.log('GoogleDriveConnect: Not connected or missing connection flag');
           }
         }
       } catch (error) {
         console.error('Error checking Google Drive connection:', error);
+        // Clear invalid tokens and connection flags
+        console.log('GoogleDriveConnect: Clearing invalid tokens and connection flags');
+        clearTokens();
         setIsConnected(false);
-        localStorage.removeItem('googleDriveConnected');
-        sessionStorage.removeItem('googleDriveConnected');
       } finally {
         setIsLoading(false);
+        console.log('GoogleDriveConnect: Set isLoading to FALSE');
       }
     };
 
@@ -82,45 +98,54 @@ const GoogleDriveConnect = ({ onConnect, onDisconnect }) => {
     // Store the current user's email in localStorage to help with the OAuth flow
     if (user && user.email) {
       localStorage.setItem('userEmail', user.email);
+      console.log('GoogleDriveConnect: Stored user email in localStorage:', user.email);
     }
 
-    // Store the current path to return to after authentication
-    const currentPath = window.location.pathname;
-    localStorage.setItem('googleAuthReturnPath', currentPath);
-    console.log('GoogleDriveConnect: Stored return path:', currentPath);
-
-    // Get auth URL with drive-specific scopes
-    const authUrl = getGoogleAuthUrl();
-    console.log('Redirecting to Google Drive OAuth URL:', authUrl);
+    // Generate the auth URL with drive-specific options
+    const authUrl = getAuthUrl([], { drive: true });
+    console.log('GoogleDriveConnect: Redirecting to Google OAuth URL');
 
     // Redirect directly to the auth URL
     window.location.href = authUrl;
   };
 
   // Handle disconnect button click
-  const handleDisconnect = async () => {
-    try {
-      await disconnectGoogleDrive();
-      setIsConnected(false);
-      setUserEmail('');
+  const handleDisconnect = () => {
+    // Clear all tokens and connection flags
+    clearTokens();
 
-      // Clear connection flags from both localStorage and sessionStorage
-      localStorage.removeItem('googleDriveConnected');
-      localStorage.removeItem('googleCalendarConnected');
-      sessionStorage.removeItem('googleDriveConnected');
-      sessionStorage.removeItem('googleCalendarConnected');
+    // Update component state
+    setIsConnected(false);
+    setUserProfile(null);
 
-      // Clear tokens
-      localStorage.removeItem('googleTokens');
-      localStorage.removeItem('googleDriveTokens');
-
-      // Call onDisconnect callback if provided
-      if (onDisconnect) {
-        onDisconnect();
-      }
-    } catch (error) {
-      console.error('Error disconnecting Google Drive:', error);
+    // Call onDisconnect callback if provided
+    if (onDisconnect) {
+      onDisconnect();
     }
+  };
+
+  // Get user display name
+  const getUserDisplayName = () => {
+    if (!userProfile) return '';
+
+    const names = userProfile.names || [];
+    return names.length > 0 ? names[0].displayName : '';
+  };
+
+  // Get user email
+  const getUserEmail = () => {
+    if (!userProfile) return '';
+
+    const emails = userProfile.emailAddresses || [];
+    return emails.length > 0 ? emails[0].value : '';
+  };
+
+  // Get user photo URL
+  const getUserPhotoUrl = () => {
+    if (!userProfile) return '';
+
+    const photos = userProfile.photos || [];
+    return photos.length > 0 ? photos[0].url : '';
   };
 
   if (isLoading) {
@@ -137,8 +162,16 @@ const GoogleDriveConnect = ({ onConnect, onDisconnect }) => {
       {isConnected ? (
         <div className={styles['connected-status']}>
           <div className={styles['user-profile']}>
+            {getUserPhotoUrl() && (
+              <img
+                src={getUserPhotoUrl()}
+                alt={getUserDisplayName()}
+                className={styles['user-photo']}
+              />
+            )}
             <div className={styles['user-info']}>
-              <div className={styles['user-email']}>{userEmail}</div>
+              <div className={styles['user-name']}>{getUserDisplayName()}</div>
+              <div className={styles['user-email']}>{getUserEmail()}</div>
             </div>
           </div>
           <div className={styles['connection-message']}>
