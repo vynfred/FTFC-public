@@ -218,7 +218,7 @@ const PartnerLogin = () => {
 
         <button
           type="button"
-          onClick={handleGoogleSignInRedirect}
+          onClick={handleGoogleSignIn}
           disabled={isLoading}
           className={styles.googleButton}
         >

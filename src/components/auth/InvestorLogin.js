@@ -218,7 +218,7 @@ const InvestorLogin = () => {
 
         <button
           type="button"
-          onClick={handleGoogleSignInRedirect}
+          onClick={handleGoogleSignIn}
           disabled={isLoading}
           className={styles.googleButton}
         >

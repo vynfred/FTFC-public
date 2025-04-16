@@ -251,7 +251,7 @@ const TeamLogin = () => {
           <p style={{ margin: '16px 0', color: '#94a3b8' }}>- OR -</p>
           <button
             type="button"
-            onClick={handleGoogleSignInRedirect}
+            onClick={handleGoogleSignIn}
             disabled={isLoading}
             style={{
               display: 'flex',

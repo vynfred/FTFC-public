@@ -82,17 +82,35 @@ const auth = {
   },
   signInWithGoogle: () => {
     try {
-      console.log('Starting Google sign-in process with redirect...');
-      // Store the intended role before redirecting
-      localStorage.setItem('intendedUserRole', 'team');
-      localStorage.setItem('googleRedirectInProgress', 'true');
-      localStorage.setItem('googleRedirectTimestamp', Date.now().toString());
-      return signInWithRedirect(firebaseAuth, googleProvider);
+      console.log('Starting Google sign-in process with popup...');
+      return signInWithPopup(firebaseAuth, googleProvider)
+        .then(result => {
+          console.log('Google sign-in successful:', result.user.email);
+          // Store a flag in sessionStorage to indicate successful sign-in
+          sessionStorage.setItem('googleSignInSuccess', 'true');
+          // Store the user's role in sessionStorage
+          sessionStorage.setItem('userRole', 'team');
+          return result;
+        })
+        .catch(error => {
+          console.error('Google sign-in error in promise chain:', error);
+          console.error('Error code:', error.code);
+          console.error('Error message:', error.message);
+          if (error.email) console.error('Error email:', error.email);
+          if (error.credential) console.error('Error credential:', error.credential);
+
+          // If popup is blocked or fails, try redirect method
+          if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
+            console.log('Popup failed, trying redirect method...');
+            // Store the intended role before redirecting
+            localStorage.setItem('intendedUserRole', 'team');
+            return signInWithRedirect(firebaseAuth, googleProvider);
+          }
+
+          throw error;
+        });
     } catch (error) {
       console.error('Google sign-in error in try/catch:', error);
-      localStorage.removeItem('intendedUserRole');
-      localStorage.removeItem('googleRedirectInProgress');
-      localStorage.removeItem('googleRedirectTimestamp');
       throw error;
     }
   },
