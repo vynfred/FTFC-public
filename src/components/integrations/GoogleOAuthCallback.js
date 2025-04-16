@@ -81,8 +81,23 @@ const GoogleOAuthCallback = ({ redirectPath = '/dashboard' }) => {
         }
 
         // Get the return path from localStorage or use default
-        const returnPath = localStorage.getItem('googleAuthReturnPath') || redirectPath;
-        console.log('GoogleOAuthCallback: Return path:', returnPath);
+        let returnPath = localStorage.getItem('googleAuthReturnPath') || redirectPath;
+        console.log('GoogleOAuthCallback: Return path from localStorage:', returnPath);
+
+        // Check if we're connecting to Calendar or Drive specifically
+        const calendarRequested = localStorage.getItem('googleAuthCalendarRequested') === 'true';
+        const driveRequested = localStorage.getItem('googleAuthDriveRequested') === 'true';
+
+        // Override return path based on what was requested
+        if (calendarRequested) {
+          returnPath = '/dashboard/calendar';
+          console.log('GoogleOAuthCallback: Calendar was requested, redirecting to calendar page');
+        } else if (driveRequested) {
+          returnPath = '/dashboard/profile';
+          console.log('GoogleOAuthCallback: Drive was requested, redirecting to profile page');
+        }
+
+        console.log('GoogleOAuthCallback: Final return path:', returnPath);
 
         // Update status
         setStatus('success');
@@ -139,20 +154,20 @@ const GoogleOAuthCallback = ({ redirectPath = '/dashboard' }) => {
 
   return (
     <div className={styles['oauth-callback']}>
-      <h2>Google Calendar Integration</h2>
+      <h2>Google {localStorage.getItem('googleAuthCalendarRequested') === 'true' ? 'Calendar' : localStorage.getItem('googleAuthDriveRequested') === 'true' ? 'Drive' : 'Services'} Integration</h2>
 
       {status === 'processing' && (
         <div className={styles.processing}>
           <div className={styles.spinner}></div>
-          <p>Processing your Google Calendar connection...</p>
+          <p>Processing your Google {localStorage.getItem('googleAuthCalendarRequested') === 'true' ? 'Calendar' : localStorage.getItem('googleAuthDriveRequested') === 'true' ? 'Drive' : 'Services'} connection...</p>
         </div>
       )}
 
       {status === 'success' && (
         <div className={styles.success}>
           <div className={styles['success-icon']}>✓</div>
-          <p>Successfully connected to Google Calendar!</p>
-          <p className={styles['redirect-message']}>Redirecting you back to the dashboard...</p>
+          <p>Successfully connected to Google {localStorage.getItem('googleAuthCalendarRequested') === 'true' ? 'Calendar' : localStorage.getItem('googleAuthDriveRequested') === 'true' ? 'Drive' : 'Services'}!</p>
+          <p className={styles['redirect-message']}>Redirecting you back to the {localStorage.getItem('googleAuthCalendarRequested') === 'true' ? 'calendar page' : localStorage.getItem('googleAuthDriveRequested') === 'true' ? 'profile page' : 'dashboard'}...</p>
 
           {/* Debug section */}
           <div style={{ marginTop: '20px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: '#f9f9f9' }}>
