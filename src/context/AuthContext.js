@@ -28,19 +28,50 @@ export const AuthProvider = ({ children }) => {
     console.log('AuthContext: Checking for redirect result');
     const checkRedirectResult = async () => {
       try {
+        console.log('AuthContext: Calling getRedirectResult');
         const result = await auth.getRedirectResult();
+        console.log('AuthContext: getRedirectResult returned:', result ? 'Result found' : 'No result');
+
         if (result && result.user) {
-          console.log('AuthContext: Redirect result found, user signed in');
+          console.log('AuthContext: Redirect result found, user signed in:', result.user.email);
+          console.log('AuthContext: User UID:', result.user.uid);
+          console.log('AuthContext: Setting googleSignInSuccess flag');
+
+          // Set a flag to indicate successful sign-in
+          localStorage.setItem('googleSignInSuccess', 'true');
+          sessionStorage.setItem('googleSignInSuccess', 'true');
 
           // Get the intended role from localStorage
           const intendedRole = localStorage.getItem('intendedUserRole') || 'team';
           console.log('AuthContext: Intended role:', intendedRole);
 
-          // Store the role in sessionStorage
+          // Store the role in sessionStorage and localStorage
+          localStorage.setItem('userRole', intendedRole);
           sessionStorage.setItem('userRole', intendedRole);
 
           // User is already handled by the auth state change listener
           // The redirect to the appropriate portal will happen there
+        } else {
+          console.log('AuthContext: No user found in redirect result');
+
+          // Check if we're in the middle of a redirect flow
+          const authState = localStorage.getItem('googleAuthState');
+          const authTimestamp = localStorage.getItem('googleAuthTimestamp');
+
+          if (authState && authTimestamp) {
+            console.log('AuthContext: Found auth state, we might be in the middle of a redirect flow');
+            const timestamp = parseInt(authTimestamp, 10);
+            const now = Date.now();
+            const fiveMinutesInMs = 5 * 60 * 1000;
+
+            if (now - timestamp < fiveMinutesInMs) {
+              console.log('AuthContext: Recent auth timestamp, redirect might be in progress');
+            } else {
+              console.log('AuthContext: Auth timestamp is old, clearing auth state');
+              localStorage.removeItem('googleAuthState');
+              localStorage.removeItem('googleAuthTimestamp');
+            }
+          }
         }
       } catch (error) {
         console.error('AuthContext: Error getting redirect result:', error);
@@ -59,8 +90,22 @@ export const AuthProvider = ({ children }) => {
         console.log('AuthContext: User details:', {
           uid: firebaseUser.uid,
           email: firebaseUser.email,
-          displayName: firebaseUser.displayName
+          displayName: firebaseUser.displayName,
+          providerId: firebaseUser.providerId,
+          providerData: firebaseUser.providerData.map(p => p.providerId)
         });
+
+        // Log authentication method
+        console.log('AuthContext: Authentication method:',
+          firebaseUser.providerData.some(p => p.providerId === 'google.com') ? 'Google' : 'Email/Password');
+
+        // Check if this is a Google sign-in
+        const isGoogleSignIn = firebaseUser.providerData.some(p => p.providerId === 'google.com');
+        if (isGoogleSignIn) {
+          console.log('AuthContext: This is a Google sign-in');
+          localStorage.setItem('googleSignInSuccess', 'true');
+          sessionStorage.setItem('googleSignInSuccess', 'true');
+        }
 
         // Store auth state in localStorage for debugging
         localStorage.setItem('authState', JSON.stringify({
@@ -117,11 +162,17 @@ export const AuthProvider = ({ children }) => {
 
           // Check if we need to redirect after successful authentication
           const googleSignInSuccess = localStorage.getItem('googleSignInSuccess') || sessionStorage.getItem('googleSignInSuccess');
-          const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+          const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole') || 'team';
+          const intendedRole = localStorage.getItem('intendedUserRole') || userRole;
+
+          // Check if this is a Google sign-in based on provider data
+          const isGoogleSignIn = firebaseUser.providerData.some(p => p.providerId === 'google.com');
 
           console.log('Auth state check:', {
             googleSignInSuccess: googleSignInSuccess ? 'Found' : 'Not found',
-            userRole
+            userRole,
+            intendedRole,
+            isGoogleSignIn
           });
 
           // Clean up any legacy flags
@@ -129,11 +180,16 @@ export const AuthProvider = ({ children }) => {
           localStorage.removeItem('googleRedirectTimestamp'); // Legacy
 
           // If this is a successful sign-in, redirect to the appropriate portal
-          if (googleSignInSuccess === 'true') {
+          // We check both the flag and the provider data to be sure
+          if (googleSignInSuccess === 'true' || isGoogleSignIn) {
             console.log('Successful authentication detected, redirecting to appropriate portal');
 
+            // Use the intended role from localStorage if available, otherwise use the stored role
+            const roleToUse = intendedRole || userRole;
+            console.log('Using role for redirect:', roleToUse);
+
             // Redirect based on user role
-            switch (userRole) {
+            switch (roleToUse) {
               case 'client':
                 console.log('Redirecting to client portal');
                 window.location.href = '/client-portal';
@@ -153,9 +209,12 @@ export const AuthProvider = ({ children }) => {
                 break;
             }
 
-            // Clear the flag
+            // Clear the flags
             localStorage.removeItem('googleSignInSuccess');
             sessionStorage.removeItem('googleSignInSuccess');
+            localStorage.removeItem('intendedUserRole');
+          } else {
+            console.log('No redirect needed or not a Google sign-in');
           }
         } catch (error) {
           console.error('Error getting user data:', error);

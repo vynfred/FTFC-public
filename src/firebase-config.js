@@ -51,6 +51,10 @@ const auth = {
   getRedirectResult: async () => {
     console.log('Getting redirect result...');
     try {
+      // Check if we're in the middle of a Google sign-in
+      const signInStarted = localStorage.getItem('googleSignInStarted');
+      console.log('Google sign-in started flag:', signInStarted ? 'Found' : 'Not found');
+
       // Get the stored state and timestamp
       const storedState = localStorage.getItem('googleAuthState');
       const storedTimestamp = localStorage.getItem('googleAuthTimestamp');
@@ -58,11 +62,14 @@ const auth = {
       console.log('Stored timestamp:', storedTimestamp ? 'Found' : 'Not found');
 
       // Get the result from Firebase
+      console.log('Calling getRedirectResult from Firebase...');
       const result = await getRedirectResult(firebaseAuth);
       console.log('Redirect result:', result ? 'Success' : 'No result');
 
       if (result && result.user) {
         console.log('User signed in via redirect:', result.user.email);
+        console.log('User UID:', result.user.uid);
+        console.log('User provider data:', result.user.providerData.map(p => p.providerId));
 
         // Verify the state parameter if available
         // This is a critical security check to prevent CSRF attacks
@@ -82,21 +89,25 @@ const auth = {
         }
 
         // Store a flag in both localStorage and sessionStorage to indicate successful sign-in
+        console.log('Setting googleSignInSuccess flag');
         localStorage.setItem('googleSignInSuccess', 'true');
         sessionStorage.setItem('googleSignInSuccess', 'true');
 
         // Get the intended role from localStorage
         const intendedRole = localStorage.getItem('intendedUserRole') || 'team';
+        console.log('Intended role:', intendedRole);
         localStorage.setItem('userRole', intendedRole);
         sessionStorage.setItem('userRole', intendedRole);
 
         // Store the user's email for future use
         if (result.user.email) {
           localStorage.setItem('userEmail', result.user.email);
+          console.log('Stored user email:', result.user.email);
         }
 
         // Store tokens if available
         if (result.credential && result.credential.accessToken) {
+          console.log('Credential found in result, storing tokens');
           const tokens = {
             access_token: result.credential.accessToken,
             id_token: result.credential.idToken,
@@ -115,13 +126,20 @@ const auth = {
           sessionStorage.setItem('googleDriveConnected', 'true');
 
           console.log('Connection flags set successfully');
+        } else {
+          console.log('No credential found in result');
         }
+      } else if (signInStarted === 'true') {
+        // If we were in the middle of a sign-in but got no result, something went wrong
+        console.log('No result but sign-in was started, setting error flag');
+        localStorage.setItem('googleSignInError', 'true');
       }
 
       // Clean up regardless of result
+      console.log('Cleaning up auth state');
       localStorage.removeItem('googleAuthState');
       localStorage.removeItem('googleAuthTimestamp');
-      localStorage.removeItem('intendedUserRole');
+      localStorage.removeItem('googleSignInStarted');
 
       return result;
     } catch (error) {
@@ -131,6 +149,8 @@ const auth = {
       localStorage.removeItem('googleAuthState');
       localStorage.removeItem('googleAuthTimestamp');
       localStorage.removeItem('intendedUserRole');
+      localStorage.removeItem('googleSignInStarted');
+      localStorage.setItem('googleSignInError', 'true');
 
       throw error;
     }
@@ -150,12 +170,25 @@ const auth = {
       // Generate a secure state parameter to prevent CSRF attacks
       const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
-      // Store state in localStorage to verify when the redirect completes
+      // Store state and timestamp in localStorage to verify when the redirect completes
       localStorage.setItem('googleAuthState', state);
       localStorage.setItem('googleAuthTimestamp', Date.now().toString());
 
       // Store the intended role before redirecting
       localStorage.setItem('intendedUserRole', 'team');
+
+      // Set a flag to indicate we're starting a Google sign-in
+      localStorage.setItem('googleSignInStarted', 'true');
+
+      // Log the current state before redirect
+      console.log('Google sign-in: State before redirect', {
+        state,
+        timestamp: Date.now(),
+        intendedRole: 'team'
+      });
+
+      // Reset the provider to ensure we're using a fresh instance
+      googleProvider = new GoogleAuthProvider();
 
       // Set custom parameters including state
       googleProvider.setCustomParameters({
@@ -172,6 +205,7 @@ const auth = {
       });
 
       // Use the redirect method as recommended by Google for web applications
+      console.log('Calling signInWithRedirect...');
       return signInWithRedirect(firebaseAuth, googleProvider);
     } catch (error) {
       console.error('Google sign-in error in try/catch:', error);
@@ -179,6 +213,7 @@ const auth = {
       localStorage.removeItem('googleAuthState');
       localStorage.removeItem('googleAuthTimestamp');
       localStorage.removeItem('intendedUserRole');
+      localStorage.removeItem('googleSignInStarted');
       throw error;
     }
   },
@@ -191,12 +226,25 @@ const auth = {
       // Generate a secure state parameter to prevent CSRF attacks
       const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
-      // Store state in localStorage to verify when the redirect completes
+      // Store state and timestamp in localStorage to verify when the redirect completes
       localStorage.setItem('googleAuthState', state);
       localStorage.setItem('googleAuthTimestamp', Date.now().toString());
 
       // Store the intended role before redirecting
       localStorage.setItem('intendedUserRole', role || 'team');
+
+      // Set a flag to indicate we're starting a Google sign-in
+      localStorage.setItem('googleSignInStarted', 'true');
+
+      // Log the current state before redirect
+      console.log('Google sign-in: State before redirect', {
+        state,
+        timestamp: Date.now(),
+        intendedRole: role || 'team'
+      });
+
+      // Reset the provider to ensure we're using a fresh instance
+      googleProvider = new GoogleAuthProvider();
 
       // Set custom parameters including state
       googleProvider.setCustomParameters({
@@ -213,6 +261,7 @@ const auth = {
       });
 
       // Use the redirect method as recommended by Google for web applications
+      console.log('Calling signInWithRedirect...');
       return signInWithRedirect(firebaseAuth, googleProvider);
     } catch (error) {
       console.error('Google sign-in redirect error:', error);
@@ -220,6 +269,7 @@ const auth = {
       localStorage.removeItem('googleAuthState');
       localStorage.removeItem('googleAuthTimestamp');
       localStorage.removeItem('intendedUserRole');
+      localStorage.removeItem('googleSignInStarted');
       throw error;
     }
   }
