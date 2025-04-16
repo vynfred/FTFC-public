@@ -16,6 +16,7 @@ import DashboardWrapper from './components/common/DashboardWrapper';
 import EmailExample from './components/common/EmailExample';
 import PWAInstallPrompt from './components/common/PWAInstallPrompt';
 import ScrollToTop from './components/common/ScrollToTop';
+import SimpleDebug from './components/Debug/SimpleDebug';
 import SearchBarExample from './components/examples/SearchBarExample';
 
 // Modal Components
@@ -114,7 +115,7 @@ function App() {
 
           {/* Lead Form Test Route */}
           <Route path="/lead-form-test" element={<LeadFormTest />} />
-          <Route path="/debug/storage" element={<LocalStorageDebug />} />
+          <Route path="/debug/storage" element={<SimpleDebug />} />
 
           {/* Google OAuth Callback Routes */}
           <Route path="/api/google/oauth-callback" element={<GoogleOAuthCallback />} />

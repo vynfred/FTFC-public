@@ -82,6 +82,38 @@ const GoogleOAuthCallback = ({ redirectPath = '/dashboard' }) => {
     processOAuthCallback();
   }, [location, navigate, redirectPath]);
 
+  // Get all localStorage items for debugging
+  const getLocalStorageItems = () => {
+    const items = {};
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        try {
+          const value = localStorage.getItem(key);
+          items[key] = value;
+        } catch (e) {
+          items[key] = "Error reading value";
+        }
+      }
+    } catch (e) {
+      return { error: e.message };
+    }
+    return items;
+  };
+
+  const localStorageItems = getLocalStorageItems();
+
+  // Function to manually set connection flags
+  const setConnectionFlags = () => {
+    try {
+      localStorage.setItem('googleCalendarConnected', 'true');
+      localStorage.setItem('googleDriveConnected', 'true');
+      alert('Connection flags set successfully!');
+    } catch (e) {
+      alert('Error setting flags: ' + e.message);
+    }
+  };
+
   return (
     <div className={styles['oauth-callback']}>
       <h2>Google Calendar Integration</h2>
@@ -98,6 +130,40 @@ const GoogleOAuthCallback = ({ redirectPath = '/dashboard' }) => {
           <div className={styles['success-icon']}>✓</div>
           <p>Successfully connected to Google Calendar!</p>
           <p className={styles['redirect-message']}>Redirecting you back to the dashboard...</p>
+
+          {/* Debug section */}
+          <div style={{ marginTop: '20px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: '#f9f9f9' }}>
+            <h3>Debug Information</h3>
+            <p>If you're having issues with the connection persisting, click the button below:</p>
+            <button
+              onClick={setConnectionFlags}
+              style={{ padding: '8px 16px', backgroundColor: '#4285f4', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+            >
+              Force Set Connection Flags
+            </button>
+
+            <div style={{ marginTop: '10px' }}>
+              <h4>Current localStorage Items:</h4>
+              <pre style={{ maxHeight: '200px', overflow: 'auto', padding: '10px', backgroundColor: '#eee', fontSize: '12px' }}>
+                {JSON.stringify(localStorageItems, null, 2)}
+              </pre>
+            </div>
+
+            <div style={{ marginTop: '10px' }}>
+              <button
+                onClick={() => navigate('/dashboard/calendar')}
+                style={{ marginRight: '10px', padding: '8px 16px', backgroundColor: '#34a853', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+              >
+                Go to Calendar
+              </button>
+              <button
+                onClick={() => navigate('/dashboard/profile')}
+                style={{ padding: '8px 16px', backgroundColor: '#34a853', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+              >
+                Go to Profile
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

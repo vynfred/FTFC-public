@@ -234,12 +234,64 @@ const Calendar = () => {
     );
   }
 
+  // Get all localStorage items for debugging
+  const getLocalStorageItems = () => {
+    const items = {};
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        try {
+          const value = localStorage.getItem(key);
+          items[key] = value;
+        } catch (e) {
+          items[key] = "Error reading value";
+        }
+      }
+    } catch (e) {
+      return { error: e.message };
+    }
+    return items;
+  };
+
+  const localStorageItems = getLocalStorageItems();
+
+  // Function to manually set connection flags
+  const setConnectionFlags = () => {
+    try {
+      localStorage.setItem('googleCalendarConnected', 'true');
+      localStorage.setItem('googleDriveConnected', 'true');
+      alert('Connection flags set successfully!');
+      window.location.reload(); // Reload the page to reflect changes
+    } catch (e) {
+      alert('Error setting flags: ' + e.message);
+    }
+  };
+
   if (!googleConnected) {
     return (
       <DashboardSection title="Calendar">
         <div className={styles.notConnectedContainer}>
           <p>Google Calendar is not connected. Please connect your Google account in your profile settings.</p>
           <a href="/dashboard/settings" className={styles.connectButton}>Go to Settings</a>
+
+          {/* Debug section */}
+          <div style={{ marginTop: '30px', padding: '15px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: '#f9f9f9', textAlign: 'left' }}>
+            <h3>Debug Information</h3>
+            <p>If you've already connected but it's not showing as connected, try setting the flags manually:</p>
+            <button
+              onClick={setConnectionFlags}
+              style={{ padding: '8px 16px', backgroundColor: '#4285f4', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginBottom: '15px' }}
+            >
+              Force Set Connection Flags
+            </button>
+
+            <div>
+              <h4>Current localStorage Items:</h4>
+              <pre style={{ maxHeight: '200px', overflow: 'auto', padding: '10px', backgroundColor: '#eee', fontSize: '12px' }}>
+                {JSON.stringify(localStorageItems, null, 2)}
+              </pre>
+            </div>
+          </div>
         </div>
       </DashboardSection>
     );

@@ -290,6 +290,45 @@ const UserProfile = () => {
               localStorage.removeItem('googleDriveConnected');
             }}
           />
+
+          {/* Debug section */}
+          <div style={{ marginTop: '20px', padding: '15px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: '#f9f9f9' }}>
+            <h4>Debug Information</h4>
+            <p>If you're having connection issues, try setting the flags manually:</p>
+            <button
+              onClick={() => {
+                localStorage.setItem('googleDriveConnected', 'true');
+                alert('Google Drive connection flag set!');
+                window.location.reload();
+              }}
+              style={{ padding: '8px 16px', backgroundColor: '#4285f4', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginBottom: '10px' }}
+            >
+              Force Set Drive Connection Flag
+            </button>
+
+            <div>
+              <h5>Current localStorage Items:</h5>
+              <pre style={{ maxHeight: '150px', overflow: 'auto', padding: '10px', backgroundColor: '#eee', fontSize: '12px' }}>
+                {JSON.stringify((() => {
+                  const items = {};
+                  try {
+                    for (let i = 0; i < localStorage.length; i++) {
+                      const key = localStorage.key(i);
+                      try {
+                        const value = localStorage.getItem(key);
+                        items[key] = value;
+                      } catch (e) {
+                        items[key] = "Error reading value";
+                      }
+                    }
+                  } catch (e) {
+                    return { error: e.message };
+                  }
+                  return items;
+                })(), null, 2)}
+              </pre>
+            </div>
+          </div>
         </div>
 
         {/* Calendar Integration Section */}
@@ -314,6 +353,30 @@ const UserProfile = () => {
               localStorage.removeItem('googleCalendarConnected');
             }}
           />
+
+          {/* Debug section */}
+          <div style={{ marginTop: '20px', padding: '15px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: '#f9f9f9' }}>
+            <h4>Debug Information</h4>
+            <p>If you're having connection issues, try setting the flags manually:</p>
+            <button
+              onClick={() => {
+                localStorage.setItem('googleCalendarConnected', 'true');
+                alert('Google Calendar connection flag set!');
+                window.location.reload();
+              }}
+              style={{ padding: '8px 16px', backgroundColor: '#4285f4', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginBottom: '10px' }}
+            >
+              Force Set Calendar Connection Flag
+            </button>
+
+            <div>
+              <h5>Connection Status:</h5>
+              <ul style={{ listStyle: 'none', padding: '0' }}>
+                <li>Calendar Connected: <strong>{isGoogleCalendarConnected ? 'Yes' : 'No'}</strong></li>
+                <li>Drive Connected: <strong>{isGoogleDriveConnected ? 'Yes' : 'No'}</strong></li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
