@@ -84,64 +84,22 @@ const InvestorLogin = () => {
     }
   };
 
-  // Alternative method for Google sign-in using redirect
-  const handleGoogleSignInRedirect = async () => {
-    setIsLoading(true);
-    setErrors({});
-
-    try {
-      console.log('InvestorLogin: Starting Google sign-in with redirect...');
-      // Set a flag in localStorage to indicate we're doing a redirect
-      localStorage.setItem('googleRedirectInProgress', 'true');
-      localStorage.setItem('googleRedirectTimestamp', Date.now().toString());
-
-      // Store the intended role
-      localStorage.setItem('intendedUserRole', 'investor');
-
-      // Store the client ID in localStorage to ensure consistency
-      localStorage.setItem('googleClientId', process.env.REACT_APP_GOOGLE_CLIENT_ID);
-
-      // Use the redirect method
-      await auth.signInWithGoogleRedirect();
-
-      // Note: This will redirect the page, so the code below will only run if the redirect fails
-      console.log('Redirect did not happen as expected');
-    } catch (error) {
-      console.error('InvestorLogin: Google sign-in redirect error:', error);
-      localStorage.removeItem('googleRedirectInProgress');
-      localStorage.removeItem('googleRedirectTimestamp');
-      localStorage.removeItem('intendedUserRole');
-      localStorage.removeItem('googleClientId');
-      setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });
-      setIsLoading(false);
-    }
-  };
-
+  // Google sign-in using redirect method
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     setErrors({});
 
     try {
-      console.log('InvestorLogin: Starting Google sign-in...');
-      // Attempt Google sign-in with Firebase Authentication
-      const result = await auth.signInWithGoogle();
-      console.log('InvestorLogin: Google sign-in successful, redirecting...');
+      console.log('InvestorLogin: Starting Google sign-in with redirect...');
 
-      // Redirect to investor portal on success
-      navigate('/investor-portal');
+      // Use the redirect method with role parameter
+      await auth.signInWithGoogleRedirect('investor');
+
+      // Note: This will redirect the page, so the code below will only run if the redirect fails
+      console.log('Redirect did not happen as expected');
     } catch (error) {
-      console.error('InvestorLogin: Google sign-in error:', error);
-
-      // Show detailed error message
-      if (error.code === 'auth/popup-closed-by-user') {
-        console.log('InvestorLogin: User closed the popup');
-        // No need to show an error
-      } else if (error.code === 'auth/popup-blocked') {
-        setErrors({ general: 'Popup was blocked by your browser. Please allow popups for this site.' });
-      } else {
-        setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });
-      }
-    } finally {
+      console.error('InvestorLogin: Google sign-in redirect error:', error);
+      setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });
       setIsLoading(false);
     }
   };

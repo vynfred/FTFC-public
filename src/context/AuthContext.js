@@ -31,7 +31,16 @@ export const AuthProvider = ({ children }) => {
         const result = await auth.getRedirectResult();
         if (result && result.user) {
           console.log('AuthContext: Redirect result found, user signed in');
+
+          // Get the intended role from localStorage
+          const intendedRole = localStorage.getItem('intendedUserRole') || 'team';
+          console.log('AuthContext: Intended role:', intendedRole);
+
+          // Store the role in sessionStorage
+          sessionStorage.setItem('userRole', intendedRole);
+
           // User is already handled by the auth state change listener
+          // The redirect to the appropriate portal will happen there
         }
       } catch (error) {
         console.error('AuthContext: Error getting redirect result:', error);
@@ -107,30 +116,58 @@ export const AuthProvider = ({ children }) => {
           setIsAuthenticated(true);
 
           // Check if we need to redirect after successful authentication
-          const redirectInProgress = localStorage.getItem('googleRedirectInProgress');
-          const redirectTimestamp = localStorage.getItem('googleRedirectTimestamp');
-          const googleSignInSuccess = sessionStorage.getItem('googleSignInSuccess');
+          const authState = localStorage.getItem('googleAuthState');
+          const authTimestamp = localStorage.getItem('googleAuthTimestamp');
+          const googleSignInSuccess = localStorage.getItem('googleSignInSuccess') || sessionStorage.getItem('googleSignInSuccess');
+          const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
 
-          if (redirectInProgress) {
-            console.log('Detected redirect in progress, clearing flags');
-            // Clear the flags
-            localStorage.removeItem('googleRedirectInProgress');
-            localStorage.removeItem('googleRedirectTimestamp');
+          console.log('Auth state check:', {
+            authState: authState ? 'Found' : 'Not found',
+            authTimestamp: authTimestamp ? 'Found' : 'Not found',
+            googleSignInSuccess: googleSignInSuccess ? 'Found' : 'Not found',
+            userRole
+          });
 
-            // If the redirect was recent (within the last 5 minutes), this is likely a successful redirect
-            if (redirectTimestamp) {
-              const timestamp = parseInt(redirectTimestamp, 10);
-              const now = Date.now();
-              const fiveMinutesInMs = 5 * 60 * 1000;
+          // Clean up auth state flags
+          localStorage.removeItem('googleAuthState');
+          localStorage.removeItem('googleAuthTimestamp');
+          localStorage.removeItem('googleRedirectInProgress'); // Legacy
+          localStorage.removeItem('googleRedirectTimestamp'); // Legacy
 
-              if (now - timestamp < fiveMinutesInMs) {
-                console.log('Recent redirect detected, likely successful');
+          // If we have a recent auth timestamp (within the last 5 minutes), this is likely a successful redirect
+          if (authTimestamp) {
+            const timestamp = parseInt(authTimestamp, 10);
+            const now = Date.now();
+            const fiveMinutesInMs = 5 * 60 * 1000;
+
+            if (now - timestamp < fiveMinutesInMs) {
+              console.log('Recent authentication detected, redirecting to appropriate portal');
+
+              // Import navigate function
+              const { navigate } = await import('react-router-dom');
+
+              // Redirect based on user role
+              switch (userRole) {
+                case 'client':
+                  window.location.href = '/client-portal';
+                  break;
+                case 'investor':
+                  window.location.href = '/investor-portal';
+                  break;
+                case 'partner':
+                  window.location.href = '/partner-portal';
+                  break;
+                case 'team':
+                default:
+                  window.location.href = '/dashboard';
+                  break;
               }
             }
           }
 
           if (googleSignInSuccess) {
             // Clear the flag
+            localStorage.removeItem('googleSignInSuccess');
             sessionStorage.removeItem('googleSignInSuccess');
           }
         } catch (error) {

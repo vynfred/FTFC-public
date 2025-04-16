@@ -16,33 +16,21 @@ const TeamLogin = () => {
   const navigate = useNavigate();
   const { login, googleSignIn } = useAuth();
 
-  // Alternative method for Google sign-in using redirect
-  const handleGoogleSignInRedirect = async () => {
+  // Google sign-in using redirect method
+  const handleGoogleSignIn = async () => {
     setIsLoading(true);
     setErrors({});
 
     try {
       console.log('TeamLogin: Starting Google sign-in with redirect...');
-      // Set a flag in localStorage to indicate we're doing a redirect
-      // Using localStorage instead of sessionStorage because it persists across redirects
-      localStorage.setItem('googleRedirectInProgress', 'true');
 
-      // Add a timestamp to track when the redirect was initiated
-      localStorage.setItem('googleRedirectTimestamp', Date.now().toString());
-
-      // Store the client ID in localStorage to ensure consistency
-      localStorage.setItem('googleClientId', process.env.REACT_APP_GOOGLE_CLIENT_ID);
-
-      // Use the redirect method
-      await auth.signInWithGoogleRedirect();
+      // Use the redirect method with role parameter
+      await auth.signInWithGoogleRedirect('team');
 
       // Note: This will redirect the page, so the code below will only run if the redirect fails
       console.log('Redirect did not happen as expected');
     } catch (error) {
       console.error('TeamLogin: Google sign-in redirect error:', error);
-      localStorage.removeItem('googleRedirectInProgress');
-      localStorage.removeItem('googleRedirectTimestamp');
-      localStorage.removeItem('googleClientId');
       setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });
       setIsLoading(false);
     }
@@ -152,41 +140,7 @@ const TeamLogin = () => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    setIsLoading(true);
-    setErrors({});
 
-    try {
-      console.log('TeamLogin: Starting Google sign-in...');
-      // Attempt Google sign-in with Firebase Authentication using the popup method
-      const result = await auth.signInWithGoogle();
-      console.log('TeamLogin: Google sign-in successful, redirecting...');
-
-      // Redirect to dashboard on success
-      navigate('/dashboard');
-    } catch (error) {
-      console.error('TeamLogin: Google sign-in error:', error);
-      console.error('TeamLogin: Error code:', error.code);
-      console.error('TeamLogin: Error message:', error.message);
-
-      // Show detailed error message
-      if (error.code === 'auth/popup-closed-by-user') {
-        console.log('TeamLogin: User closed the popup');
-        // No need to show an error
-      } else if (error.code === 'auth/popup-blocked') {
-        setErrors({ general: 'Popup was blocked by your browser. Please allow popups for this site.' });
-      } else if (error.code === 'auth/cancelled-popup-request') {
-        console.log('TeamLogin: Popup request was cancelled');
-        // No need to show an error
-      } else if (error.code === 'auth/unauthorized-domain') {
-        setErrors({ general: 'This domain is not authorized for OAuth operations.' });
-      } else {
-        setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="team-login-container">

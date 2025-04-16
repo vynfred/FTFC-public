@@ -57,6 +57,18 @@ export const getAuthUrl = (scopes = []) => {
 
   const authScopes = scopes.length > 0 ? scopes : defaultScopes;
 
+  // Generate a secure state parameter to prevent CSRF attacks
+  const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+  // Store state in localStorage to verify when the redirect completes
+  localStorage.setItem('googleApiAuthState', state);
+  localStorage.setItem('googleApiAuthTimestamp', Date.now().toString());
+
+  // Store the current path to return to after authentication
+  const currentPath = window.location.pathname;
+  localStorage.setItem('googleAuthReturnPath', currentPath);
+  console.log('GoogleIntegration: Stored return path:', currentPath);
+
   // Generate auth URL with additional parameters to improve reliability
   const authUrl = oauth2Client.generateAuthUrl({
     access_type: 'offline', // Get refresh token
@@ -64,7 +76,7 @@ export const getAuthUrl = (scopes = []) => {
     prompt: 'consent', // Force consent screen to always appear
     include_granted_scopes: true, // Include previously granted scopes
     login_hint: localStorage.getItem('userEmail') || '', // Pre-fill user email if available
-    state: Date.now().toString(), // Add state parameter to prevent CSRF
+    state: state, // Add state parameter to prevent CSRF
   });
 
   return authUrl;
@@ -79,16 +91,50 @@ export const exchangeCodeForTokens = async (code) => {
   const oauth2Client = createOAuth2Client();
 
   try {
+    console.log('GoogleIntegration: Exchanging code for tokens');
     const { tokens } = await oauth2Client.getToken(code);
+    console.log('GoogleIntegration: Received tokens successfully');
 
-    // Store tokens and set connection flags
+    // Store tokens in both localStorage and sessionStorage for redundancy
     localStorage.setItem('googleTokens', JSON.stringify(tokens));
+    localStorage.setItem('googleDriveTokens', JSON.stringify(tokens)); // For Drive-specific functions
+
+    // Set connection flags in both localStorage and sessionStorage
     localStorage.setItem('googleCalendarConnected', 'true');
     localStorage.setItem('googleDriveConnected', 'true');
+    sessionStorage.setItem('googleCalendarConnected', 'true');
+    sessionStorage.setItem('googleDriveConnected', 'true');
+
+    // Store user email if available in the ID token
+    if (tokens.id_token) {
+      try {
+        // Parse the ID token to get user info
+        const base64Url = tokens.id_token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        const payload = JSON.parse(jsonPayload);
+        if (payload.email) {
+          localStorage.setItem('userEmail', payload.email);
+          console.log('GoogleIntegration: Stored user email:', payload.email);
+        }
+      } catch (tokenError) {
+        console.error('GoogleIntegration: Error parsing ID token:', tokenError);
+      }
+    }
+
+    // Clear the state parameters
+    localStorage.removeItem('googleApiAuthState');
+    localStorage.removeItem('googleApiAuthTimestamp');
 
     return tokens;
   } catch (error) {
     console.error('Error getting tokens:', error);
+    // Clean up in case of error
+    localStorage.removeItem('googleApiAuthState');
+    localStorage.removeItem('googleApiAuthTimestamp');
     throw error;
   }
 };

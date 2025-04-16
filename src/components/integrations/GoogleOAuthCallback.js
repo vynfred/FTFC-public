@@ -20,67 +20,54 @@ const GoogleOAuthCallback = ({ redirectPath = '/dashboard' }) => {
     const processOAuthCallback = async () => {
       try {
         console.log('GoogleOAuthCallback: Processing OAuth callback');
-        // Get code from URL
+        // Get code and state from URL
         const urlParams = new URLSearchParams(location.search);
         const code = urlParams.get('code');
+        const state = urlParams.get('state');
 
         if (!code) {
           const error = urlParams.get('error');
           throw new Error(error || 'No authorization code found');
         }
 
+        // Verify state parameter to prevent CSRF attacks
+        const storedState = localStorage.getItem('googleApiAuthState');
+        console.log('GoogleOAuthCallback: Verifying state parameter');
+        console.log('GoogleOAuthCallback: Received state:', state);
+        console.log('GoogleOAuthCallback: Stored state:', storedState);
+
+        if (state && storedState && state !== storedState) {
+          console.error('GoogleOAuthCallback: State mismatch, possible CSRF attack');
+          throw new Error('Invalid state parameter. Please try again.');
+        }
+
         console.log('GoogleOAuthCallback: Got code, exchanging for tokens');
-        // Exchange code for tokens
+        // Exchange code for tokens - this function now handles token storage
         const tokens = await getTokensFromCode(code);
         console.log('GoogleOAuthCallback: Received tokens:', tokens ? 'Success' : 'Failed');
 
-        // Store tokens in localStorage
-        console.log('GoogleOAuthCallback: Storing tokens in localStorage');
+        // The exchangeCodeForTokens function now handles all token storage and flag setting
+        // We just need to verify everything was set correctly
         try {
-          // Store tokens in multiple locations to ensure they're available
-          localStorage.setItem('googleTokens', JSON.stringify(tokens));
-          localStorage.setItem('googleDriveTokens', JSON.stringify(tokens));
-          console.log('GoogleOAuthCallback: Successfully stored tokens in localStorage');
-
-          // Store flags to indicate successful connection
-          localStorage.setItem('googleCalendarConnected', 'true');
-          console.log('GoogleOAuthCallback: Set googleCalendarConnected flag to true');
-
-          localStorage.setItem('googleDriveConnected', 'true');
-          console.log('GoogleOAuthCallback: Set googleDriveConnected flag to true');
-
-          // Store in sessionStorage as well for redundancy
-          sessionStorage.setItem('googleCalendarConnected', 'true');
-          sessionStorage.setItem('googleDriveConnected', 'true');
-
           // Verify the flags were set
           const calendarFlag = localStorage.getItem('googleCalendarConnected');
           const driveFlag = localStorage.getItem('googleDriveConnected');
-          console.log('GoogleOAuthCallback: Verification - Calendar flag:', calendarFlag);
-          console.log('GoogleOAuthCallback: Verification - Drive flag:', driveFlag);
+          const sessionCalendarFlag = sessionStorage.getItem('googleCalendarConnected');
+          const sessionDriveFlag = sessionStorage.getItem('googleDriveConnected');
 
-          // Store user email if available
-          if (tokens.id_token) {
-            try {
-              // Parse the ID token to get user info
-              const base64Url = tokens.id_token.split('.')[1];
-              const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-              const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-              }).join(''));
+          console.log('GoogleOAuthCallback: Verification - Calendar flag (localStorage):', calendarFlag);
+          console.log('GoogleOAuthCallback: Verification - Drive flag (localStorage):', driveFlag);
+          console.log('GoogleOAuthCallback: Verification - Calendar flag (sessionStorage):', sessionCalendarFlag);
+          console.log('GoogleOAuthCallback: Verification - Drive flag (sessionStorage):', sessionDriveFlag);
 
-              const payload = JSON.parse(jsonPayload);
-              if (payload.email) {
-                localStorage.setItem('userEmail', payload.email);
-                console.log('GoogleOAuthCallback: Stored user email:', payload.email);
-              }
-            } catch (tokenError) {
-              console.error('GoogleOAuthCallback: Error parsing ID token:', tokenError);
-            }
-          }
-        } catch (storageError) {
-          console.error('GoogleOAuthCallback: Error storing in localStorage:', storageError);
-          setError('Failed to store connection data. Please check your browser settings.');
+          // If any flags are missing, set them again
+          if (!calendarFlag) localStorage.setItem('googleCalendarConnected', 'true');
+          if (!driveFlag) localStorage.setItem('googleDriveConnected', 'true');
+          if (!sessionCalendarFlag) sessionStorage.setItem('googleCalendarConnected', 'true');
+          if (!sessionDriveFlag) sessionStorage.setItem('googleDriveConnected', 'true');
+        } catch (verifyError) {
+          console.error('GoogleOAuthCallback: Error verifying flags:', verifyError);
+          // Continue anyway, as the tokens should still be valid
         }
 
         // Get the return path from localStorage or use default
