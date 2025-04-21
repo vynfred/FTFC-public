@@ -260,12 +260,27 @@
   background-color: rgba(var(--color-primary-rgb), 0.1);
 }
 
+.logoutButton {
+  display: flex;
+  align-items: center;
+  color: #e53e3e;
+  border-color: #e53e3e;
+}
+
+.logoutButton:hover {
+  background-color: rgba(229, 62, 62, 0.1);
+}
+
+.buttonIcon {
+  margin-right: 8px;
+}
+
 /* Responsive styles */
 @media (max-width: 768px) {
   .profileContent {
     grid-template-columns: 1fr;
   }
-  
+
   .profileCard {
     margin-bottom: 24px;
   }

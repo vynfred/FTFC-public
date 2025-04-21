@@ -92,12 +92,27 @@ const GoogleOAuthCallback = ({ redirectPath = '/dashboard' }) => {
         if (calendarRequested) {
           returnPath = '/dashboard/calendar';
           console.log('GoogleOAuthCallback: Calendar was requested, redirecting to calendar page');
+
+          // Ensure the calendar connection flag is set
+          localStorage.setItem('googleCalendarConnected', 'true');
+          sessionStorage.setItem('googleCalendarConnected', 'true');
         } else if (driveRequested) {
           returnPath = '/dashboard/profile';
           console.log('GoogleOAuthCallback: Drive was requested, redirecting to profile page');
+
+          // Ensure the drive connection flag is set
+          localStorage.setItem('googleDriveConnected', 'true');
+          sessionStorage.setItem('googleDriveConnected', 'true');
         }
 
-        console.log('GoogleOAuthCallback: Final return path:', returnPath);
+        // Add state parameter to the return path to force component remounting
+        if (returnPath.includes('?')) {
+          returnPath += '&auth=' + Date.now();
+        } else {
+          returnPath += '?auth=' + Date.now();
+        }
+
+        console.log('GoogleOAuthCallback: Final return path with state:', returnPath);
 
         // Update status
         setStatus('success');
@@ -144,10 +159,35 @@ const GoogleOAuthCallback = ({ redirectPath = '/dashboard' }) => {
   // Function to manually set connection flags
   const setConnectionFlags = () => {
     try {
-      localStorage.setItem('googleCalendarConnected', 'true');
-      localStorage.setItem('googleDriveConnected', 'true');
+      // Check which type of connection was requested
+      const calendarRequested = localStorage.getItem('googleAuthCalendarRequested') === 'true';
+      const driveRequested = localStorage.getItem('googleAuthDriveRequested') === 'true';
+
+      // Set the appropriate flags
+      if (calendarRequested) {
+        localStorage.setItem('googleCalendarConnected', 'true');
+        sessionStorage.setItem('googleCalendarConnected', 'true');
+        console.log('GoogleOAuthCallback: Manually set Calendar connection flags');
+      }
+
+      if (driveRequested) {
+        localStorage.setItem('googleDriveConnected', 'true');
+        sessionStorage.setItem('googleDriveConnected', 'true');
+        console.log('GoogleOAuthCallback: Manually set Drive connection flags');
+      }
+
+      // If neither was specifically requested, set both as a fallback
+      if (!calendarRequested && !driveRequested) {
+        localStorage.setItem('googleCalendarConnected', 'true');
+        localStorage.setItem('googleDriveConnected', 'true');
+        sessionStorage.setItem('googleCalendarConnected', 'true');
+        sessionStorage.setItem('googleDriveConnected', 'true');
+        console.log('GoogleOAuthCallback: Manually set both connection flags as fallback');
+      }
+
       alert('Connection flags set successfully!');
     } catch (e) {
+      console.error('GoogleOAuthCallback: Error setting flags:', e);
       alert('Error setting flags: ' + e.message);
     }
   };

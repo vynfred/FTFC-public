@@ -4,6 +4,40 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { auth } from '../../firebase-config';
 
+// Detect Safari browser
+const isSafari = () => {
+  const userAgent = navigator.userAgent.toLowerCase();
+  return userAgent.includes('safari') && !userAgent.includes('chrome');
+};
+
+// Create a direct Google auth URL for Safari
+const createGoogleAuthUrl = (state, role) => {
+  // Get the stored client ID if available
+  const storedClientId = localStorage.getItem('googleClientId');
+  const clientId = storedClientId || process.env.REACT_APP_GOOGLE_CLIENT_ID || '815708531852-scs6t2uph7ci2vkgpfvn7uq5q7406s20.apps.googleusercontent.com';
+
+  // Use the same redirect URI that Firebase uses
+  const redirectUri = window.location.origin + '/__/auth/handler';
+
+  console.log('Safari auth - Using redirect URI:', redirectUri);
+
+  // Build the URL manually
+  const url = new URL('https://accounts.google.com/o/oauth2/auth');
+  url.searchParams.append('client_id', clientId);
+  url.searchParams.append('redirect_uri', redirectUri);
+  url.searchParams.append('response_type', 'token id_token');
+  url.searchParams.append('scope', 'email profile');
+  url.searchParams.append('state', state);
+  url.searchParams.append('nonce', Math.random().toString(36).substring(2, 15));
+  url.searchParams.append('prompt', 'select_account');
+
+  // Store role information
+  localStorage.setItem('intendedUserRole', role || 'team');
+
+  console.log('Safari auth - Generated URL:', url.toString());
+  return url.toString();
+};
+
 const TeamLogin = () => {
   const [formData, setFormData] = useState({
     email: '',
@@ -23,12 +57,39 @@ const TeamLogin = () => {
 
     try {
       console.log('TeamLogin: Starting Google sign-in with redirect...');
+      console.log('Browser detection - Safari:', isSafari() ? 'Yes' : 'No');
 
-      // Use the redirect method with role parameter
-      await auth.signInWithGoogleRedirect('team');
+      // Check if we're on Safari
+      if (isSafari()) {
+        console.log('TeamLogin: Using Safari-specific authentication flow');
 
-      // Note: This will redirect the page, so the code below will only run if the redirect fails
-      console.log('Redirect did not happen as expected');
+        // Generate a secure state parameter to prevent CSRF attacks
+        const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+        // Store state and timestamp in localStorage to verify when the redirect completes
+        localStorage.setItem('googleAuthState', state);
+        localStorage.setItem('googleAuthTimestamp', Date.now().toString());
+
+        // Store the intended role before redirecting
+        localStorage.setItem('intendedUserRole', 'team');
+
+        // Set a flag to indicate we're starting a Google sign-in
+        localStorage.setItem('googleSignInStarted', 'true');
+
+        // Create a direct URL for Safari
+        const authUrl = createGoogleAuthUrl(state, 'team');
+
+        // Redirect manually instead of using Firebase's signInWithRedirect
+        window.location.href = authUrl;
+      } else {
+        console.log('TeamLogin: Using standard authentication flow');
+
+        // Use the redirect method with role parameter
+        await auth.signInWithGoogleRedirect('team');
+
+        // Note: This will redirect the page, so the code below will only run if the redirect fails
+        console.log('Redirect did not happen as expected');
+      }
     } catch (error) {
       console.error('TeamLogin: Google sign-in redirect error:', error);
       setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });

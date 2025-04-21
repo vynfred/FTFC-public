@@ -1,5 +1,5 @@
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
+const functions = require('firebase-functions/v2');
+const admin = require('./admin');
 const { google } = require('googleapis');
 
 // Get configuration from environment variables
@@ -128,10 +128,10 @@ class GeminiNotesProcessor {
 
         document.body.content.forEach(element => {
           // Check for headings to identify sections
-          if (element.paragraph && element.paragraph.paragraphStyle && 
-              element.paragraph.paragraphStyle.namedStyleType && 
+          if (element.paragraph && element.paragraph.paragraphStyle &&
+              element.paragraph.paragraphStyle.namedStyleType &&
               element.paragraph.paragraphStyle.namedStyleType.includes('HEADING')) {
-            
+
             // Extract heading text
             let headingText = '';
             if (element.paragraph.elements) {
@@ -141,17 +141,17 @@ class GeminiNotesProcessor {
                 }
               });
             }
-            
+
             // Set current section based on heading
             if (headingText.toLowerCase().includes('summary')) {
               currentSection = 'summary';
-            } else if (headingText.toLowerCase().includes('key point') || 
+            } else if (headingText.toLowerCase().includes('key point') ||
                        headingText.toLowerCase().includes('main point')) {
               currentSection = 'keyPoints';
-            } else if (headingText.toLowerCase().includes('action item') || 
+            } else if (headingText.toLowerCase().includes('action item') ||
                        headingText.toLowerCase().includes('next step')) {
               currentSection = 'actionItems';
-            } else if (headingText.toLowerCase().includes('participant') || 
+            } else if (headingText.toLowerCase().includes('participant') ||
                        headingText.toLowerCase().includes('attendee')) {
               currentSection = 'participants';
             } else if (headingText.toLowerCase().includes('transcript')) {
@@ -160,17 +160,17 @@ class GeminiNotesProcessor {
               currentSection = 'other';
             }
           }
-          
+
           // Extract text content based on current section
           if (element.paragraph && element.paragraph.elements) {
             let paragraphText = '';
-            
+
             element.paragraph.elements.forEach(paraElement => {
               if (paraElement.textRun && paraElement.textRun.content) {
                 paragraphText += paraElement.textRun.content;
               }
             });
-            
+
             // Add to appropriate section
             if (currentSection === 'summary') {
               result.summary += paragraphText;
@@ -192,7 +192,7 @@ class GeminiNotesProcessor {
                 result.participants = result.participants.concat(emails);
               }
             }
-            
+
             // Add to full text content
             result.textContent += paragraphText;
           }
@@ -239,7 +239,7 @@ class GeminiNotesProcessor {
       // Check clients
       const clientsQuery = db.collection('clients')
         .where('email', 'in', emails.slice(0, 10)); // Firestore 'in' query limited to 10 values
-      
+
       const clientsSnapshot = await clientsQuery.get();
       if (!clientsSnapshot.empty) {
         const client = clientsSnapshot.docs[0];
@@ -253,7 +253,7 @@ class GeminiNotesProcessor {
       // Check investors
       const investorsQuery = db.collection('investors')
         .where('email', 'in', emails.slice(0, 10));
-      
+
       const investorsSnapshot = await investorsQuery.get();
       if (!investorsSnapshot.empty) {
         const investor = investorsSnapshot.docs[0];
@@ -267,7 +267,7 @@ class GeminiNotesProcessor {
       // Check partners
       const partnersQuery = db.collection('partners')
         .where('email', 'in', emails.slice(0, 10));
-      
+
       const partnersSnapshot = await partnersQuery.get();
       if (!partnersSnapshot.empty) {
         const partner = partnersSnapshot.docs[0];
@@ -303,23 +303,23 @@ class GeminiNotesProcessor {
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         updatedAt: admin.firestore.FieldValue.serverTimestamp()
       };
-      
+
       // Save to Firestore
       const transcriptRef = await db.collection('transcripts').add(transcriptWithEntity);
-      
+
       // Update the transcript with its ID
       await transcriptRef.update({
         id: transcriptRef.id
       });
-      
+
       // Update the entity with reference to the transcript
       const entityRef = db.collection(`${entityType}s`).doc(entityId);
       const entityDoc = await entityRef.get();
-      
+
       if (entityDoc.exists) {
         const entityData = entityDoc.data();
         const transcripts = entityData.transcripts || [];
-        
+
         await entityRef.update({
           transcripts: [...transcripts, {
             id: transcriptRef.id,
@@ -330,7 +330,7 @@ class GeminiNotesProcessor {
           updatedAt: admin.firestore.FieldValue.serverTimestamp()
         });
       }
-      
+
       // Create activity log entry
       await db.collection('activity').add({
         type: 'transcript',
@@ -342,7 +342,7 @@ class GeminiNotesProcessor {
         timestamp: admin.firestore.FieldValue.serverTimestamp(),
         description: `New meeting transcript added: ${transcriptData.title}`
       });
-      
+
       return transcriptRef.id;
     } catch (error) {
       console.error('Error saving transcript:', error);
@@ -359,7 +359,7 @@ class GeminiNotesProcessor {
     try {
       const processedQuery = db.collection('processedNotes')
         .where('fileId', '==', fileId);
-      
+
       const processedSnapshot = await processedQuery.get();
       return !processedSnapshot.empty;
     } catch (error) {
@@ -395,73 +395,73 @@ class GeminiNotesProcessor {
 exports.processGeminiNotes = async (context) => {
   try {
     console.log('Processing Gemini Notes...');
-    
+
     // Get team members with Google Drive connected
     const usersSnapshot = await db.collection('users')
       .where('googleDriveConnected', '==', true)
       .get();
-    
+
     if (usersSnapshot.empty) {
       console.log('No team members with Google Drive connected');
       return null;
     }
-    
+
     const processor = new GeminiNotesProcessor();
     let processedCount = 0;
-    
+
     // Process each team member's Drive
     for (const userDoc of usersSnapshot.docs) {
       const userData = userDoc.data();
-      
+
       if (!userData.googleTokens) {
         console.log(`User ${userDoc.id} has no Google tokens`);
         continue;
       }
-      
+
       try {
         console.log(`Processing Drive for user ${userData.email}`);
-        
+
         // Scan for Gemini notes
         const notes = await processor.scanForGeminiNotes(userData.googleTokens);
-        
+
         if (notes.length === 0) {
           console.log(`No Gemini notes found for user ${userData.email}`);
           continue;
         }
-        
+
         console.log(`Found ${notes.length} Gemini notes for user ${userData.email}`);
-        
+
         // Process each note
         for (const note of notes) {
           // Check if this note has already been processed
           const isProcessed = await processor.isNoteProcessed(note.id);
-          
+
           if (isProcessed) {
             console.log(`Note ${note.id} has already been processed`);
             continue;
           }
-          
+
           // Extract structured content from the document
           const content = await processor.extractStructuredContent(note.id);
-          
+
           // Extract email addresses from participants
           const emails = content.participants;
-          
+
           if (emails.length === 0) {
             console.log(`No email addresses found in note ${note.id}`);
             continue;
           }
-          
+
           // Find entity associated with emails
           const entity = await processor.findEntityByEmails(emails);
-          
+
           if (!entity) {
             console.log(`No entity found for emails in note ${note.id}`);
             continue;
           }
-          
+
           console.log(`Found entity ${entity.type}/${entity.id} for note ${note.id}`);
-          
+
           // Create transcript data
           const transcriptData = {
             meetingId: note.id, // Use note ID as meeting ID
@@ -479,17 +479,17 @@ exports.processGeminiNotes = async (context) => {
             })),
             sourceType: 'gemini'
           };
-          
+
           // Save transcript to database
           const transcriptId = await processor.saveTranscript(
             transcriptData,
             entity.type,
             entity.id
           );
-          
+
           // Mark note as processed
           await processor.markNoteAsProcessed(note.id, transcriptId);
-          
+
           processedCount++;
           console.log(`Processed note ${note.id} as transcript ${transcriptId}`);
         }
@@ -498,7 +498,7 @@ exports.processGeminiNotes = async (context) => {
         // Continue with next user
       }
     }
-    
+
     console.log(`Processed ${processedCount} Gemini notes`);
     return null;
   } catch (error) {
@@ -518,10 +518,10 @@ exports.triggerGeminiNotesProcessing = async (req, res) => {
     if (apiKey !== config.google.webhook_key) {
       return res.status(401).send('Unauthorized');
     }
-    
+
     // Process Gemini Notes
     await exports.processGeminiNotes({});
-    
+
     return res.status(200).send('Processing triggered');
   } catch (error) {
     console.error('Error triggering Gemini Notes processing:', error);

@@ -12,6 +12,7 @@ import styles from './UserProfile.module.css';
 const UserProfile = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  
   // User data state
   const [userData, setUserData] = useState({
     name: 'John Doe',
@@ -30,136 +31,24 @@ const UserProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ ...userData });
 
-  // Handle logout with retry logic
+  // Handle logout
   const handleLogout = async () => {
     try {
-      // First call the Cloud Function to revoke tokens
-      const functions = getFunctions();
-      const logoutFunction = httpsCallable(functions, 'logout');
-
-      // Implement client-side retry with exponential backoff
-      const retryOperation = async (operation, maxRetries = 3, maxBackoff = 16) => {
-        let retries = 0;
-
-        while (retries < maxRetries) {
-          try {
-            return await operation();
-          } catch (error) {
-            // Check if this is a retryable error
-            const isRetryable =
-              error.code === 'unavailable' ||
-              error.code === 'resource-exhausted' ||
-              error.code === 'deadline-exceeded' ||
-              error.code === 'internal';
-
-            if (isRetryable) {
-              retries++;
-
-              if (retries >= maxRetries) {
-                throw error; // Max retries reached
-              }
-
-              // Calculate backoff time with jitter
-              const backoffTime = Math.min(Math.pow(2, retries) + Math.random(), maxBackoff);
-              console.log(`Retry attempt ${retries}, waiting ${backoffTime} seconds`);
-
-              // Wait for the backoff period
-              await new Promise(resolve => setTimeout(resolve, backoffTime * 1000));
-            } else {
-              throw error; // Not a retryable error
-            }
-          }
-        }
-      };
-
-      // Call the Cloud Function with retry logic
-      await retryOperation(() => logoutFunction());
-
-      // Then use the local logout function to clear state
       await logout();
-
-      // Navigate to login page
       navigate('/team-login');
     } catch (error) {
       console.error('Error signing out:', error);
-      // Show error to user
-      alert('Failed to sign out. Please try again.');
     }
   };
 
-  // Fetch user data from Firestore
-  // Check for Google connections
   useEffect(() => {
-    console.log('UserProfile: Checking for Google connections');
+    // Check if Google Drive is connected
+    const driveConnected = localStorage.getItem('googleDriveConnected') === 'true';
+    setIsGoogleDriveConnected(driveConnected);
 
-    // Check if Google Drive is connected (check both localStorage and sessionStorage)
-    const driveConnected = localStorage.getItem('googleDriveConnected');
-    const sessionDriveConnected = sessionStorage.getItem('googleDriveConnected');
-    console.log('UserProfile: Drive connected flag (localStorage):', driveConnected);
-    console.log('UserProfile: Drive connected flag (sessionStorage):', sessionDriveConnected);
-
-    if (driveConnected === 'true' || sessionDriveConnected === 'true') {
-      setIsGoogleDriveConnected(true);
-      console.log('UserProfile: Google Drive is connected');
-
-      // Ensure both storage locations have the flag set
-      localStorage.setItem('googleDriveConnected', 'true');
-      sessionStorage.setItem('googleDriveConnected', 'true');
-    } else {
-      console.log('UserProfile: Google Drive is NOT connected');
-      setIsGoogleDriveConnected(false);
-    }
-
-    // Check if Google Calendar is connected (check both localStorage and sessionStorage)
-    const calendarConnected = localStorage.getItem('googleCalendarConnected');
-    const sessionCalendarConnected = sessionStorage.getItem('googleCalendarConnected');
-    console.log('UserProfile: Calendar connected flag (localStorage):', calendarConnected);
-    console.log('UserProfile: Calendar connected flag (sessionStorage):', sessionCalendarConnected);
-
-    if (calendarConnected === 'true' || sessionCalendarConnected === 'true') {
-      setIsGoogleCalendarConnected(true);
-      console.log('UserProfile: Google Calendar is connected');
-
-      // Ensure both storage locations have the flag set
-      localStorage.setItem('googleCalendarConnected', 'true');
-      sessionStorage.setItem('googleCalendarConnected', 'true');
-    } else {
-      console.log('UserProfile: Google Calendar is NOT connected');
-      setIsGoogleCalendarConnected(false);
-    }
-
-    // Check for tokens
-    const tokens = localStorage.getItem('googleTokens');
-    const driveTokens = localStorage.getItem('googleDriveTokens');
-    console.log('UserProfile: Tokens in localStorage:', tokens ? 'Yes' : 'No');
-    console.log('UserProfile: Drive tokens in localStorage:', driveTokens ? 'Yes' : 'No');
-
-    // If we have tokens but no connection flags, try to set the flags
-    if (tokens && (!calendarConnected && !sessionCalendarConnected)) {
-      try {
-        // Verify tokens are valid by parsing them
-        JSON.parse(tokens);
-        console.log('UserProfile: Tokens are valid, setting calendar connection flag');
-        localStorage.setItem('googleCalendarConnected', 'true');
-        sessionStorage.setItem('googleCalendarConnected', 'true');
-        setIsGoogleCalendarConnected(true);
-      } catch (error) {
-        console.error('UserProfile: Error validating tokens:', error);
-      }
-    }
-
-    if (driveTokens && (!driveConnected && !sessionDriveConnected)) {
-      try {
-        // Verify tokens are valid by parsing them
-        JSON.parse(driveTokens);
-        console.log('UserProfile: Drive tokens are valid, setting drive connection flag');
-        localStorage.setItem('googleDriveConnected', 'true');
-        sessionStorage.setItem('googleDriveConnected', 'true');
-        setIsGoogleDriveConnected(true);
-      } catch (error) {
-        console.error('UserProfile: Error validating drive tokens:', error);
-      }
-    }
+    // Check if Google Calendar is connected
+    const calendarConnected = localStorage.getItem('googleCalendarConnected') === 'true';
+    setIsGoogleCalendarConnected(calendarConnected);
   }, []);
 
   useEffect(() => {
@@ -207,9 +96,9 @@ const UserProfile = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // In a real app, this would save to an API
     setUserData(formData);
     setIsEditing(false);
-    // In a real app, you would save the data to the backend here
   };
 
   const handleCancel = () => {
@@ -219,10 +108,7 @@ const UserProfile = () => {
 
   return (
     <div className={styles.profileContainer}>
-      <div className={styles.profileHeader}>
-        <h1>User Profile</h1>
-        <p>Manage your account information and settings</p>
-      </div>
+      <h1 className={styles.pageTitle}>My Profile</h1>
 
       <div className={styles.profileContent}>
         <div className={styles.profileCard}>
@@ -250,7 +136,7 @@ const UserProfile = () => {
             {isEditing ? (
               <form onSubmit={handleSubmit} className={styles.editForm}>
                 <div className={styles.formGroup}>
-                  <label htmlFor="name">Full Name</label>
+                  <label htmlFor="name">Name</label>
                   <input
                     type="text"
                     id="name"
@@ -366,10 +252,10 @@ const UserProfile = () => {
           <div className={styles.settingsSection}>
             <ProfileThemeToggle />
           </div>
-
+          
           <div className={styles.settingsSection}>
             <h4>Logout</h4>
-            <button
+            <button 
               className={`${styles.actionButton} ${styles.logoutButton}`}
               onClick={handleLogout}
             >
@@ -386,7 +272,7 @@ const UserProfile = () => {
             Google Drive Integration
           </h3>
           <p className={styles.sectionDescription}>
-            Connect your Google Drive to enable automatic processing of Gemini meeting notes
+            Connect your Google Drive to automatically process meeting recordings and notes
           </p>
 
           <GoogleDriveConnect
@@ -401,45 +287,6 @@ const UserProfile = () => {
               localStorage.removeItem('googleDriveConnected');
             }}
           />
-
-          {/* Debug section */}
-          <div style={{ marginTop: '20px', padding: '15px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: '#f9f9f9' }}>
-            <h4>Debug Information</h4>
-            <p>If you're having connection issues, try setting the flags manually:</p>
-            <button
-              onClick={() => {
-                localStorage.setItem('googleDriveConnected', 'true');
-                alert('Google Drive connection flag set!');
-                window.location.reload();
-              }}
-              style={{ padding: '8px 16px', backgroundColor: '#4285f4', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginBottom: '10px' }}
-            >
-              Force Set Drive Connection Flag
-            </button>
-
-            <div>
-              <h5>Current localStorage Items:</h5>
-              <pre style={{ maxHeight: '150px', overflow: 'auto', padding: '10px', backgroundColor: '#eee', fontSize: '12px' }}>
-                {JSON.stringify((() => {
-                  const items = {};
-                  try {
-                    for (let i = 0; i < localStorage.length; i++) {
-                      const key = localStorage.key(i);
-                      try {
-                        const value = localStorage.getItem(key);
-                        items[key] = value;
-                      } catch (e) {
-                        items[key] = "Error reading value";
-                      }
-                    }
-                  } catch (e) {
-                    return { error: e.message };
-                  }
-                  return items;
-                })(), null, 2)}
-              </pre>
-            </div>
-          </div>
         </div>
 
         {/* Calendar Integration Section */}
@@ -464,30 +311,6 @@ const UserProfile = () => {
               localStorage.removeItem('googleCalendarConnected');
             }}
           />
-
-          {/* Debug section */}
-          <div style={{ marginTop: '20px', padding: '15px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: '#f9f9f9' }}>
-            <h4>Debug Information</h4>
-            <p>If you're having connection issues, try setting the flags manually:</p>
-            <button
-              onClick={() => {
-                localStorage.setItem('googleCalendarConnected', 'true');
-                alert('Google Calendar connection flag set!');
-                window.location.reload();
-              }}
-              style={{ padding: '8px 16px', backgroundColor: '#4285f4', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginBottom: '10px' }}
-            >
-              Force Set Calendar Connection Flag
-            </button>
-
-            <div>
-              <h5>Connection Status:</h5>
-              <ul style={{ listStyle: 'none', padding: '0' }}>
-                <li>Calendar Connected: <strong>{isGoogleCalendarConnected ? 'Yes' : 'No'}</strong></li>
-                <li>Drive Connected: <strong>{isGoogleDriveConnected ? 'Yes' : 'No'}</strong></li>
-              </ul>
-            </div>
-          </div>
         </div>
       </div>
     </div>

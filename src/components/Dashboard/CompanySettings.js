@@ -1,11 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { FaCog, FaEnvelope, FaFileAlt, FaGlobe, FaPhone, FaSlack, FaUser, FaUsers } from 'react-icons/fa';
+import { FaCog, FaEnvelope, FaFileAlt, FaGlobe, FaPhone, FaShieldAlt, FaSlack, FaUser, FaUsers } from 'react-icons/fa';
 import { useStatsView } from '../../context/StatsViewContext';
+import SecuritySettings from '../settings/SecuritySettings';
 import SlackIntegrationSettings from '../settings/SlackIntegrationSettings';
 import PublicPagesManager from './PublicPagesManager';
 
 const CompanySettings = () => {
   const [activeTab, setActiveTab] = useState('general');
+
+  // Debug the tabs
+  console.log('CompanySettings: Available tabs:', [
+    { id: 'general', label: 'General', icon: <FaCog /> },
+    { id: 'team', label: 'Team', icon: <FaUsers /> },
+    { id: 'publicPages', label: 'Public Pages', icon: <FaGlobe /> },
+    { id: 'integrations', label: 'Integrations', icon: <FaPlug /> },
+    { id: 'security', label: 'Security', icon: <FaShieldAlt /> }
+  ]);
   const { setViewCompanyStats } = useStatsView();
 
   // Force company stats view for Company Settings
@@ -64,11 +74,19 @@ const CompanySettings = () => {
             </button>
 
             <button
-              className={`tab-button ${activeTab === 'public-pages' ? 'active' : ''}`}
-              onClick={() => setActiveTab('public-pages')}
+              className={`tab-button ${activeTab === 'publicPages' ? 'active' : ''}`}
+              onClick={() => setActiveTab('publicPages')}
             >
               <FaFileAlt className="tab-icon" />
               <span>Public Pages</span>
+            </button>
+
+            <button
+              className={`tab-button ${activeTab === 'security' ? 'active' : ''}`}
+              onClick={() => setActiveTab('security')}
+            >
+              <FaShieldAlt className="tab-icon" />
+              <span>Security</span>
             </button>
 
             <button
@@ -191,8 +209,12 @@ const CompanySettings = () => {
               </div>
             )}
 
-            {activeTab === 'public-pages' && (
+            {activeTab === 'publicPages' && (
               <PublicPagesManager />
+            )}
+
+            {activeTab === 'security' && (
+              <SecuritySettings />
             )}
 
             {activeTab === 'integrations' && (

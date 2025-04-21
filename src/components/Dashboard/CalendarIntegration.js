@@ -19,8 +19,39 @@ const CalendarIntegration = () => {
   const [clientList, setClientList] = useState([]);
   const [selectedClient, setSelectedClient] = useState('');
 
-  // Fetch client list on component mount
+  // Fetch client list on component mount and check calendar connection
   useEffect(() => {
+    // Check both localStorage and sessionStorage for redundancy
+    const localStorageConnected = localStorage.getItem('googleCalendarConnected') === 'true';
+    const sessionStorageConnected = sessionStorage.getItem('googleCalendarConnected') === 'true';
+    const calendarConnected = localStorageConnected || sessionStorageConnected;
+
+    console.log('CalendarIntegration: Initial check - Calendar connected:', calendarConnected);
+    console.log('CalendarIntegration: localStorage connected:', localStorageConnected);
+    console.log('CalendarIntegration: sessionStorage connected:', sessionStorageConnected);
+
+    // If connected in one storage but not the other, sync them
+    if (localStorageConnected && !sessionStorageConnected) {
+      sessionStorage.setItem('googleCalendarConnected', 'true');
+    } else if (!localStorageConnected && sessionStorageConnected) {
+      localStorage.setItem('googleCalendarConnected', 'true');
+    }
+
+    if (calendarConnected) {
+      setIsCalendarConnected(true);
+      console.log('CalendarIntegration: Setting isCalendarConnected to TRUE on mount');
+    }
+
+    // Check URL parameters for auth state
+    const urlParams = new URLSearchParams(window.location.search);
+    const authParam = urlParams.get('auth');
+    if (authParam) {
+      console.log('CalendarIntegration: Detected auth parameter in URL, setting connected state');
+      setIsCalendarConnected(true);
+      localStorage.setItem('googleCalendarConnected', 'true');
+      sessionStorage.setItem('googleCalendarConnected', 'true');
+    }
+
     // In a real app, this would fetch from your backend
     const fetchClients = async () => {
       // Mock data
@@ -37,15 +68,94 @@ const CalendarIntegration = () => {
     fetchClients();
   }, []);
 
+  // Listen for changes to localStorage and sessionStorage
+  useEffect(() => {
+    // Create a storage event listener to detect changes from other tabs/windows
+    const handleStorageChange = (event) => {
+      if (event.key === 'googleCalendarConnected') {
+        const isConnected = event.newValue === 'true';
+        console.log('CalendarIntegration: Storage event - Calendar connected changed to:', isConnected);
+        setIsCalendarConnected(isConnected);
+
+        // Sync the other storage
+        if (event.storageArea === localStorage) {
+          sessionStorage.setItem('googleCalendarConnected', event.newValue);
+        } else if (event.storageArea === sessionStorage) {
+          localStorage.setItem('googleCalendarConnected', event.newValue);
+        }
+      }
+    };
+
+    // Add event listener
+    window.addEventListener('storage', handleStorageChange);
+
+    // Check connection status every 2 seconds (as a fallback)
+    const intervalId = setInterval(() => {
+      // Check both localStorage and sessionStorage
+      const localStorageConnected = localStorage.getItem('googleCalendarConnected') === 'true';
+      const sessionStorageConnected = sessionStorage.getItem('googleCalendarConnected') === 'true';
+      const calendarConnected = localStorageConnected || sessionStorageConnected;
+
+      if (calendarConnected !== isCalendarConnected) {
+        console.log('CalendarIntegration: Interval check - Calendar connected changed to:', calendarConnected);
+        console.log('CalendarIntegration: localStorage connected:', localStorageConnected);
+        console.log('CalendarIntegration: sessionStorage connected:', sessionStorageConnected);
+
+        // Sync storages if they're different
+        if (localStorageConnected && !sessionStorageConnected) {
+          sessionStorage.setItem('googleCalendarConnected', 'true');
+        } else if (!localStorageConnected && sessionStorageConnected) {
+          localStorage.setItem('googleCalendarConnected', 'true');
+        }
+
+        setIsCalendarConnected(calendarConnected);
+      }
+    }, 2000);
+
+    // Check if we just returned from OAuth flow
+    const checkOAuthReturn = () => {
+      // Check URL for OAuth callback indicators
+      const url = window.location.href;
+      if (url.includes('/dashboard/calendar') && (url.includes('state=') || url.includes('auth='))) {
+        console.log('CalendarIntegration: Detected return from OAuth flow or auth parameter');
+
+        // Force set the connection flag
+        localStorage.setItem('googleCalendarConnected', 'true');
+        sessionStorage.setItem('googleCalendarConnected', 'true');
+        setIsCalendarConnected(true);
+        console.log('CalendarIntegration: Force set connection flags after OAuth return');
+      }
+    };
+
+    // Run the check once on mount
+    checkOAuthReturn();
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(intervalId);
+    };
+  }, [isCalendarConnected]);
+
   // Handle calendar connection
   const handleCalendarConnect = (tokens, profile) => {
+    console.log('CalendarIntegration: handleCalendarConnect called');
+    // Set both localStorage and sessionStorage flags
+    localStorage.setItem('googleCalendarConnected', 'true');
+    sessionStorage.setItem('googleCalendarConnected', 'true');
     setIsCalendarConnected(true);
+    console.log('CalendarIntegration: Connection flags set in handleCalendarConnect');
   };
 
   // Handle calendar disconnection
   const handleCalendarDisconnect = () => {
+    console.log('CalendarIntegration: handleCalendarDisconnect called');
+    // Clear both localStorage and sessionStorage flags
+    localStorage.removeItem('googleCalendarConnected');
+    sessionStorage.removeItem('googleCalendarConnected');
     setIsCalendarConnected(false);
     setShowMeetingScheduler(false);
+    console.log('CalendarIntegration: Connection flags cleared in handleCalendarDisconnect');
   };
 
   // Handle meeting scheduled

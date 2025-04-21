@@ -30,20 +30,35 @@ const GoogleCalendarConnect = ({ onConnect, onDisconnect }) => {
         if (tokens && (calendarConnected === 'true' || sessionCalendarConnected === 'true')) {
           // Get user profile to verify connection
           console.log('GoogleCalendarConnect: Getting user profile with tokens');
-          const profile = await getUserProfile(tokens);
-          console.log('GoogleCalendarConnect: Got profile:', profile);
-          setUserProfile(profile);
-          setIsConnected(true);
-          console.log('GoogleCalendarConnect: Set isConnected to TRUE');
+          try {
+            const profile = await getUserProfile(tokens);
+            console.log('GoogleCalendarConnect: Got profile:', profile);
 
-          // Ensure both storage locations have the flag set
-          localStorage.setItem('googleCalendarConnected', 'true');
-          sessionStorage.setItem('googleCalendarConnected', 'true');
+            // Check if we got a valid profile
+            if (profile && (profile.names || profile.emailAddresses)) {
+              setUserProfile(profile);
+              setIsConnected(true);
+              console.log('GoogleCalendarConnect: Set isConnected to TRUE');
 
-          // Call onConnect callback if provided
-          if (onConnect) {
-            console.log('GoogleCalendarConnect: Calling onConnect callback');
-            onConnect(tokens, profile);
+              // Ensure both storage locations have the flag set
+              localStorage.setItem('googleCalendarConnected', 'true');
+              sessionStorage.setItem('googleCalendarConnected', 'true');
+
+              // Call onConnect callback if provided
+              if (onConnect) {
+                console.log('GoogleCalendarConnect: Calling onConnect callback');
+                onConnect(tokens, profile);
+              }
+            } else {
+              console.log('GoogleCalendarConnect: Invalid profile received, clearing tokens');
+              clearTokens();
+              setIsConnected(false);
+            }
+          } catch (profileError) {
+            console.error('GoogleCalendarConnect: Error getting user profile:', profileError);
+            // If we can't get the profile, the tokens might be invalid
+            clearTokens();
+            setIsConnected(false);
           }
         } else {
           console.log('GoogleCalendarConnect: No tokens or connection flag found, not connected');
@@ -53,7 +68,7 @@ const GoogleCalendarConnect = ({ onConnect, onDisconnect }) => {
               // Verify tokens are valid by getting user profile
               console.log('GoogleCalendarConnect: Found tokens but no connection flag, verifying tokens');
               const profile = await getUserProfile(tokens);
-              if (profile) {
+              if (profile && (profile.names || profile.emailAddresses)) {
                 console.log('GoogleCalendarConnect: Tokens are valid, setting connection flag');
                 localStorage.setItem('googleCalendarConnected', 'true');
                 sessionStorage.setItem('googleCalendarConnected', 'true');
@@ -66,6 +81,9 @@ const GoogleCalendarConnect = ({ onConnect, onDisconnect }) => {
                   onConnect(tokens, profile);
                 }
                 return;
+              } else {
+                console.log('GoogleCalendarConnect: Invalid profile received, clearing tokens');
+                clearTokens();
               }
             } catch (verifyError) {
               console.error('GoogleCalendarConnect: Error verifying tokens:', verifyError);
@@ -90,7 +108,24 @@ const GoogleCalendarConnect = ({ onConnect, onDisconnect }) => {
     };
 
     checkConnection();
-  }, [onConnect]);
+
+    // Set up an interval to periodically check connection status
+    const intervalId = setInterval(() => {
+      const calendarConnected = localStorage.getItem('googleCalendarConnected') === 'true';
+      if (calendarConnected !== isConnected) {
+        console.log('GoogleCalendarConnect: Interval check - Connection status changed to:', calendarConnected);
+        if (calendarConnected) {
+          checkConnection();
+        } else {
+          setIsConnected(false);
+          setUserProfile(null);
+        }
+      }
+    }, 2000);
+
+    // Clean up interval on unmount
+    return () => clearInterval(intervalId);
+  }, [onConnect, isConnected]);
 
   // Handle connect button click
   const handleConnect = () => {
@@ -101,9 +136,20 @@ const GoogleCalendarConnect = ({ onConnect, onDisconnect }) => {
       console.log('GoogleCalendarConnect: Stored user email in localStorage:', user.email);
     }
 
+    // Clear any existing connection flags to ensure a fresh start
+    localStorage.removeItem('googleCalendarConnected');
+    localStorage.removeItem('googleDriveConnected');
+    sessionStorage.removeItem('googleCalendarConnected');
+    sessionStorage.removeItem('googleDriveConnected');
+
+    // Set a flag to indicate we're specifically requesting calendar access
+    localStorage.setItem('googleAuthCalendarRequested', 'true');
+    localStorage.setItem('googleAuthReturnPath', '/dashboard/calendar');
+    console.log('GoogleCalendarConnect: Set calendar request flag and return path');
+
     // Generate the auth URL with calendar-specific options
     const authUrl = getAuthUrl([], { calendar: true });
-    console.log('GoogleCalendarConnect: Redirecting to Google OAuth URL');
+    console.log('GoogleCalendarConnect: Redirecting to Google OAuth URL:', authUrl);
 
     // Redirect directly to the auth URL
     window.location.href = authUrl;

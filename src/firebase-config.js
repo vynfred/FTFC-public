@@ -28,17 +28,63 @@ export { db, auth, storage, handleFirebaseError, functions, app };
 // Development mode check
 const isDevelopment = process.env.NODE_ENV === 'development';
 
-// Create a Google provider instance to reuse
-const googleProvider = new GoogleAuthProvider();
-// Add scopes
-googleProvider.addScope('https://www.googleapis.com/auth/userinfo.email');
-googleProvider.addScope('https://www.googleapis.com/auth/userinfo.profile');
-// Set custom parameters
-googleProvider.setCustomParameters({
-  prompt: 'select_account',
-  // Explicitly set the client ID from environment variable
-  client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID
-});
+// Detect Safari browser
+const isSafari = () => {
+  const userAgent = navigator.userAgent.toLowerCase();
+  return userAgent.includes('safari') && !userAgent.includes('chrome');
+};
+
+console.log('Browser detection - Safari:', isSafari() ? 'Yes' : 'No');
+
+// Function to create a new Google provider instance with default settings
+const createGoogleProvider = (customParams = {}) => {
+  const provider = new GoogleAuthProvider();
+  // Add scopes
+  provider.addScope('https://www.googleapis.com/auth/userinfo.email');
+  provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
+
+  // Set custom parameters
+  const params = {
+    prompt: 'select_account',
+    // Explicitly set the client ID from environment variable
+    client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+    ...customParams
+  };
+
+  provider.setCustomParameters(params);
+  return provider;
+};
+
+// Create a direct URL for Safari to use instead of the provider
+const createGoogleAuthUrl = (state, role) => {
+  // Always use environment variables for security and consistency
+  const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+  if (!clientId) {
+    console.error('REACT_APP_GOOGLE_CLIENT_ID is not defined in environment variables');
+  }
+
+  // Use the standard Firebase Auth redirect handler
+  // This should be registered in Google Cloud Console
+  const redirectUri = window.location.origin + '/__/auth/handler';
+
+  console.log('Safari auth - Using redirect URI:', redirectUri);
+
+  // Build the URL manually
+  const url = new URL('https://accounts.google.com/o/oauth2/auth');
+  url.searchParams.append('client_id', clientId);
+  url.searchParams.append('redirect_uri', redirectUri);
+  url.searchParams.append('response_type', 'token id_token');
+  url.searchParams.append('scope', 'email profile');
+  url.searchParams.append('state', state);
+  url.searchParams.append('nonce', Math.random().toString(36).substring(2, 15));
+  url.searchParams.append('prompt', 'select_account');
+
+  // Store role information
+  localStorage.setItem('intendedUserRole', role || 'team');
+
+  console.log('Safari auth - Generated URL:', url.toString());
+  return url.toString();
+};
 
 // Auth service
 // Always use real Firebase auth for Google authentication to work properly
@@ -155,14 +201,7 @@ const auth = {
       throw error;
     }
   },
-  // Method to update the Google provider's client ID
-  updateGoogleProviderClientId: (clientId) => {
-    console.log('Updating Google provider client ID:', clientId);
-    googleProvider.setCustomParameters({
-      prompt: 'select_account',
-      client_id: clientId
-    });
-  },
+  // We no longer need to update the client ID as we're using environment variables consistently
   signInWithGoogle: () => {
     try {
       console.log('Starting Google sign-in process with redirect...');
@@ -187,26 +226,35 @@ const auth = {
         intendedRole: 'team'
       });
 
-      // Reset the provider to ensure we're using a fresh instance
-      googleProvider = new GoogleAuthProvider();
+      // Check if we're on Safari
+      if (isSafari()) {
+        console.log('Using Safari-specific authentication flow');
 
-      // Set custom parameters including state
-      googleProvider.setCustomParameters({
-        // Always prompt user to select account to ensure they get the right one
-        prompt: 'select_account',
-        // Include state parameter for CSRF protection
-        state: state,
-        // Use the client ID from environment variables
-        client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID || '815708531852-scs6t2uph7ci2vkgpfvn7uq5q7406s20.apps.googleusercontent.com',
-        // Request offline access to get refresh token
-        access_type: 'offline',
-        // Include previously granted scopes
-        include_granted_scopes: true
-      });
+        // Create a direct URL for Safari
+        const authUrl = createGoogleAuthUrl(state, 'team');
 
-      // Use the redirect method as recommended by Google for web applications
-      console.log('Calling signInWithRedirect...');
-      return signInWithRedirect(firebaseAuth, googleProvider);
+        // Redirect manually instead of using Firebase's signInWithRedirect
+        window.location.href = authUrl;
+
+        // Return a resolved promise to maintain the same API
+        return Promise.resolve();
+      } else {
+        console.log('Using standard authentication flow');
+
+        // Create a fresh provider with all necessary parameters
+        const provider = createGoogleProvider({
+          // Include state parameter for CSRF protection
+          state: state,
+          // Request offline access to get refresh token
+          access_type: 'offline',
+          // Include previously granted scopes
+          include_granted_scopes: true
+        });
+
+        // Use the redirect method as recommended by Google for web applications
+        console.log('Calling signInWithRedirect...');
+        return signInWithRedirect(firebaseAuth, provider);
+      }
     } catch (error) {
       console.error('Google sign-in error in try/catch:', error);
       // Clean up in case of error
@@ -243,26 +291,35 @@ const auth = {
         intendedRole: role || 'team'
       });
 
-      // Reset the provider to ensure we're using a fresh instance
-      googleProvider = new GoogleAuthProvider();
+      // Check if we're on Safari
+      if (isSafari()) {
+        console.log('Using Safari-specific authentication flow');
 
-      // Set custom parameters including state
-      googleProvider.setCustomParameters({
-        // Always prompt user to select account to ensure they get the right one
-        prompt: 'select_account',
-        // Include state parameter for CSRF protection
-        state: state,
-        // Use the client ID from environment variables
-        client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID || '815708531852-scs6t2uph7ci2vkgpfvn7uq5q7406s20.apps.googleusercontent.com',
-        // Request offline access to get refresh token
-        access_type: 'offline',
-        // Include previously granted scopes
-        include_granted_scopes: true
-      });
+        // Create a direct URL for Safari
+        const authUrl = createGoogleAuthUrl(state, role);
 
-      // Use the redirect method as recommended by Google for web applications
-      console.log('Calling signInWithRedirect...');
-      return signInWithRedirect(firebaseAuth, googleProvider);
+        // Redirect manually instead of using Firebase's signInWithRedirect
+        window.location.href = authUrl;
+
+        // Return a resolved promise to maintain the same API
+        return Promise.resolve();
+      } else {
+        console.log('Using standard authentication flow');
+
+        // Create a fresh provider with all necessary parameters
+        const provider = createGoogleProvider({
+          // Include state parameter for CSRF protection
+          state: state,
+          // Request offline access to get refresh token
+          access_type: 'offline',
+          // Include previously granted scopes
+          include_granted_scopes: true
+        });
+
+        // Use the redirect method as recommended by Google for web applications
+        console.log('Calling signInWithRedirect...');
+        return signInWithRedirect(firebaseAuth, provider);
+      }
     } catch (error) {
       console.error('Google sign-in redirect error:', error);
       // Clean up in case of error

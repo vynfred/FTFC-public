@@ -18,12 +18,18 @@ import { google } from 'googleapis';
 
 // Create OAuth2 client
 const createOAuth2Client = () => {
-  // Use environment variables if available, otherwise use hardcoded values
-  const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID || '815708531852-scs6t2uph7ci2vkgpfvn7uq5q7406s20.apps.googleusercontent.com';
+  // Always use environment variables for security and consistency
+  const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+  if (!clientId) {
+    console.error('REACT_APP_GOOGLE_CLIENT_ID is not defined in environment variables');
+  }
 
-  // Use a redirect URI that's already registered in Google Cloud Console
-  // This is one of the URIs you mentioned was already set up
-  const redirectUri = process.env.REACT_APP_GOOGLE_REDIRECT_URI || 'https://ftfc-start.web.app/api/google/oauth-callback';
+  // Use a consistent redirect URI for all Google authentication flows
+  // This should match what's configured in Google Cloud Console
+  const redirectUri = process.env.REACT_APP_GOOGLE_REDIRECT_URI;
+  if (!redirectUri) {
+    console.error('REACT_APP_GOOGLE_REDIRECT_URI is not defined in environment variables');
+  }
 
   console.log('Creating OAuth2 client with:', { clientId, redirectUri });
 
@@ -83,14 +89,37 @@ export const getAuthUrl = (scopes = [], options = {}) => {
   // Store requested scopes for verification later
   localStorage.setItem('googleApiRequestedScopes', JSON.stringify(authScopes));
 
-  // Store the current path to return to after authentication
-  const currentPath = window.location.pathname;
-  localStorage.setItem('googleAuthReturnPath', currentPath);
-  console.log('GoogleIntegration: Stored return path:', currentPath);
+  // Store the current path to return to after authentication if not already set
+  if (!localStorage.getItem('googleAuthReturnPath')) {
+    const currentPath = window.location.pathname;
+    localStorage.setItem('googleAuthReturnPath', currentPath);
+    console.log('GoogleIntegration: Stored return path:', currentPath);
+  } else {
+    console.log('GoogleIntegration: Using existing return path:', localStorage.getItem('googleAuthReturnPath'));
+  }
 
   // Store any additional options
-  if (options.calendar) localStorage.setItem('googleAuthCalendarRequested', 'true');
-  if (options.drive) localStorage.setItem('googleAuthDriveRequested', 'true');
+  if (options.calendar) {
+    localStorage.setItem('googleAuthCalendarRequested', 'true');
+    console.log('GoogleIntegration: Set calendar requested flag');
+
+    // If calendar is requested, ensure return path is set to calendar page
+    if (!localStorage.getItem('googleAuthReturnPath').includes('/calendar')) {
+      localStorage.setItem('googleAuthReturnPath', '/dashboard/calendar');
+      console.log('GoogleIntegration: Override return path to calendar page');
+    }
+  }
+
+  if (options.drive) {
+    localStorage.setItem('googleAuthDriveRequested', 'true');
+    console.log('GoogleIntegration: Set drive requested flag');
+
+    // If drive is requested, ensure return path is set to profile page
+    if (!localStorage.getItem('googleAuthReturnPath').includes('/profile')) {
+      localStorage.setItem('googleAuthReturnPath', '/dashboard/profile');
+      console.log('GoogleIntegration: Override return path to profile page');
+    }
+  }
 
   // Generate auth URL with additional parameters to improve reliability
   const authUrl = oauth2Client.generateAuthUrl({
@@ -178,28 +207,60 @@ export const exchangeCodeForTokens = async (code) => {
       const hasDriveScope = grantedScopes.some(scope =>
         scope.includes('drive') || scope.includes('https://www.googleapis.com/auth/drive'));
 
-      // Set connection flags based on granted scopes
-      if (hasCalendarScope || calendarRequested) {
+      // Set connection flags based on granted scopes and what was requested
+      if (calendarRequested) {
+        if (hasCalendarScope) {
+          localStorage.setItem('googleCalendarConnected', 'true');
+          sessionStorage.setItem('googleCalendarConnected', 'true');
+          console.log('GoogleIntegration: Calendar connection enabled - scope granted');
+        } else {
+          console.warn('GoogleIntegration: Calendar was requested but scope not granted');
+          // Set the flag anyway if we specifically requested calendar access
+          // This is a fallback for cases where the scope might be named differently
+          localStorage.setItem('googleCalendarConnected', 'true');
+          sessionStorage.setItem('googleCalendarConnected', 'true');
+          console.log('GoogleIntegration: Calendar connection enabled - fallback');
+        }
+      } else if (hasCalendarScope) {
+        // Calendar wasn't specifically requested but we got the scope
         localStorage.setItem('googleCalendarConnected', 'true');
         sessionStorage.setItem('googleCalendarConnected', 'true');
-        console.log('GoogleIntegration: Calendar connection enabled');
+        console.log('GoogleIntegration: Calendar connection enabled - scope detected');
       }
 
-      if (hasDriveScope || driveRequested) {
+      if (driveRequested) {
+        if (hasDriveScope) {
+          localStorage.setItem('googleDriveConnected', 'true');
+          sessionStorage.setItem('googleDriveConnected', 'true');
+          console.log('GoogleIntegration: Drive connection enabled - scope granted');
+        } else {
+          console.warn('GoogleIntegration: Drive was requested but scope not granted');
+          // Set the flag anyway if we specifically requested drive access
+          // This is a fallback for cases where the scope might be named differently
+          localStorage.setItem('googleDriveConnected', 'true');
+          sessionStorage.setItem('googleDriveConnected', 'true');
+          console.log('GoogleIntegration: Drive connection enabled - fallback');
+        }
+      } else if (hasDriveScope) {
+        // Drive wasn't specifically requested but we got the scope
         localStorage.setItem('googleDriveConnected', 'true');
         sessionStorage.setItem('googleDriveConnected', 'true');
-        console.log('GoogleIntegration: Drive connection enabled');
+        console.log('GoogleIntegration: Drive connection enabled - scope detected');
       }
     } else {
       // If we don't have scope information, set flags based on what was requested
+      console.warn('GoogleIntegration: No scope information in token response');
+
       if (calendarRequested) {
         localStorage.setItem('googleCalendarConnected', 'true');
         sessionStorage.setItem('googleCalendarConnected', 'true');
+        console.log('GoogleIntegration: Calendar connection enabled - no scope info');
       }
 
       if (driveRequested) {
         localStorage.setItem('googleDriveConnected', 'true');
         sessionStorage.setItem('googleDriveConnected', 'true');
+        console.log('GoogleIntegration: Drive connection enabled - no scope info');
       }
     }
 

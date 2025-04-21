@@ -9,11 +9,17 @@
  * @returns {String} - Authorization URL
  */
 export const getGoogleAuthUrl = () => {
-  // Use a direct approach without relying on environment variables
-  // This ensures consistent client ID and redirect URI across environments
-  // Using the FTFC Client ID from Google Cloud Console
-  const clientId = '815708531852-scs6t2uph7ci2vkgpfvn7uq5q7406s20.apps.googleusercontent.com';
-  const redirectUri = 'https://ftfc-start.web.app/api/google/oauth-callback';
+  // Always use environment variables for security and consistency
+  const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+  if (!clientId) {
+    console.error('REACT_APP_GOOGLE_CLIENT_ID is not defined in environment variables');
+  }
+
+  // Use a consistent redirect URI for all Google authentication flows
+  const redirectUri = process.env.REACT_APP_GOOGLE_REDIRECT_URI;
+  if (!redirectUri) {
+    console.error('REACT_APP_GOOGLE_REDIRECT_URI is not defined in environment variables');
+  }
 
   console.log('Creating Google Drive OAuth URL with:', { clientId, redirectUri });
 
@@ -53,10 +59,21 @@ export const getGoogleAuthUrl = () => {
  * @returns {Promise<Object>} - Tokens object
  */
 export const getTokensFromCode = async (code) => {
-  // Use the same client ID and redirect URI as in getGoogleAuthUrl
-  const clientId = '815708531852-scs6t2uph7ci2vkgpfvn7uq5q7406s20.apps.googleusercontent.com';
+  // Always use environment variables for security and consistency
+  const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+  if (!clientId) {
+    console.error('REACT_APP_GOOGLE_CLIENT_ID is not defined in environment variables');
+  }
+
   const clientSecret = process.env.REACT_APP_GOOGLE_CLIENT_SECRET;
-  const redirectUri = 'https://ftfc-start.web.app/api/google/oauth-callback';
+  if (!clientSecret) {
+    console.error('REACT_APP_GOOGLE_CLIENT_SECRET is not defined in environment variables');
+  }
+
+  const redirectUri = process.env.REACT_APP_GOOGLE_REDIRECT_URI;
+  if (!redirectUri) {
+    console.error('REACT_APP_GOOGLE_REDIRECT_URI is not defined in environment variables');
+  }
 
   console.log('Exchanging code for tokens with:', { clientId, redirectUri });
 

@@ -6,8 +6,8 @@
  * - processTranscriptionQueue: Background function to process transcription jobs
  */
 
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
+const functions = require('firebase-functions/v2');
+const admin = require('../src/admin');
 const { google } = require('googleapis');
 const fs = require('fs');
 const os = require('os');
@@ -32,7 +32,7 @@ const speechClient = new speech.SpeechClient();
  * This function is triggered by a webhook from Google Meet when a recording is available.
  * It verifies the webhook, downloads the recording, and creates a transcription job.
  */
-exports.processMeetRecording = functions.https.onRequest(async (req, res) => {
+exports.processMeetRecording = functions.https.onRequest({region: 'us-central1'}, async (req, res) => {
   // Verify the request is from Google Meet
   const apiKey = req.headers['x-api-key'];
   if (apiKey !== functions.config().google.webhook_key) {
@@ -102,7 +102,11 @@ exports.processMeetRecording = functions.https.onRequest(async (req, res) => {
  * This function runs on a schedule to process pending transcription jobs.
  * It fetches recordings, generates transcripts, and stores them in Firestore.
  */
-exports.processTranscriptionQueue = functions.pubsub.schedule('every 5 minutes').onRun(async (context) => {
+// This function is triggered by a Pub/Sub message
+exports.processTranscriptionQueue = functions.pubsub.onMessagePublished({
+  topic: 'process-transcription-queue',
+  region: 'us-central1'
+}, async (event) => {
   try {
     console.log('Processing transcription queue');
 
