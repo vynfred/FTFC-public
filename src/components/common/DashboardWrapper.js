@@ -1,6 +1,7 @@
+import { onAuthStateChanged } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { auth } from '../../firebase-direct';
 import styles from './DashboardWrapper.module.css';
 import PrivateTopNav from './PrivateTopNav';
 import SidebarNav from './SidebarNav';
@@ -31,12 +32,20 @@ const DashboardWrapper = () => {
     setSidebarCollapsed(!sidebarCollapsed);
   };
 
-  // Get user info from AuthContext
-  const { user } = useAuth();
+  // Get user info directly from Firebase Auth
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // Extract user info or use defaults
-  const name = user?.name || user?.displayName || 'Team Member';
-  const role = user?.role || 'Team';
+  const name = user?.displayName || 'Team Member';
+  const role = 'Team';
   const initials = name
     ? name.split(' ').map(n => n[0]).join('').toUpperCase()
     : 'TM';

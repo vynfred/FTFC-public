@@ -1,0 +1,134 @@
+/* Pagination Component Styles */
+
+.paginationContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1rem 0;
+  gap: 1rem;
+}
+
+.paginationInfo {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.paginationControls {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.paginationButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-background);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.paginationButton:hover:not(.disabled) {
+  background-color: var(--color-background-hover);
+  border-color: var(--color-border-hover);
+}
+
+.paginationButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.paginationButton.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pageNumbers {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pageNumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-background);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pageNumber:hover:not(.active) {
+  background-color: var(--color-background-hover);
+  border-color: var(--color-border-hover);
+}
+
+.pageNumber:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.pageNumber.active {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+  cursor: default;
+}
+
+.ellipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  color: var(--color-text-secondary);
+}
+
+.pageSizeSelector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.pageSizeSelect {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background-color: var(--color-background);
+  cursor: pointer;
+}
+
+.pageSizeSelect:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .paginationContainer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .paginationControls {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .pageSizeSelector {
+    margin-top: 0.5rem;
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

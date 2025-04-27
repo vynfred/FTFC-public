@@ -3,17 +3,9 @@ import { FaCalendarAlt, FaChartBar, FaChartLine, FaChevronLeft, FaChevronRight, 
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import styles from './SidebarNav.module.css';
 
-const SidebarNav = ({ collapsed, toggleSidebar }) => {
+const SidebarNav = ({ collapsed, toggleSidebar, userInfo }) => {
   const location = useLocation();
   const pathName = location.pathname;
-
-  // User info (in real app, this would come from context/api)
-  const userInfo = {
-    name: 'John Doe',
-    role: 'Admin',
-    initials: 'J', // Just the first letter of the first name
-    profileImage: null // In a real app, this would be the URL to the user's profile image
-  };
 
   // Format the current date for "Last Updated"
   const formattedDate = new Date().toLocaleDateString('en-US', {

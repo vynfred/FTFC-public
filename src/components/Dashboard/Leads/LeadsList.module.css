@@ -1,0 +1,237 @@
+/* Leads List Component Styles */
+
+.leadsListContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.filtersContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: var(--color-background);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filterGroup label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.filterSelect {
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background-color: var(--color-background);
+  min-width: 150px;
+}
+
+.filterSelect:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.filterActions {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.applyButton {
+  padding: 0.5rem 1rem;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.applyButton:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.resetButton {
+  padding: 0.5rem 1rem;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.resetButton:hover {
+  background-color: var(--color-background-hover);
+  border-color: var(--color-border-hover);
+}
+
+.tableContainer {
+  width: 100%;
+  overflow-x: auto;
+  background-color: var(--color-background);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1rem;
+}
+
+.leadsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.leadsTable th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.leadsTable td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.leadRow {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.leadRow:hover {
+  background-color: var(--color-background-hover);
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.statusBadge.new {
+  background-color: var(--color-info-light);
+  color: var(--color-info);
+}
+
+.statusBadge.contacted {
+  background-color: var(--color-warning-light);
+  color: var(--color-warning);
+}
+
+.statusBadge.qualified {
+  background-color: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.statusBadge.proposal {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.statusBadge.negotiation {
+  background-color: var(--color-secondary-light);
+  color: var(--color-secondary);
+}
+
+.statusBadge.won {
+  background-color: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.statusBadge.lost {
+  background-color: var(--color-error-light);
+  color: var(--color-error);
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  background-color: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: all 0.2s ease;
+}
+
+.actionButton:hover {
+  background-color: var(--color-background-hover);
+  color: var(--color-primary);
+}
+
+.loadingCell,
+.errorCell,
+.emptyCell {
+  text-align: center;
+  padding: 2rem !important;
+}
+
+.loadingCell {
+  color: var(--color-text-secondary);
+}
+
+.errorCell {
+  color: var(--color-error);
+}
+
+.emptyCell {
+  color: var(--color-text-secondary);
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+  .filtersContainer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filterActions {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-end;
+  }
+  
+  .leadsTable th:nth-child(4),
+  .leadsTable td:nth-child(4),
+  .leadsTable th:nth-child(6),
+  .leadsTable td:nth-child(6) {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .leadsTable th:nth-child(2),
+  .leadsTable td:nth-child(2),
+  .leadsTable th:nth-child(7),
+  .leadsTable td:nth-child(7) {
+    display: none;
+  }
+}

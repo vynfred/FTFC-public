@@ -1,0 +1,22 @@
+/* Virtual List Styles */
+
+.container {
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  border-radius: 4px;
+  background-color: var(--color-background);
+  box-shadow: var(--shadow-sm);
+}
+
+.innerContainer {
+  position: relative;
+  width: 100%;
+}
+
+.itemWrapper {
+  box-sizing: border-box;
+  padding: 0;
+  overflow: hidden;
+}

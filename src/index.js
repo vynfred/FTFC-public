@@ -13,29 +13,17 @@ try {
   console.warn('Chart config not found:', e);
 }
 
-// Import app and providers
+// Import App
 import App from './App';
-import { AuthProvider } from './context/AuthContext';
-import { DateRangeProvider } from './context/DateRangeContext';
-import { StatsViewProvider } from './context/StatsViewContext';
-import { ThemeProvider } from './context/ThemeContext';
 
 // Create root
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-// Render app
+// Render app with BrowserRouter
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <AuthProvider>
-        <ThemeProvider>
-          <DateRangeProvider>
-            <StatsViewProvider>
-              <App />
-            </StatsViewProvider>
-          </DateRangeProvider>
-        </ThemeProvider>
-      </AuthProvider>
+      <App />
     </BrowserRouter>
   </React.StrictMode>
 );

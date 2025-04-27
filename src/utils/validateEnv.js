@@ -9,7 +9,6 @@ export const validateEnv = () => {
     'REACT_APP_TINYMCE_API_KEY',
     // Google OAuth credentials
     'REACT_APP_GOOGLE_CLIENT_ID',
-    'REACT_APP_GOOGLE_CLIENT_SECRET',
     'REACT_APP_GOOGLE_REDIRECT_URI',
     // Calendly API key
     'REACT_APP_CALENDLY_API_KEY'

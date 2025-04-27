@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FaEnvelope, FaGoogle, FaLock } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { auth } from '../../firebase-config';
+import * as authService from '../../services/authService';
 import styles from './Auth.module.css';
 
 const InvestorLogin = () => {
@@ -92,8 +92,11 @@ const InvestorLogin = () => {
     try {
       console.log('InvestorLogin: Starting Google sign-in with redirect...');
 
-      // Use the redirect method with role parameter
-      await auth.signInWithGoogleRedirect('investor');
+      // Store the intended role before redirecting
+      localStorage.setItem('intendedUserRole', 'investor');
+
+      // Use the signInWithGoogle method from our auth service
+      await authService.signInWithGoogle();
 
       // Note: This will redirect the page, so the code below will only run if the redirect fails
       console.log('Redirect did not happen as expected');

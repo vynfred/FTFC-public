@@ -4,33 +4,36 @@
  * This service handles integration with Google Drive through Firebase Cloud Functions.
  */
 
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { GOOGLE_SCOPES } from '../utils/constants';
+
+// Initialize Firebase Functions
+const functions = getFunctions();
+const getGoogleAuthUrlFunction = httpsCallable(functions, 'getGoogleAuthUrl');
+const getTokensFromCodeFunction = httpsCallable(functions, 'getTokensFromCode');
+const connectGoogleDriveFunction = httpsCallable(functions, 'connectGoogleDrive');
+const disconnectGoogleDriveFunction = httpsCallable(functions, 'disconnectGoogleDrive');
+const getGoogleDriveStatusFunction = httpsCallable(functions, 'getGoogleDriveStatus');
+
 /**
  * Get authorization URL for Google OAuth
- * @returns {String} - Authorization URL
+ * @returns {Promise<String>} - Authorization URL
  */
-export const getGoogleAuthUrl = () => {
-  const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-  const redirectUri = process.env.REACT_APP_GOOGLE_REDIRECT_URI;
-
-  // Define scopes
-  const scopes = [
-    'https://www.googleapis.com/auth/userinfo.email',
-    'https://www.googleapis.com/auth/userinfo.profile',
-    'https://www.googleapis.com/auth/drive.readonly',
-    'https://www.googleapis.com/auth/drive.metadata.readonly',
-    'https://www.googleapis.com/auth/documents.readonly'
-  ];
-
-  // Build auth URL
-  const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
-  authUrl.searchParams.append('client_id', clientId);
-  authUrl.searchParams.append('redirect_uri', redirectUri);
-  authUrl.searchParams.append('response_type', 'code');
-  authUrl.searchParams.append('scope', scopes.join(' '));
-  authUrl.searchParams.append('access_type', 'offline');
-  authUrl.searchParams.append('prompt', 'consent');
-
-  return authUrl.toString();
+export const getGoogleAuthUrl = async () => {
+  try {
+    const result = await getGoogleAuthUrlFunction({
+      scopes: [
+        ...GOOGLE_SCOPES,
+        'https://www.googleapis.com/auth/drive.readonly',
+        'https://www.googleapis.com/auth/drive.metadata.readonly',
+        'https://www.googleapis.com/auth/documents.readonly'
+      ]
+    });
+    return result.data.url;
+  } catch (error) {
+    console.error('Error getting Google Auth URL:', error);
+    throw error;
+  }
 };
 
 /**
@@ -39,31 +42,13 @@ export const getGoogleAuthUrl = () => {
  * @returns {Promise<Object>} - Tokens object
  */
 export const getTokensFromCode = async (code) => {
-  const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-  const clientSecret = process.env.REACT_APP_GOOGLE_CLIENT_SECRET;
-  const redirectUri = process.env.REACT_APP_GOOGLE_REDIRECT_URI;
-
-  const tokenUrl = 'https://oauth2.googleapis.com/token';
-  const response = await fetch(tokenUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    body: new URLSearchParams({
-      code,
-      client_id: clientId,
-      client_secret: clientSecret,
-      redirect_uri: redirectUri,
-      grant_type: 'authorization_code'
-    })
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.error_description || 'Failed to get tokens');
+  try {
+    const result = await getTokensFromCodeFunction({ code });
+    return result.data;
+  } catch (error) {
+    console.error('Error getting tokens from code:', error);
+    throw error;
   }
-
-  return response.json();
 };
 
 /**

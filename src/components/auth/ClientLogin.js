@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FaEnvelope, FaGoogle, FaLock } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { auth } from '../../firebase-config';
+import * as authService from '../../services/authService';
 
 const ClientLogin = () => {
   const [formData, setFormData] = useState({
@@ -92,8 +92,11 @@ const ClientLogin = () => {
     try {
       console.log('ClientLogin: Starting Google sign-in with redirect...');
 
-      // Use the redirect method with role parameter
-      await auth.signInWithGoogleRedirect('client');
+      // Store the intended role before redirecting
+      localStorage.setItem('intendedUserRole', 'client');
+
+      // Use the signInWithGoogle method from our auth service
+      await authService.signInWithGoogle();
 
       // Note: This will redirect the page, so the code below will only run if the redirect fails
       console.log('Redirect did not happen as expected');

@@ -1,7 +1,8 @@
-import { onAuthStateChanged } from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { auth, db } from '../firebase-config';
+import { db } from '../firebase-config';
+import * as authService from '../services/authService';
 
 // Create context
 const AuthContext = createContext();
@@ -28,9 +29,9 @@ export const AuthProvider = ({ children }) => {
     console.log('AuthContext: Checking for redirect result');
     const checkRedirectResult = async () => {
       try {
-        console.log('AuthContext: Calling getRedirectResult');
-        const result = await auth.getRedirectResult();
-        console.log('AuthContext: getRedirectResult returned:', result ? 'Result found' : 'No result');
+        console.log('AuthContext: Calling getGoogleRedirectResult');
+        const result = await authService.getGoogleRedirectResult();
+        console.log('AuthContext: getGoogleRedirectResult returned:', result ? 'Result found' : 'No result');
 
         if (result && result.user) {
           console.log('AuthContext: Redirect result found, user signed in:', result.user.email);
@@ -84,6 +85,7 @@ export const AuthProvider = ({ children }) => {
   // Check for existing session on mount using Firebase Auth
   useEffect(() => {
     console.log('AuthContext: Setting up auth state listener');
+    const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       console.log('AuthContext: Auth state changed:', firebaseUser ? 'User signed in' : 'No user');
       if (firebaseUser) {
@@ -250,8 +252,7 @@ export const AuthProvider = ({ children }) => {
 
     try {
       // Sign in with Firebase Authentication
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
+      const userCredential = await authService.signInWithEmail(
         credentials.email,
         credentials.password
       );
@@ -272,25 +273,13 @@ export const AuthProvider = ({ children }) => {
     try {
       console.log('AuthContext: Starting Google sign-in...');
 
-      // Check if we have a stored client ID from a redirect
-      const storedClientId = localStorage.getItem('googleClientId');
-      if (storedClientId) {
-        console.log('AuthContext: Using stored client ID from redirect');
-        // Ensure the auth provider uses the same client ID
-        auth.updateGoogleProviderClientId(storedClientId);
-      }
-
       // Use the signInWithGoogle method from our auth service
-      const result = await auth.signInWithGoogle();
-
-      // Clear any stored client ID
-      localStorage.removeItem('googleClientId');
+      await authService.signInWithGoogle();
 
       // Firebase Auth successful, user state will be updated by the onAuthStateChanged listener
-      return result.user;
+      return { success: true };
     } catch (error) {
       console.error('Google Sign-In error:', error);
-      localStorage.removeItem('googleClientId');
       setLoading(false);
       throw error;
     }
@@ -331,7 +320,7 @@ export const AuthProvider = ({ children }) => {
   // Logout function
   const logout = async () => {
     try {
-      await signOut(auth);
+      await authService.signOutUser();
       // Auth state will be updated by the onAuthStateChanged listener
     } catch (error) {
       console.error('Logout error:', error);

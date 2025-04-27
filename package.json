@@ -34,7 +34,9 @@
     "test:pwa": "node scripts/test-pwa-functionality.js",
     "test:sendgrid": "node scripts/test-sendgrid-integration.js",
     "test:meeting-notes": "node scripts/test-meeting-notes-capture.js",
-    "test:4.0": "npm run test:pwa && npm run test:sendgrid && npm run test:meeting-notes"
+    "test:auth": "node scripts/test-authentication.js",
+    "test:4.0": "npm run test:pwa && npm run test:sendgrid && npm run test:meeting-notes && npm run test:auth",
+    "update:firebase-cli": "node scripts/update-firebase-cli.js"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.2.2",

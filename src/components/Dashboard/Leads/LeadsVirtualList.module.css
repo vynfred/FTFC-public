@@ -1,0 +1,261 @@
+/* Leads Virtual List Styles */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: var(--color-background);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-background-alt);
+}
+
+.searchContainer {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.5rem 0.5rem 0.5rem 2rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.filterContainer,
+.sortContainer {
+  position: relative;
+  min-width: 150px;
+}
+
+.filterIcon,
+.sortIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+}
+
+.filterSelect,
+.sortSelect {
+  width: 100%;
+  padding: 0.5rem 0.5rem 0.5rem 2rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8.825L1.175 4 2.05 3.125 6 7.075 9.95 3.125 10.825 4z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+.filterSelect:focus,
+.sortSelect:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.listHeader {
+  display: flex;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-background-alt);
+  border-bottom: 1px solid var(--color-border);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.headerCell {
+  flex: 1;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.headerCell:hover {
+  color: var(--color-primary);
+}
+
+.headerCell:last-child {
+  flex: 0 0 120px;
+  text-align: center;
+}
+
+.virtualList {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.leadItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.leadItem:hover {
+  background-color: var(--color-background-hover);
+}
+
+.leadItem.scrolling {
+  background-color: var(--color-background);
+}
+
+.leadInfo {
+  display: flex;
+  flex: 1;
+}
+
+.leadName,
+.leadCompany,
+.leadEmail,
+.leadPhone,
+.leadStatus,
+.leadDate {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leadActions {
+  display: flex;
+  gap: 0.5rem;
+  flex: 0 0 120px;
+  justify-content: center;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  background-color: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: all 0.2s ease;
+}
+
+.actionButton:hover {
+  background-color: var(--color-background-hover);
+  color: var(--color-primary);
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.statusBadge.new {
+  background-color: var(--color-info-light);
+  color: var(--color-info);
+}
+
+.statusBadge.contacted {
+  background-color: var(--color-warning-light);
+  color: var(--color-warning);
+}
+
+.statusBadge.qualified {
+  background-color: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.statusBadge.proposal {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.statusBadge.negotiation {
+  background-color: var(--color-secondary-light);
+  color: var(--color-secondary);
+}
+
+.statusBadge.won {
+  background-color: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.statusBadge.lost {
+  background-color: var(--color-error-light);
+  color: var(--color-error);
+}
+
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.listFooter {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  text-align: right;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+  .leadPhone,
+  .leadDate {
+    display: none;
+  }
+  
+  .headerCell:nth-child(4),
+  .headerCell:nth-child(6) {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .leadCompany {
+    display: none;
+  }
+  
+  .headerCell:nth-child(2) {
+    display: none;
+  }
+  
+  .controls {
+    flex-direction: column;
+  }
+}

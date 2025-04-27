@@ -1,81 +1,288 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Authenticated users can read all documents
-    match /{document=**} {
-      allow read: if request.auth != null;
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
     }
 
-    // Only authenticated users can write to leads collection
-    match /leads/{document} {
-      allow write: if request.auth != null;
-    }
-
-    // Only authenticated users can write to investors collection
-    match /investors/{document} {
-      allow write: if request.auth != null;
-    }
-
-    // Transcripts can be read by the entity owner and team members
-    match /transcripts/{transcriptId} {
-      allow read: if request.auth != null && (
-        resource.data.entityType == 'client' && (
-          resource.data.entityId == request.auth.uid ||
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team'
-        ) ||
-        resource.data.entityType == 'investor' && (
-          resource.data.entityId == request.auth.uid ||
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team'
-        ) ||
-        resource.data.entityType == 'partner' && (
-          resource.data.entityId == request.auth.uid ||
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team'
-        )
-      );
-
-      // Only team members can write to transcripts
-      allow write: if request.auth != null &&
+    function isTeamMember() {
+      return isAuthenticated() &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team';
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isOwnerOf(resourceId) {
+      return isAuthenticated() &&
+        resource.data.ownerId == request.auth.uid;
+    }
+
+    function isAssignedTo(resourceId) {
+      return isAuthenticated() &&
+        resource.data.assignedTo == request.auth.uid;
+    }
+
+    function hasClientAccess(clientId) {
+      return isAuthenticated() && (
+        isTeamMember() ||
+        get(/databases/$(database)/documents/clients/$(clientId)).data.clientUserId == request.auth.uid
+      );
+    }
+
+    function hasInvestorAccess(investorId) {
+      return isAuthenticated() && (
+        isTeamMember() ||
+        get(/databases/$(database)/documents/investors/$(investorId)).data.investorUserId == request.auth.uid
+      );
+    }
+
+    function hasPartnerAccess(partnerId) {
+      return isAuthenticated() && (
+        isTeamMember() ||
+        get(/databases/$(database)/documents/partners/$(partnerId)).data.partnerUserId == request.auth.uid
+      );
+    }
+
+    // Validate data fields
+    function validateUserData(userData) {
+      return userData.size() <= 50 &&
+        userData.role is string &&
+        userData.email is string &&
+        userData.email.matches('^[^@]+@[^@]+\\.[^@]+$');
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (userId == request.auth.uid || isTeamMember());
+      allow create: if isAuthenticated() && userId == request.auth.uid;
+      allow update: if isAuthenticated() &&
+        (userId == request.auth.uid || isTeamMember()) &&
+        validateUserData(request.resource.data);
+      allow delete: if isAdmin();
+
+      // Protect sensitive fields
+      match /googleTokens {
+        allow read, write: if isAuthenticated() && userId == request.auth.uid;
+      }
+
+      // OAuth sessions subcollection
+      match /oauthSessions/{sessionId} {
+        allow read, write: if isAuthenticated() && userId == request.auth.uid;
+      }
+    }
+
+    // Leads collection
+    match /leads/{leadId} {
+      allow read: if isTeamMember();
+      allow create: if isAuthenticated(); // Anyone can create a lead
+      allow update: if isTeamMember();
+      allow delete: if isTeamMember();
+    }
+
+    // Client logs collection
+    match /clientLogs/{logId} {
+      allow create: if isAuthenticated();
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    // Auth logs collection
+    match /authLogs/{logId} {
+      allow create: if isAuthenticated();
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    // Clients collection
+    match /clients/{clientId} {
+      allow read: if isAuthenticated() && (
+        isTeamMember() ||
+        resource.data.clientUserId == request.auth.uid
+      );
+      allow create: if isTeamMember();
+      allow update: if isTeamMember();
+      allow delete: if isAdmin();
+
+      // Client documents subcollection
+      match /documents/{documentId} {
+        allow read: if isAuthenticated() && (
+          isTeamMember() ||
+          get(/databases/$(database)/documents/clients/$(clientId)).data.clientUserId == request.auth.uid
+        );
+        allow create: if isTeamMember();
+        allow update: if isTeamMember();
+        allow delete: if isTeamMember();
+      }
+
+      // Client meetings subcollection
+      match /meetings/{meetingId} {
+        allow read: if isAuthenticated() && (
+          isTeamMember() ||
+          get(/databases/$(database)/documents/clients/$(clientId)).data.clientUserId == request.auth.uid
+        );
+        allow create: if isTeamMember();
+        allow update: if isTeamMember();
+        allow delete: if isTeamMember();
+      }
+
+      // Client milestones subcollection
+      match /milestones/{milestoneId} {
+        allow read: if isAuthenticated() && (
+          isTeamMember() ||
+          get(/databases/$(database)/documents/clients/$(clientId)).data.clientUserId == request.auth.uid
+        );
+        allow create: if isTeamMember();
+        allow update: if isTeamMember();
+        allow delete: if isTeamMember();
+      }
+    }
+
+    // Investors collection
+    match /investors/{investorId} {
+      allow read: if isAuthenticated() && (
+        isTeamMember() ||
+        resource.data.investorUserId == request.auth.uid
+      );
+      allow create: if isTeamMember();
+      allow update: if isTeamMember();
+      allow delete: if isAdmin();
+
+      // Investor documents subcollection
+      match /documents/{documentId} {
+        allow read: if isAuthenticated() && (
+          isTeamMember() ||
+          get(/databases/$(database)/documents/investors/$(investorId)).data.investorUserId == request.auth.uid
+        );
+        allow create: if isTeamMember();
+        allow update: if isTeamMember();
+        allow delete: if isTeamMember();
+      }
+
+      // Investor meetings subcollection
+      match /meetings/{meetingId} {
+        allow read: if isAuthenticated() && (
+          isTeamMember() ||
+          get(/databases/$(database)/documents/investors/$(investorId)).data.investorUserId == request.auth.uid
+        );
+        allow create: if isTeamMember();
+        allow update: if isTeamMember();
+        allow delete: if isTeamMember();
+      }
+    }
+
+    // Partners collection
+    match /partners/{partnerId} {
+      allow read: if isAuthenticated() && (
+        isTeamMember() ||
+        resource.data.partnerUserId == request.auth.uid
+      );
+      allow create: if isTeamMember();
+      allow update: if isTeamMember();
+      allow delete: if isAdmin();
+
+      // Partner documents subcollection
+      match /documents/{documentId} {
+        allow read: if isAuthenticated() && (
+          isTeamMember() ||
+          get(/databases/$(database)/documents/partners/$(partnerId)).data.partnerUserId == request.auth.uid
+        );
+        allow create: if isTeamMember();
+        allow update: if isTeamMember();
+        allow delete: if isTeamMember();
+      }
+    }
+
+    // Transcripts collection
+    match /transcripts/{transcriptId} {
+      allow read: if isAuthenticated() && (
+        isTeamMember() ||
+        (resource.data.entityType == 'client' &&
+          get(/databases/$(database)/documents/clients/$(resource.data.entityId)).data.clientUserId == request.auth.uid) ||
+        (resource.data.entityType == 'investor' &&
+          get(/databases/$(database)/documents/investors/$(resource.data.entityId)).data.investorUserId == request.auth.uid) ||
+        (resource.data.entityType == 'partner' &&
+          get(/databases/$(database)/documents/partners/$(resource.data.entityId)).data.partnerUserId == request.auth.uid)
+      );
+      allow create: if isTeamMember();
+      allow update: if isTeamMember();
+      allow delete: if isTeamMember();
     }
 
     // Meeting webhooks can only be accessed by team members
     match /meetingWebhooks/{webhookId} {
-      allow read, write: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team';
+      allow read, write: if isTeamMember();
     }
 
     // Recording configs can only be accessed by team members
     match /recordingConfigs/{configId} {
-      allow read, write: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team';
+      allow read, write: if isTeamMember();
     }
 
     // Transcription jobs can only be accessed by team members
     match /transcriptionJobs/{jobId} {
-      allow read, write: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team';
+      allow read, write: if isTeamMember();
     }
 
-    // Meetings can be read by the entity owner and team members
+    // Meetings collection
     match /meetings/{meetingId} {
-      allow read: if request.auth != null && (
-        resource.data.entityType == 'client' && (
-          resource.data.entityId == request.auth.uid ||
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team'
-        ) ||
-        resource.data.entityType == 'investor' && (
-          resource.data.entityId == request.auth.uid ||
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team'
-        ) ||
-        resource.data.entityType == 'partner' && (
-          resource.data.entityId == request.auth.uid ||
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team'
-        )
+      allow read: if isAuthenticated() && (
+        isTeamMember() ||
+        (resource.data.entityType == 'client' &&
+          get(/databases/$(database)/documents/clients/$(resource.data.entityId)).data.clientUserId == request.auth.uid) ||
+        (resource.data.entityType == 'investor' &&
+          get(/databases/$(database)/documents/investors/$(resource.data.entityId)).data.investorUserId == request.auth.uid) ||
+        (resource.data.entityType == 'partner' &&
+          get(/databases/$(database)/documents/partners/$(resource.data.entityId)).data.partnerUserId == request.auth.uid) ||
+        resource.data.attendees[request.auth.uid] == true
       );
+      allow create: if isTeamMember();
+      allow update: if isTeamMember();
+      allow delete: if isTeamMember();
+    }
 
-      // Only team members can write to meetings
-      allow write: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'team';
+    // Company settings collection
+    match /companySettings/{settingId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Public pages collection
+    match /publicPages/{pageId} {
+      allow read: if true; // Public access
+      allow write: if isTeamMember();
+    }
+
+    // Content collection
+    match /content/{contentId} {
+      function isPublic() {
+        return resource.data.accessLevel == 'public';
+      }
+
+      function hasAccess() {
+        return isPublic() ||
+               (isAuthenticated() &&
+                (resource.data.accessLevel == 'authenticated' ||
+                 (resource.data.accessLevel == 'team' && isTeamMember()) ||
+                 (resource.data.accessLevel == 'admin' && isAdmin())));
+      }
+
+      allow read: if hasAccess();
+      allow write: if isAuthenticated() && isAdmin();
+    }
+
+    // Analytics collection
+    match /analytics/{docId} {
+      allow read: if isTeamMember();
+      allow write: if isTeamMember();
+    }
+
+    // Default deny all other collections
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

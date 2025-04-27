@@ -1,42 +1,9 @@
+import { GoogleAuthProvider, signInWithRedirect } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import { FaEnvelope, FaGoogle, FaLock } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { auth } from '../../firebase-config';
-
-// Detect Safari browser
-const isSafari = () => {
-  const userAgent = navigator.userAgent.toLowerCase();
-  return userAgent.includes('safari') && !userAgent.includes('chrome');
-};
-
-// Create a direct Google auth URL for Safari
-const createGoogleAuthUrl = (state, role) => {
-  // Get the stored client ID if available
-  const storedClientId = localStorage.getItem('googleClientId');
-  const clientId = storedClientId || process.env.REACT_APP_GOOGLE_CLIENT_ID || '815708531852-scs6t2uph7ci2vkgpfvn7uq5q7406s20.apps.googleusercontent.com';
-
-  // Use the same redirect URI that Firebase uses
-  const redirectUri = window.location.origin + '/__/auth/handler';
-
-  console.log('Safari auth - Using redirect URI:', redirectUri);
-
-  // Build the URL manually
-  const url = new URL('https://accounts.google.com/o/oauth2/auth');
-  url.searchParams.append('client_id', clientId);
-  url.searchParams.append('redirect_uri', redirectUri);
-  url.searchParams.append('response_type', 'token id_token');
-  url.searchParams.append('scope', 'email profile');
-  url.searchParams.append('state', state);
-  url.searchParams.append('nonce', Math.random().toString(36).substring(2, 15));
-  url.searchParams.append('prompt', 'select_account');
-
-  // Store role information
-  localStorage.setItem('intendedUserRole', role || 'team');
-
-  console.log('Safari auth - Generated URL:', url.toString());
-  return url.toString();
-};
 
 const TeamLogin = () => {
   const [formData, setFormData] = useState({
@@ -46,56 +13,96 @@ const TeamLogin = () => {
 
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [adBlockerDetected, setAdBlockerDetected] = useState(false);
+  const [isBraveBrowser, setIsBraveBrowser] = useState(false);
 
   const navigate = useNavigate();
   const { login, googleSignIn } = useAuth();
 
-  // Google sign-in using redirect method
+  // Direct Google sign-in using Firebase
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     setErrors({});
 
     try {
-      console.log('TeamLogin: Starting Google sign-in with redirect...');
-      console.log('Browser detection - Safari:', isSafari() ? 'Yes' : 'No');
+      console.log('TeamLogin: Starting Google sign-in...');
 
-      // Check if we're on Safari
-      if (isSafari()) {
-        console.log('TeamLogin: Using Safari-specific authentication flow');
+      // Create a Google provider directly
+      const provider = new GoogleAuthProvider();
 
-        // Generate a secure state parameter to prevent CSRF attacks
-        const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      // Add scopes
+      provider.addScope('email');
+      provider.addScope('profile');
 
-        // Store state and timestamp in localStorage to verify when the redirect completes
-        localStorage.setItem('googleAuthState', state);
-        localStorage.setItem('googleAuthTimestamp', Date.now().toString());
+      // Force account selection
+      provider.setCustomParameters({
+        prompt: 'select_account'
+      });
 
-        // Store the intended role before redirecting
-        localStorage.setItem('intendedUserRole', 'team');
+      // Use redirect method for maximum compatibility
+      console.log('Using signInWithRedirect directly...');
+      await signInWithRedirect(auth, provider);
 
-        // Set a flag to indicate we're starting a Google sign-in
-        localStorage.setItem('googleSignInStarted', 'true');
-
-        // Create a direct URL for Safari
-        const authUrl = createGoogleAuthUrl(state, 'team');
-
-        // Redirect manually instead of using Firebase's signInWithRedirect
-        window.location.href = authUrl;
-      } else {
-        console.log('TeamLogin: Using standard authentication flow');
-
-        // Use the redirect method with role parameter
-        await auth.signInWithGoogleRedirect('team');
-
-        // Note: This will redirect the page, so the code below will only run if the redirect fails
-        console.log('Redirect did not happen as expected');
-      }
+      // The page will redirect, so we won't reach this point
+      console.log('TeamLogin: Redirect in progress...');
     } catch (error) {
-      console.error('TeamLogin: Google sign-in redirect error:', error);
-      setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });
+      console.error('TeamLogin: Google sign-in failed:', error);
+
+      // Show a more user-friendly error message
+      let errorMessage = 'Google sign-in failed. Please try again.';
+
+      if (error.code === 'auth/network-request-failed') {
+        errorMessage = 'Network error. Please check your connection and try again.';
+      } else if (error.message) {
+        errorMessage = `Google sign-in failed: ${error.message}`;
+      }
+
+      setErrors({ general: errorMessage });
       setIsLoading(false);
     }
   };
+
+  // Check for ad blockers and Brave browser
+  useEffect(() => {
+    const checkForAdBlocker = async () => {
+      try {
+        // Create a test element
+        const testElement = document.createElement('div');
+        testElement.className = 'adsbox';
+        testElement.innerHTML = '&nbsp;';
+        document.body.appendChild(testElement);
+
+        // Wait a bit for ad blockers to hide the element
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Check if the element is hidden
+        const isBlocked = testElement.offsetHeight === 0 ||
+                         window.getComputedStyle(testElement).display === 'none' ||
+                         !document.body.contains(testElement);
+
+        // Clean up
+        if (document.body.contains(testElement)) {
+          document.body.removeChild(testElement);
+        }
+
+        // Set state based on result
+        setAdBlockerDetected(isBlocked);
+        console.log('Ad blocker detected:', isBlocked);
+      } catch (error) {
+        console.error('Error checking for ad blocker:', error);
+      }
+    };
+
+    // Check for Brave browser
+    const checkForBraveBrowser = () => {
+      const brave = isBrave();
+      setIsBraveBrowser(brave);
+      console.log('Brave browser detected:', brave);
+    };
+
+    checkForAdBlocker();
+    checkForBraveBrowser();
+  }, []);
 
   // Check for redirect result when component mounts
   useEffect(() => {
@@ -104,32 +111,31 @@ const TeamLogin = () => {
     document.body.scrollTop = 0; // For Safari
     document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
 
-    // Check if we have a successful Google sign-in from redirect
-    const googleSignInSuccess = sessionStorage.getItem('googleSignInSuccess');
-    const userRole = sessionStorage.getItem('userRole');
+    // Check for redirect result using the Firebase SDK directly
+    const checkRedirectResult = async () => {
+      try {
+        console.log('TeamLogin: Checking for redirect result...');
 
-    if (googleSignInSuccess) {
-      console.log('TeamLogin: Detected successful Google sign-in from redirect');
-      console.log('TeamLogin: User role from session:', userRole);
+        // Import getRedirectResult dynamically to avoid circular dependencies
+        const { getRedirectResult } = await import('firebase/auth');
+        const result = await getRedirectResult(auth);
 
-      // Clear the flags
-      sessionStorage.removeItem('googleSignInSuccess');
-      sessionStorage.removeItem('userRole');
-
-      // Redirect based on role
-      if (userRole === 'team') {
-        navigate('/dashboard');
-      } else if (userRole === 'client') {
-        navigate('/client-portal');
-      } else if (userRole === 'investor') {
-        navigate('/investor-portal');
-      } else if (userRole === 'partner') {
-        navigate('/partner-portal');
-      } else {
-        // Default to dashboard
-        navigate('/dashboard');
+        if (result && result.user) {
+          console.log('TeamLogin: Redirect result found, user signed in:', result.user.email);
+          navigate('/dashboard');
+        } else {
+          console.log('TeamLogin: No redirect result found');
+        }
+      } catch (error) {
+        console.error('TeamLogin: Error handling redirect result:', error);
+        console.error('Error code:', error.code);
+        console.error('Error message:', error.message);
+        setErrors({ general: `Google sign-in failed: ${error.message}. Please try again.` });
       }
-    }
+    };
+
+    // Run the redirect check
+    checkRedirectResult();
 
     // Set a single timeout to ensure it works
     const timeoutId = setTimeout(() => {
@@ -214,6 +220,20 @@ const TeamLogin = () => {
         {errors.general && (
           <div className="error-message general-error">
             {errors.general}
+          </div>
+        )}
+
+        <BrowserWarning />
+
+        {isBraveBrowser && <BraveShieldsWarning />}
+
+        {adBlockerDetected && !isBraveBrowser && (
+          <div className="warning-message">
+            <FaExclamationTriangle style={{ marginRight: '8px' }} />
+            <span>
+              Ad blocker detected! This may prevent Google sign-in from working properly.
+              Please disable your ad blocker or privacy extensions for this site and try again.
+            </span>
           </div>
         )}
 
@@ -414,6 +434,19 @@ const TeamLogin = () => {
           padding: 12px;
           margin-bottom: 20px;
           text-align: center;
+        }
+
+        .warning-message {
+          display: flex;
+          align-items: center;
+          background-color: rgba(245, 158, 11, 0.1);
+          color: #f59e0b;
+          border-radius: 4px;
+          padding: 12px;
+          margin-bottom: 20px;
+          text-align: left;
+          font-size: 14px;
+          line-height: 1.5;
         }
 
         .login-button {

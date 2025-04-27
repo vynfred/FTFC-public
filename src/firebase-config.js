@@ -4,6 +4,13 @@ import { getFirestore } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { getStorage } from 'firebase/storage';
 
+/**
+ * Firebase Configuration
+ *
+ * This file initializes and exports Firebase services using the v9 modular SDK.
+ * Environment variables are used to store sensitive configuration values.
+ */
+
 // Firebase configuration
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -11,19 +18,22 @@ const firebaseConfig = {
   projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
   storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_FIREBASE_APP_ID,
-  driveFolderId: process.env.REACT_APP_GOOGLE_DRIVE_FOLDER_ID
+  appId: process.env.REACT_APP_FIREBASE_APP_ID
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const firebaseAuth = getAuth(app);
+
+// Use Firebase's default configuration for authentication
+if (typeof window !== 'undefined') {
+  console.log('Firebase Auth using default configuration');
+  console.log('Auth domain:', process.env.REACT_APP_FIREBASE_AUTH_DOMAIN);
+}
+
 const firebaseDb = getFirestore(app);
 const firebaseStorage = getStorage(app);
 const firebaseFunctions = getFunctions(app);
-
-// Export services
-export { db, auth, storage, handleFirebaseError, functions, app };
 
 // Development mode check
 const isDevelopment = process.env.NODE_ENV === 'development';
@@ -34,57 +44,41 @@ const isSafari = () => {
   return userAgent.includes('safari') && !userAgent.includes('chrome');
 };
 
-console.log('Browser detection - Safari:', isSafari() ? 'Yes' : 'No');
+// Log browser detection in development mode
+if (isDevelopment) {
+  console.log('Browser detection - Safari:', isSafari() ? 'Yes' : 'No');
+}
 
-// Function to create a new Google provider instance with default settings
-const createGoogleProvider = (customParams = {}) => {
-  const provider = new GoogleAuthProvider();
-  // Add scopes
-  provider.addScope('https://www.googleapis.com/auth/userinfo.email');
-  provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
+// Simple Google sign-in method using Firebase's built-in authentication
+const signInWithGoogle = async () => {
+  try {
+    console.log('firebase-config: Starting Google sign-in...');
 
-  // Set custom parameters
-  const params = {
-    prompt: 'select_account',
-    // Explicitly set the client ID from environment variable
-    client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
-    ...customParams
-  };
+    // Create a Google provider
+    const provider = new GoogleAuthProvider();
 
-  provider.setCustomParameters(params);
-  return provider;
-};
+    // Add scopes for Google services
+    provider.addScope('email');
+    provider.addScope('profile');
 
-// Create a direct URL for Safari to use instead of the provider
-const createGoogleAuthUrl = (state, role) => {
-  // Always use environment variables for security and consistency
-  const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-  if (!clientId) {
-    console.error('REACT_APP_GOOGLE_CLIENT_ID is not defined in environment variables');
+    // Set custom parameters
+    provider.setCustomParameters({
+      // Force account selection even if the user is already signed in
+      prompt: 'select_account'
+    });
+
+    // Use redirect method for maximum compatibility
+    console.log('Using signInWithRedirect...');
+    await signInWithRedirect(firebaseAuth, provider);
+    return null; // Redirect will navigate away
+  } catch (error) {
+    console.error('firebase-config: Google sign-in error:', error);
+    console.error('Error message:', error.message);
+    throw error;
   }
-
-  // Use the standard Firebase Auth redirect handler
-  // This should be registered in Google Cloud Console
-  const redirectUri = window.location.origin + '/__/auth/handler';
-
-  console.log('Safari auth - Using redirect URI:', redirectUri);
-
-  // Build the URL manually
-  const url = new URL('https://accounts.google.com/o/oauth2/auth');
-  url.searchParams.append('client_id', clientId);
-  url.searchParams.append('redirect_uri', redirectUri);
-  url.searchParams.append('response_type', 'token id_token');
-  url.searchParams.append('scope', 'email profile');
-  url.searchParams.append('state', state);
-  url.searchParams.append('nonce', Math.random().toString(36).substring(2, 15));
-  url.searchParams.append('prompt', 'select_account');
-
-  // Store role information
-  localStorage.setItem('intendedUserRole', role || 'team');
-
-  console.log('Safari auth - Generated URL:', url.toString());
-  return url.toString();
 };
+
+
 
 // Auth service
 // Always use real Firebase auth for Google authentication to work properly
@@ -201,67 +195,15 @@ const auth = {
       throw error;
     }
   },
-  // We no longer need to update the client ID as we're using environment variables consistently
-  signInWithGoogle: () => {
+  // Google sign-in method using Firebase's built-in authentication
+  signInWithGoogle: async () => {
     try {
-      console.log('Starting Google sign-in process with redirect...');
+      console.log('auth.signInWithGoogle: Starting Google sign-in process...');
 
-      // Generate a secure state parameter to prevent CSRF attacks
-      const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-
-      // Store state and timestamp in localStorage to verify when the redirect completes
-      localStorage.setItem('googleAuthState', state);
-      localStorage.setItem('googleAuthTimestamp', Date.now().toString());
-
-      // Store the intended role before redirecting
-      localStorage.setItem('intendedUserRole', 'team');
-
-      // Set a flag to indicate we're starting a Google sign-in
-      localStorage.setItem('googleSignInStarted', 'true');
-
-      // Log the current state before redirect
-      console.log('Google sign-in: State before redirect', {
-        state,
-        timestamp: Date.now(),
-        intendedRole: 'team'
-      });
-
-      // Check if we're on Safari
-      if (isSafari()) {
-        console.log('Using Safari-specific authentication flow');
-
-        // Create a direct URL for Safari
-        const authUrl = createGoogleAuthUrl(state, 'team');
-
-        // Redirect manually instead of using Firebase's signInWithRedirect
-        window.location.href = authUrl;
-
-        // Return a resolved promise to maintain the same API
-        return Promise.resolve();
-      } else {
-        console.log('Using standard authentication flow');
-
-        // Create a fresh provider with all necessary parameters
-        const provider = createGoogleProvider({
-          // Include state parameter for CSRF protection
-          state: state,
-          // Request offline access to get refresh token
-          access_type: 'offline',
-          // Include previously granted scopes
-          include_granted_scopes: true
-        });
-
-        // Use the redirect method as recommended by Google for web applications
-        console.log('Calling signInWithRedirect...');
-        return signInWithRedirect(firebaseAuth, provider);
-      }
+      // Use the main signInWithGoogle function
+      return await signInWithGoogle();
     } catch (error) {
-      console.error('Google sign-in error in try/catch:', error);
-      // Clean up in case of error
-      localStorage.removeItem('googleAuthState');
-      localStorage.removeItem('googleAuthTimestamp');
-      localStorage.removeItem('intendedUserRole');
-      localStorage.removeItem('googleSignInStarted');
+      console.error('Google sign-in error:', error);
       throw error;
     }
   },
@@ -271,62 +213,29 @@ const auth = {
     try {
       console.log(`Starting Google sign-in with redirect for role: ${role}`);
 
-      // Generate a secure state parameter to prevent CSRF attacks
-      const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-
-      // Store state and timestamp in localStorage to verify when the redirect completes
-      localStorage.setItem('googleAuthState', state);
-      localStorage.setItem('googleAuthTimestamp', Date.now().toString());
-
-      // Store the intended role before redirecting
+      // Store the intended role
       localStorage.setItem('intendedUserRole', role || 'team');
 
-      // Set a flag to indicate we're starting a Google sign-in
-      localStorage.setItem('googleSignInStarted', 'true');
+      // Create a Google provider
+      const provider = new GoogleAuthProvider();
 
-      // Log the current state before redirect
-      console.log('Google sign-in: State before redirect', {
-        state,
-        timestamp: Date.now(),
-        intendedRole: role || 'team'
+      // Add scopes for Google services
+      provider.addScope('email');
+      provider.addScope('profile');
+
+      // Set custom parameters
+      provider.setCustomParameters({
+        // Force account selection even if the user is already signed in
+        prompt: 'select_account'
       });
 
-      // Check if we're on Safari
-      if (isSafari()) {
-        console.log('Using Safari-specific authentication flow');
-
-        // Create a direct URL for Safari
-        const authUrl = createGoogleAuthUrl(state, role);
-
-        // Redirect manually instead of using Firebase's signInWithRedirect
-        window.location.href = authUrl;
-
-        // Return a resolved promise to maintain the same API
-        return Promise.resolve();
-      } else {
-        console.log('Using standard authentication flow');
-
-        // Create a fresh provider with all necessary parameters
-        const provider = createGoogleProvider({
-          // Include state parameter for CSRF protection
-          state: state,
-          // Request offline access to get refresh token
-          access_type: 'offline',
-          // Include previously granted scopes
-          include_granted_scopes: true
-        });
-
-        // Use the redirect method as recommended by Google for web applications
-        console.log('Calling signInWithRedirect...');
-        return signInWithRedirect(firebaseAuth, provider);
-      }
+      // Use the redirect method
+      console.log('Using signInWithRedirect...');
+      return signInWithRedirect(firebaseAuth, provider);
     } catch (error) {
       console.error('Google sign-in redirect error:', error);
       // Clean up in case of error
-      localStorage.removeItem('googleAuthState');
-      localStorage.removeItem('googleAuthTimestamp');
       localStorage.removeItem('intendedUserRole');
-      localStorage.removeItem('googleSignInStarted');
       throw error;
     }
   }
@@ -336,7 +245,7 @@ const auth = {
 const db = isDevelopment ?
   // Mock firestore for development
   {
-    collection: (name) => ({
+    collection: (_collectionName) => ({
       doc: (id) => ({
         get: () => Promise.resolve({
           exists: true,
@@ -391,8 +300,8 @@ const storage = isDevelopment ?
   // Mock storage for development
   {
     ref: (path) => ({
-      put: (file) => ({
-        on: (event, progressCallback, errorCallback, completeCallback) => {
+      put: (_fileData) => ({
+        on: (_event, _progressCallback, _errorCallback, completeCallback) => {
           // Simulate upload completion
           setTimeout(() => {
             completeCallback();
@@ -439,8 +348,13 @@ export const callFunction = (name, data) => {
     return Promise.resolve({ data: { success: true } });
   } else {
     // Real implementation for production
-    return httpsCallable(functions, name)(data);
+    return httpsCallable(firebaseFunctions, name)(data);
   }
 };
+
+// Export services
+export { auth, db, storage, handleFirebaseError, functions, app };
+// Export authentication methods
+export { signInWithGoogle };
 
 

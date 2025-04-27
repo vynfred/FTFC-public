@@ -1,10 +1,96 @@
 rules_version = '2';
-
-// Craft rules based on data in your Firestore database
-// allow write: if firestore.get(
-//    /databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin;
 service firebase.storage {
   match /b/{bucket}/o {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isTeamMember() {
+      return isAuthenticated() &&
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'team';
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isClientOwner(clientId) {
+      return isAuthenticated() &&
+        firestore.get(/databases/(default)/documents/clients/$(clientId)).data.clientUserId == request.auth.uid;
+    }
+
+    function isInvestorOwner(investorId) {
+      return isAuthenticated() &&
+        firestore.get(/databases/(default)/documents/investors/$(investorId)).data.investorUserId == request.auth.uid;
+    }
+
+    function isPartnerOwner(partnerId) {
+      return isAuthenticated() &&
+        firestore.get(/databases/(default)/documents/partners/$(partnerId)).data.partnerUserId == request.auth.uid;
+    }
+
+    function isValidImage() {
+      return request.resource.contentType.matches('image/.*') &&
+        request.resource.size < 5 * 1024 * 1024; // 5MB
+    }
+
+    function isValidDocument() {
+      return (request.resource.contentType.matches('application/pdf') ||
+              request.resource.contentType.matches('application/msword') ||
+              request.resource.contentType.matches('application/vnd.openxmlformats-officedocument.wordprocessingml.document') ||
+              request.resource.contentType.matches('application/vnd.ms-excel') ||
+              request.resource.contentType.matches('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) &&
+        request.resource.size < 20 * 1024 * 1024; // 20MB
+    }
+
+    // User profile images
+    match /users/{userId}/profile.{extension} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && request.auth.uid == userId && isValidImage();
+    }
+
+    // Client documents
+    match /clients/{clientId}/{documentPath=**} {
+      allow read: if isAuthenticated() && (isTeamMember() || isClientOwner(clientId));
+      allow write: if isAuthenticated() && (isTeamMember() || isClientOwner(clientId)) && isValidDocument();
+    }
+
+    // Investor documents
+    match /investors/{investorId}/{documentPath=**} {
+      allow read: if isAuthenticated() && (isTeamMember() || isInvestorOwner(investorId));
+      allow write: if isAuthenticated() && (isTeamMember() || isInvestorOwner(investorId)) && isValidDocument();
+    }
+
+    // Partner documents
+    match /partners/{partnerId}/{documentPath=**} {
+      allow read: if isAuthenticated() && (isTeamMember() || isPartnerOwner(partnerId));
+      allow write: if isAuthenticated() && (isTeamMember() || isPartnerOwner(partnerId)) && isValidDocument();
+    }
+
+    // Meeting recordings
+    match /meetings/{meetingId}/{recordingPath=**} {
+      allow read: if isAuthenticated() && (
+        isTeamMember() ||
+        firestore.get(/databases/(default)/documents/meetings/$(meetingId)).data.attendees[request.auth.uid] == true
+      );
+      allow write: if isTeamMember();
+    }
+
+    // Public assets
+    match /public/{assetPath=**} {
+      allow read: if true;
+      allow write: if isTeamMember();
+    }
+
+    // Company assets
+    match /company/{assetPath=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Default deny
     match /{allPaths=**} {
       allow read, write: if false;
     }
