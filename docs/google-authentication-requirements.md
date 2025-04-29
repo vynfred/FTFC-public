@@ -6,6 +6,8 @@ This document outlines the requirements for implementing Google authentication i
 
 The FTFC application requires Google authentication for team members to access the dashboard and to integrate with Google services like Calendar and Drive for meeting management and document storage.
 
+**IMPORTANT UPDATE (April 29, 2025)**: Google authentication has been removed from branch `5.0-Final-setup` to focus on perfecting other aspects of the application. A specialist will be hired to implement the Google authentication functionality.
+
 ## Authentication Flow
 
 1. **User Authentication**: Team members should be able to sign in with their Google accounts.
@@ -25,7 +27,7 @@ The FTFC application requires Google authentication for team members to access t
 
 ### Google Cloud Console Setup
 
-1. **OAuth Client ID**: 
+1. **OAuth Client ID**:
    - The application needs a properly configured OAuth client ID in Google Cloud Console
    - The client ID should be added to the Firebase Authentication settings
 
@@ -71,12 +73,25 @@ The FTFC application requires Google authentication for team members to access t
   - Download files from Google Drive
   - Create folders in Google Drive
 
+## Current Issues and Challenges
+
+1. **Authentication Errors**:
+   - Previous implementation had issues with redirect URI mismatches
+   - Error 400: redirect_uri_mismatch was common
+   - Error 401: invalid_client occurred when using incorrect client ID
+
+2. **Configuration Problems**:
+   - The Firebase authDomain was incorrectly set to `ftfc-start.web.app` instead of `ftfc-start.firebaseapp.com`
+   - The Google OAuth client ID in the code didn't match the one in Google Cloud Console
+   - Missing required redirect URIs, especially the `postmessage` URI
+
 ## Testing Requirements
 
 1. **Authentication Testing**:
    - Test with various Google accounts
    - Test error scenarios (network issues, permission denied, etc.)
    - Test token refresh
+   - Create a standalone test page for Google authentication
 
 2. **Integration Testing**:
    - Test Calendar API integration
@@ -89,3 +104,14 @@ The FTFC application requires Google authentication for team members to access t
 - [Google Identity Services Documentation](https://developers.google.com/identity/gsi/web)
 - [Google Calendar API Documentation](https://developers.google.com/calendar)
 - [Google Drive API Documentation](https://developers.google.com/drive)
+
+## Project-Specific Information
+
+- Firebase project: `ftfc-start`
+- Google Cloud project: `ftfc-451421`
+- Current OAuth client ID in `.env`: `REACT_APP_GOOGLE_CLIENT_ID=815708531852-tfgmdto75nqmd9v3qn3n5vfkud1cma38.apps.googleusercontent.com`
+- Relevant files:
+  - `src/components/auth/SimpleLogin.js` - Main login component
+  - `src/firebase-direct.js` - Firebase configuration
+  - `.env` - Environment variables for Firebase and Google API configuration
+  - `google-oauth-setup-guide.md` - Guide for setting up Google OAuth

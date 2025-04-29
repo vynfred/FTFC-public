@@ -46,7 +46,7 @@ service firebase.storage {
     }
 
     // User profile images
-    match /users/{userId}/profile.{extension} {
+    match /users/{userId}/profile_images/{imageId} {
       allow read: if isAuthenticated();
       allow write: if isAuthenticated() && request.auth.uid == userId && isValidImage();
     }
