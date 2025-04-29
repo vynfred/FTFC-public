@@ -1,0 +1,50 @@
+/* SearchBar.module.css */
+/* Styles for the SearchBar component */
+
+.searchContainer {
+  display: flex;
+  align-items: center;
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-sm);
+  padding: 0 var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  transition: all var(--transition-default);
+}
+
+.searchContainer:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
+}
+
+.searchIcon {
+  color: var(--color-text-secondary);
+  margin-right: var(--spacing-sm);
+  font-size: var(--font-size-md);
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: var(--spacing-sm);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 0.7;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .searchContainer {
+    padding: 0 var(--spacing-xs);
+  }
+  
+  .searchInput {
+    padding: var(--spacing-xs);
+    font-size: var(--font-size-xs);
+  }
+}

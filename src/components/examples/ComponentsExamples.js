@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
-import { FaEdit, FaTrash, FaPlus, FaSearch, FaFilter, FaEye } from 'react-icons/fa';
-import Container from '../ui/layout/Container';
-import Grid from '../ui/layout/Grid';
+import { FaEdit, FaEye, FaPlus, FaTrash } from 'react-icons/fa';
+import { useToast } from '../../context/ToastContext';
 import Table from '../ui/data/Table';
 import Modal from '../ui/feedback/Modal';
-import { useToast } from '../../context/ToastContext';
 import { FormButton, FormInput, FormSelect, FormTextarea } from '../ui/form';
+import Container from '../ui/layout/Container';
+import Grid from '../ui/layout/Grid';
 import styles from './Examples.module.css';
 
 const ComponentsExamples = () => {
   const { showInfo, showSuccess, showWarning, showError } = useToast();
-  
+
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalSize, setModalSize] = useState('md');
   const [modalTitle, setModalTitle] = useState('Example Modal');
-  
+
   // Table data
   const [tableData, setTableData] = useState([
     { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'Active', lastLogin: '2024-03-15T10:30:00' },
@@ -31,7 +31,7 @@ const ComponentsExamples = () => {
     { id: 11, name: 'Ian Clark', email: 'ian@example.com', role: 'Editor', status: 'Pending', lastLogin: '2024-03-05T16:45:00' },
     { id: 12, name: 'Julia Adams', email: 'julia@example.com', role: 'User', status: 'Active', lastLogin: '2024-03-04T11:10:00' }
   ]);
-  
+
   // Table columns
   const tableColumns = [
     { id: 'name', label: 'Name', sortable: true },
@@ -117,7 +117,7 @@ const ComponentsExamples = () => {
       </div>
     )}
   ];
-  
+
   // Table actions
   const tableActions = (
     <div style={{ display: 'flex', gap: 'var(--spacing-sm)' }}>
@@ -133,12 +133,12 @@ const ComponentsExamples = () => {
       </FormButton>
     </div>
   );
-  
+
   // Handle row click
   const handleRowClick = (row) => {
     showInfo(`Clicked on ${row.name}`);
   };
-  
+
   // Handle view user
   const handleViewUser = (user) => {
     setModalTitle(`View User: ${user.name}`);
@@ -146,7 +146,7 @@ const ComponentsExamples = () => {
     setIsModalOpen(true);
     showInfo(`Viewing ${user.name}`);
   };
-  
+
   // Handle edit user
   const handleEditUser = (user) => {
     setModalTitle(`Edit User: ${user.name}`);
@@ -154,7 +154,7 @@ const ComponentsExamples = () => {
     setIsModalOpen(true);
     showWarning(`Editing ${user.name}`);
   };
-  
+
   // Handle delete user
   const handleDeleteUser = (user) => {
     if (window.confirm(`Are you sure you want to delete ${user.name}?`)) {
@@ -164,7 +164,7 @@ const ComponentsExamples = () => {
       showError('Delete cancelled');
     }
   };
-  
+
   // Modal footer
   const modalFooter = (
     <>
@@ -185,17 +185,17 @@ const ComponentsExamples = () => {
       </Modal.Button>
     </>
   );
-  
+
   return (
     <Container className={styles.examplesContainer}>
       <h1 className={styles.examplesTitle}>Component Examples</h1>
-      
+
       <div className={styles.examplesSection}>
         <h2 className={styles.examplesSectionTitle}>Table Component</h2>
         <p className={styles.examplesDescription}>
           The Table component provides a powerful way to display, sort, filter, and paginate tabular data.
         </p>
-        
+
         <Table
           columns={tableColumns}
           data={tableData}
@@ -207,13 +207,13 @@ const ComponentsExamples = () => {
           emptyMessage="No users found"
         />
       </div>
-      
+
       <div className={styles.examplesSection}>
         <h2 className={styles.examplesSectionTitle}>Modal Component</h2>
         <p className={styles.examplesDescription}>
           The Modal component provides a way to display content in a dialog that overlays the page.
         </p>
-        
+
         <Grid columns={5} mdColumns={3} smColumns={1} gap="md">
           <FormButton
             onClick={() => {
@@ -224,7 +224,7 @@ const ComponentsExamples = () => {
           >
             Small Modal
           </FormButton>
-          
+
           <FormButton
             onClick={() => {
               setModalTitle('Medium Modal');
@@ -234,7 +234,7 @@ const ComponentsExamples = () => {
           >
             Medium Modal
           </FormButton>
-          
+
           <FormButton
             onClick={() => {
               setModalTitle('Large Modal');
@@ -244,7 +244,7 @@ const ComponentsExamples = () => {
           >
             Large Modal
           </FormButton>
-          
+
           <FormButton
             onClick={() => {
               setModalTitle('Extra Large Modal');
@@ -254,7 +254,7 @@ const ComponentsExamples = () => {
           >
             XL Modal
           </FormButton>
-          
+
           <FormButton
             onClick={() => {
               setModalTitle('Full Screen Modal');
@@ -265,7 +265,7 @@ const ComponentsExamples = () => {
             Full Screen
           </FormButton>
         </Grid>
-        
+
         <Modal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
@@ -275,7 +275,7 @@ const ComponentsExamples = () => {
         >
           <div>
             <p>This is an example modal with a form.</p>
-            
+
             <Grid columns={2} mdColumns={2} smColumns={1} gap="md">
               <FormInput
                 id="name"
@@ -284,7 +284,7 @@ const ComponentsExamples = () => {
                 placeholder="Enter name"
                 required
               />
-              
+
               <FormInput
                 id="email"
                 name="email"
@@ -293,7 +293,7 @@ const ComponentsExamples = () => {
                 placeholder="Enter email"
                 required
               />
-              
+
               <FormSelect
                 id="role"
                 name="role"
@@ -306,7 +306,7 @@ const ComponentsExamples = () => {
                 ]}
                 required
               />
-              
+
               <FormSelect
                 id="status"
                 name="status"
@@ -320,7 +320,7 @@ const ComponentsExamples = () => {
                 required
               />
             </Grid>
-            
+
             <FormTextarea
               id="notes"
               name="notes"
@@ -331,56 +331,56 @@ const ComponentsExamples = () => {
           </div>
         </Modal>
       </div>
-      
+
       <div className={styles.examplesSection}>
         <h2 className={styles.examplesSectionTitle}>Toast Component</h2>
         <p className={styles.examplesDescription}>
           The Toast component provides a way to display notifications to the user.
         </p>
-        
+
         <Grid columns={4} mdColumns={2} smColumns={1} gap="md">
           <FormButton
             onClick={() => showInfo('This is an info toast')}
           >
             Show Info
           </FormButton>
-          
+
           <FormButton
             onClick={() => showSuccess('This is a success toast')}
           >
             Show Success
           </FormButton>
-          
+
           <FormButton
             onClick={() => showWarning('This is a warning toast')}
           >
             Show Warning
           </FormButton>
-          
+
           <FormButton
             onClick={() => showError('This is an error toast')}
           >
             Show Error
           </FormButton>
-          
+
           <FormButton
             onClick={() => showInfo('This is a toast with a title', { title: 'Info Title' })}
           >
             With Title
           </FormButton>
-          
+
           <FormButton
             onClick={() => showInfo('This toast will stay until dismissed', { duration: 0 })}
           >
             No Auto-Close
           </FormButton>
-          
+
           <FormButton
             onClick={() => showInfo('This toast will close quickly', { duration: 2000 })}
           >
             Quick Close
           </FormButton>
-          
+
           <FormButton
             onClick={() => showInfo('This toast has no progress bar', { showProgress: false })}
           >

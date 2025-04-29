@@ -1,4 +1,4 @@
-import { FaSearch } from 'react-icons/fa';
+import SearchIcon from '../icons/SearchIcon';
 
 /**
  * This file defines a global FaSearch variable to prevent reference errors
@@ -7,11 +7,12 @@ import { FaSearch } from 'react-icons/fa';
 
 // Define FaSearch globally if it doesn't exist
 if (typeof window !== 'undefined') {
-  window.FaSearch = FaSearch;
+  // Create a component that mimics the FaSearch API
+  window.FaSearch = SearchIcon;
 }
 
 export default function initGlobalFaSearch() {
   // This function doesn't need to do anything, just importing it is enough
-  console.log('Global FaSearch initialized');
+  console.log('Global FaSearch initialized with custom SearchIcon');
   return null;
 }

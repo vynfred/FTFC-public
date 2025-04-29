@@ -13,6 +13,13 @@ try {
   console.warn('Chart config not found:', e);
 }
 
+// Import icons to ensure they're available globally
+import './components/icons';
+
+// Import and initialize GlobalFaSearch to fix the FaSearch reference error
+import initGlobalFaSearch from './components/common/GlobalFaSearch';
+initGlobalFaSearch();
+
 // Import App
 import App from './App';
 

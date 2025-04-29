@@ -1,16 +1,17 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { FaEdit, FaFilter, FaSortAmountDown, FaTrash, FaUserPlus } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { FaEdit, FaTrash, FaUserPlus, FaSearch, FaFilter, FaSortAmountDown } from 'react-icons/fa';
-import VirtualList from '../../common/VirtualList';
+import SearchBar from '../../../components/common/SearchBar';
 import useDebounce from '../../../hooks/useDebounce';
 import { formatDate } from '../../../utils/dateUtils';
+import VirtualList from '../../common/VirtualList';
 import styles from './LeadsVirtualList.module.css';
 
 /**
  * Leads Virtual List Component
- * 
+ *
  * Displays a large list of leads with virtual scrolling for performance.
- * 
+ *
  * @param {Object} props - Component props
  * @param {Array} props.leads - The list of leads
  * @param {Function} props.onDelete - Function to call when a lead is deleted
@@ -22,16 +23,16 @@ const LeadsVirtualList = ({ leads, onDelete, onConvert }) => {
   const [statusFilter, setStatusFilter] = useState('');
   const [sortField, setSortField] = useState('createdAt');
   const [sortDirection, setSortDirection] = useState('desc');
-  
+
   // Debounce search term to prevent excessive filtering
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
-  
+
   // Filter and sort leads
   const filteredAndSortedLeads = useMemo(() => {
     // Filter by search term
     let result = leads.filter(lead => {
       if (!debouncedSearchTerm) return true;
-      
+
       const searchTermLower = debouncedSearchTerm.toLowerCase();
       return (
         lead.name?.toLowerCase().includes(searchTermLower) ||
@@ -40,52 +41,52 @@ const LeadsVirtualList = ({ leads, onDelete, onConvert }) => {
         lead.phone?.toLowerCase().includes(searchTermLower)
       );
     });
-    
+
     // Filter by status
     if (statusFilter) {
       result = result.filter(lead => lead.status === statusFilter);
     }
-    
+
     // Sort leads
     result.sort((a, b) => {
       let valueA = a[sortField];
       let valueB = b[sortField];
-      
+
       // Handle dates
       if (sortField === 'createdAt' || sortField === 'updatedAt') {
         valueA = valueA?.toDate?.() || new Date(valueA);
         valueB = valueB?.toDate?.() || new Date(valueB);
       }
-      
+
       // Handle strings
       if (typeof valueA === 'string') {
         valueA = valueA.toLowerCase();
         valueB = valueB.toLowerCase();
       }
-      
+
       // Handle undefined values
       if (valueA === undefined) return 1;
       if (valueB === undefined) return -1;
-      
+
       // Compare values
       if (valueA < valueB) return sortDirection === 'asc' ? -1 : 1;
       if (valueA > valueB) return sortDirection === 'asc' ? 1 : -1;
       return 0;
     });
-    
+
     return result;
   }, [leads, debouncedSearchTerm, statusFilter, sortField, sortDirection]);
-  
+
   // Handle search input change
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
-  
+
   // Handle status filter change
   const handleStatusFilterChange = (e) => {
     setStatusFilter(e.target.value);
   };
-  
+
   // Handle sort change
   const handleSortChange = (field) => {
     if (field === sortField) {
@@ -97,18 +98,18 @@ const LeadsVirtualList = ({ leads, onDelete, onConvert }) => {
       setSortDirection('desc');
     }
   };
-  
+
   // Handle lead click
   const handleLeadClick = useCallback((lead) => {
     navigate(`/dashboard/leads/${lead.id}`);
   }, [navigate]);
-  
+
   // Handle lead edit
   const handleEditLead = useCallback((e, lead) => {
     e.stopPropagation();
     navigate(`/dashboard/leads/${lead.id}/edit`);
   }, [navigate]);
-  
+
   // Handle lead delete
   const handleDeleteLead = useCallback((e, lead) => {
     e.stopPropagation();
@@ -116,13 +117,13 @@ const LeadsVirtualList = ({ leads, onDelete, onConvert }) => {
       onDelete(lead.id);
     }
   }, [onDelete]);
-  
+
   // Handle convert to client
   const handleConvertToClient = useCallback((e, lead) => {
     e.stopPropagation();
     onConvert(lead);
   }, [onConvert]);
-  
+
   // Render each lead item
   const renderLeadItem = useCallback(({ item: lead, index, isScrolling }) => {
     return (
@@ -144,7 +145,7 @@ const LeadsVirtualList = ({ leads, onDelete, onConvert }) => {
             {formatDate(lead.createdAt?.toDate?.() || lead.createdAt)}
           </div>
         </div>
-        
+
         <div className={styles.leadActions}>
           <button
             className={styles.actionButton}
@@ -171,21 +172,19 @@ const LeadsVirtualList = ({ leads, onDelete, onConvert }) => {
       </div>
     );
   }, [handleLeadClick, handleEditLead, handleConvertToClient, handleDeleteLead]);
-  
+
   return (
     <div className={styles.container}>
       <div className={styles.controls}>
-        <div className={styles.searchContainer}>
-          <FaSearch className={styles.searchIcon} />
-          <input
-            type="text"
-            placeholder="Search leads..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className={styles.searchInput}
-          />
-        </div>
-        
+        <SearchBar
+          placeholder="Search leads..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+          className={styles.searchContainer}
+          inputClassName={styles.searchInput}
+          iconClassName={styles.searchIcon}
+        />
+
         <div className={styles.filterContainer}>
           <FaFilter className={styles.filterIcon} />
           <select
@@ -203,7 +202,7 @@ const LeadsVirtualList = ({ leads, onDelete, onConvert }) => {
             <option value="lost">Lost</option>
           </select>
         </div>
-        
+
         <div className={styles.sortContainer}>
           <FaSortAmountDown className={styles.sortIcon} />
           <select
@@ -224,7 +223,7 @@ const LeadsVirtualList = ({ leads, onDelete, onConvert }) => {
           </select>
         </div>
       </div>
-      
+
       <div className={styles.listHeader}>
         <div className={styles.headerCell} onClick={() => handleSortChange('name')}>
           Name {sortField === 'name' && (sortDirection === 'asc' ? '↑' : '↓')}
@@ -246,7 +245,7 @@ const LeadsVirtualList = ({ leads, onDelete, onConvert }) => {
         </div>
         <div className={styles.headerCell}>Actions</div>
       </div>
-      
+
       {filteredAndSortedLeads.length === 0 ? (
         <div className={styles.emptyState}>
           No leads found. Try adjusting your filters.
@@ -261,7 +260,7 @@ const LeadsVirtualList = ({ leads, onDelete, onConvert }) => {
           className={styles.virtualList}
         />
       )}
-      
+
       <div className={styles.listFooter}>
         Showing {filteredAndSortedLeads.length} of {leads.length} leads
       </div>
