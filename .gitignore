@@ -11,10 +11,13 @@
 
 # environment variables
 .env
+.env.*
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+.env.production
+.env.secure
 
 # logs
 npm-debug.log*
@@ -57,6 +60,10 @@ firebase-debug.*.log*
 functions/service-account.json
 ftfc-451421-42a7ed406a80.json
 *-service-account.json
+service-account.json
+service-account*.json
+*serviceAccount*.json
+*serviceaccount*.json
 
 # Runtime data
 pids

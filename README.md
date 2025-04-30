@@ -1,6 +1,6 @@
-# First Time Founder Capital Website
+# First Time Founder Capital (FTFC) Platform
 
-Lead generation and client management platform for startup advising firm.
+Lead generation and client management platform for startup advising firm. This is the public repository of the FTFC application, designed to help startup founders manage their fundraising process, connect with investors, and track client relationships.
 
 ## New Features
 
@@ -27,33 +27,73 @@ The application now integrates with Google Drive to automatically process meetin
 1. Clone the repository
 2. Install dependencies: `npm install`
 3. Create a `.env` file based on `.env.example`
-4. Run development server: `npm start`
+4. Set up Firebase project and update configuration
+5. Run development server: `npm start`
 
 ## Environment Variables Required
 
-- Firebase configuration
-- Klaviyo API keys
-- Sentry credentials
-- Additional service keys
+Create a `.env` file in the root directory with the following variables:
+
+```
+# Firebase Configuration
+REACT_APP_FIREBASE_API_KEY=your_firebase_api_key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+REACT_APP_FIREBASE_PROJECT_ID=your_firebase_project_id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
+REACT_APP_FIREBASE_APP_ID=your_firebase_app_id
+
+# Google OAuth (for Google Sign-In)
+REACT_APP_GOOGLE_CLIENT_ID=your_google_client_id
+
+# Other Services (Optional)
+REACT_APP_SENTRY_DSN=your_sentry_dsn
+REACT_APP_KLAVIYO_API_KEY=your_klaviyo_api_key
+```
+
+See `.env.example` for a complete list of environment variables.
 
 ## Features
 
-- Lead intake form
-- Team dashboard
-- Client management
+### Core Features
+- Lead intake form with validation and data flow
+- Team dashboard with key metrics and activity tracking
+- Client management with document storage and milestone tracking
+- Investor relationship management
+- Partner management and referral tracking
+- Meeting scheduling and notes integration
 - Email automation integration
-- Error tracking
-- Analytics
-- Progressive Web App (PWA)
-- Google Drive integration
+- Error tracking and monitoring
+- Analytics and reporting
+- Progressive Web App (PWA) capabilities
+- Google Drive integration for meeting transcripts
+
+### Dashboard Modules
+- Marketing dashboard with campaign management
+- Leads dashboard with status tracking
+- Clients dashboard with relationship management
+- Investors dashboard with investment tracking
+- Partners dashboard with referral management
+- Company settings with user management
+
+### Portal Access
+- Client portal for document sharing and milestone tracking
+- Investor portal for deal flow and portfolio management
+- Partner portal for referral submission and tracking
+
+## Documentation
+
+Comprehensive documentation is available in the `docs` directory:
+
+- [Developer Guide](docs/FTFC-Developer-Guide.md) - Complete guide to the application architecture and development
+- [Requirements](docs/FTFC-Requirements.md) - Detailed requirements and implementation status
+- [Test Plan](docs/test-plan.md) - Testing strategy and test cases
+- [PWA Testing Guide](docs/pwa-testing-guide.md) - Guide for testing Progressive Web App features
+- [Google Drive Integration Testing Guide](docs/google-drive-integration-testing-guide.md) - Guide for testing Google Drive integration
+- [CSS Architecture](docs/css-architecture.md) - Overview of the CSS organization and best practices
+- [Icon Usage](docs/icon-usage.md) - Guide for using icons in the application
 
 ## Testing
-
-Detailed testing guides are available in the `docs` directory:
-
-- [Test Plan](docs/test-plan.md)
-- [PWA Testing Guide](docs/pwa-testing-guide.md)
-- [Google Drive Integration Testing Guide](docs/google-drive-integration-testing-guide.md)
 
 ### Testing the Google Drive Integration
 
@@ -68,6 +108,14 @@ This will test the connection status and trigger the Gemini notes processing.
 ### Testing the PWA Features
 
 To test the PWA features, follow the instructions in the [PWA Testing Guide](docs/pwa-testing-guide.md).
+
+### Running All Tests
+
+To run all tests and verify the application functionality:
+
+```bash
+npm test
+```
 
 ## Build and Deployment
 
@@ -228,3 +276,26 @@ This will generate:
 - logo512.png (512x512)
 - maskable_icon.png (512x512 with padding for safe area)
 - favicon.png (32x32)
+
+## Contributing
+
+Contributions to the FTFC platform are welcome. Please follow these steps to contribute:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Commit your changes (`git commit -m 'Add some amazing feature'`)
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
+
+Please ensure your code follows the existing style guidelines and includes appropriate tests.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- React team for the amazing framework
+- Firebase team for the powerful backend services
+- All contributors who have helped shape this project
