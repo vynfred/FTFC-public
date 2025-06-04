@@ -11,7 +11,7 @@ import {
     addDoc, collection, doc,
     getDoc,
     getDocs,
-    query, serverTimestamp, updateDoc, where
+    query, serverTimestamp, updateDoc, where, orderBy
 } from 'firebase/firestore';
 import { db } from '../firebase-config';
 import { getMeetingTranscripts, getStoredTokens } from './googleIntegration';

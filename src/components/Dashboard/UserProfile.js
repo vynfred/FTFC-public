@@ -1,4 +1,5 @@
 import { doc, getDoc } from 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import React, { useEffect, useState } from 'react';
 import { FaCalendarAlt, FaCamera, FaEnvelope, FaGoogleDrive, FaPhone, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
@@ -405,7 +406,7 @@ const UserProfile = () => {
           {/* Debug section */}
           <div style={{ marginTop: '20px', padding: '15px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: '#f9f9f9' }}>
             <h4>Debug Information</h4>
-            <p>If you're having connection issues, try setting the flags manually:</p>
+            <p>If you&apos;re having connection issues, try setting the flags manually:</p>
             <button
               onClick={() => {
                 localStorage.setItem('googleDriveConnected', 'true');
@@ -468,7 +469,7 @@ const UserProfile = () => {
           {/* Debug section */}
           <div style={{ marginTop: '20px', padding: '15px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: '#f9f9f9' }}>
             <h4>Debug Information</h4>
-            <p>If you're having connection issues, try setting the flags manually:</p>
+            <p>If you&apos;re having connection issues, try setting the flags manually:</p>
             <button
               onClick={() => {
                 localStorage.setItem('googleCalendarConnected', 'true');

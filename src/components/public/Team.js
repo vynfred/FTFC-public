@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { FaLinkedin } from 'react-icons/fa';
 
 const Team = () => {
   return (
@@ -7,10 +7,10 @@ const Team = () => {
       <section className="page-header">
         <div className="container">
           <h1 className="page-title">Our Team</h1>
-          <p className="page-subtitle">Meet the experts behind FTFC's success.</p>
+          <p className="page-subtitle">Meet the experts behind FTFC success.</p>
         </div>
       </section>
-      
+
       <section className="team-section">
         <div className="container">
           <div className="team-intro">
@@ -19,78 +19,79 @@ const Team = () => {
               Our leadership team brings decades of experience in finance, technology, and business development. Together, they guide FTFC's mission to provide innovative funding solutions for businesses of all sizes.
             </p>
           </div>
-          
+
           <div className="team-grid">
             <div className="team-member">
               <div className="member-image">
-                <img src="/images/team-member-1.jpg" alt="John Smith" />
+                <img src="/assets/images/teams/MikeSpidaliere.jpeg" alt="John Smith" />
               </div>
               <div className="member-info">
-                <h3 className="member-name">John Smith</h3>
-                <p className="member-role">CEO & Co-Founder</p>
+                <h3 className="member-name">Mike Spidaliere</h3>
+                <p className="member-role">CEO & Partner, FTFC</p>
                 <p className="member-bio">
-                  John has over 15 years of experience in finance and venture capital. He previously worked at Goldman Sachs and founded two successful startups before co-founding FTFC in 2015.
+                  Mike is a serial founder with a track record of launching and fundraising for companies across entertainment, cannabis, physical spaces, and food tech. After navigating the fundraising journey firsthand, he launched FTFC with one mission: to help other founders not just understand the capital-raising process—but master it.
+                  Since founding FTFC, Mike has helped startups across industries raise millions, built a vetted network of 600+ investors, and mentored rising founders through top accelerators like Techstars and Founder Institute. He’s also brought together a powerhouse team of experienced entrepreneurs, all united around one goal: bridging the gap between founders and funders.
+
                 </p>
                 <div className="member-social">
-                  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="social-link">LinkedIn</a>
-                  <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="social-link">Twitter</a>
+                  <a href="https://www.linkedin.com/in/michaelspidaliere" target="_blank" rel="noopener noreferrer" className="social-link"> <FaLinkedin /></a>
                 </div>
               </div>
             </div>
-            
+
             <div className="team-member">
               <div className="member-image">
-                <img src="/images/team-member-2.jpg" alt="Sarah Johnson" />
+                <img src="/images/team-member-2.jpg" alt="Jason Zuker" />
               </div>
               <div className="member-info">
-                <h3 className="member-name">Sarah Johnson</h3>
-                <p className="member-role">COO & Co-Founder</p>
+                <h3 className="member-name">Jason Zuker</h3>
+                {/* <p className="member-role">Founder-turned-strategic advisor</p> */}
                 <p className="member-bio">
-                  Sarah brings 12 years of operational experience from her time at McKinsey and as COO of a fintech startup that was acquired in 2018. She oversees all operational aspects of FTFC.
+                  Founder-turned-strategic advisor with a polymathic background spanning human & machine intelligence, venture building, media, and advanced technology. He is an international scholar laureate and self-ascribed mad-scientist developing a reputation for manifesting uniquely valuable solutions. With experience scaling companies, building technology, and securing funding, he’s passionate about leveraging his unique talent and network to bridge the gap between founders and investors at FTFC.
                 </p>
                 <div className="member-social">
-                  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="social-link">LinkedIn</a>
-                  <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="social-link">Twitter</a>
+                  <a href="https://www.linkedin.com/in/jasonzuker" target="_blank" rel="noopener noreferrer" className="social-link"> <FaLinkedin /></a>
                 </div>
               </div>
             </div>
-            
+
             <div className="team-member">
               <div className="member-image">
-                <img src="/images/team-member-3.jpg" alt="Michael Chen" />
+                <img src="/images/team-member-3.jpg" alt="Jake Kerr" />
               </div>
               <div className="member-info">
-                <h3 className="member-name">Michael Chen</h3>
-                <p className="member-role">CTO</p>
+                <h3 className="member-name">Jake Kerr</h3>
+                {/* <p className="member-role">CTO</p> */}
                 <p className="member-bio">
-                  Michael is a technology leader with experience at Google and several fintech startups. He specializes in building secure and scalable financial platforms and leads FTFC's tech team.
+                  Jake, a molecular biologist, entrepreneur, and investor with extensive healthcare expertise, co-founded Bright Yeti, Inc., an early-stage plant biology company focused on bioelectromagnetics, and later served as a senior venture analyst for the University of Colorado Care Innovation Fund, supporting biotech and digital health ventures. Currently, as CEO and founder of 39North Health Plans, he has built a high-performance provider network offering members $0 care for most services. Passionate about advancing healthcare technologies, Jake joined FTFC to consult and advise companies, leveraging his diverse experience to help patients access cutting-edge tools and improve their lives in a rapidly evolving industry.
+
                 </p>
-                <div className="member-social">
+                {/* <div className="member-social">
                   <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="social-link">LinkedIn</a>
                   <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="social-link">GitHub</a>
-                </div>
+                </div> */}
               </div>
             </div>
-            
+
             <div className="team-member">
               <div className="member-image">
-                <img src="/images/team-member-4.jpg" alt="Emily Rodriguez" />
+                <img src="/images/team-member-4.jpg" alt="Wilfred Hirst" />
               </div>
               <div className="member-info">
-                <h3 className="member-name">Emily Rodriguez</h3>
-                <p className="member-role">CFO</p>
+                <h3 className="member-name">Wilfred Hirst</h3>
+                {/* <p className="member-role">CFO</p> */}
                 <p className="member-bio">
-                  Emily is a certified CPA with 10 years of experience in financial management for both startups and established companies in the financial sector. She manages FTFC's finances and investor relations.
+                  Wilfred Hirst is a creative strategist, entrepreneur, and super connector who blends artistic insight with sharp business expertise to guide first-time founders in building innovative, market-leading startups. As co-founder of VONA with Sigur Rós, he launched a pioneering CBD and wellness venture, scaling it to serve customers in the US, Hong Kong, UK, and Taiwan, demonstrating his ability to shape and thrive in emerging markets. An accomplished artist in music and visual arts, Wilfred brings originality and creative problem-solving to his strategic work. Wilfred joined First Time Founder Capital to connect people and help early-stage entrepreneurs leveraging his unique blend of creative, entrepreneurial, and SaaS expertise to help founders turn bold ideas into successful ventures and stay ahead of market trends.
                 </p>
-                <div className="member-social">
+                {/* <div className="member-social">
                   <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="social-link">LinkedIn</a>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
         </div>
       </section>
-      
+
       <section className="team-section">
         <div className="container">
           <div className="team-intro">
@@ -99,7 +100,7 @@ const Team = () => {
               Our team of experienced financial advisors works directly with clients to understand their needs and develop customized funding solutions.
             </p>
           </div>
-          
+
           <div className="team-grid">
             <div className="team-member">
               <div className="member-image">
@@ -116,7 +117,7 @@ const Team = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="team-member">
               <div className="member-image">
                 <img src="/images/team-member-6.jpg" alt="Jessica Lee" />
@@ -132,7 +133,7 @@ const Team = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="team-member">
               <div className="member-image">
                 <img src="/images/team-member-7.jpg" alt="Robert Taylor" />
@@ -148,7 +149,7 @@ const Team = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="team-member">
               <div className="member-image">
                 <img src="/images/team-member-8.jpg" alt="Amanda Patel" />
@@ -167,7 +168,7 @@ const Team = () => {
           </div>
         </div>
       </section>
-      
+
       <section className="join-team-section">
         <div className="container">
           <div className="join-team-content">
@@ -182,7 +183,7 @@ const Team = () => {
           </div>
         </div>
       </section>
-      
+
       <style jsx>{`
         .team-page {
           padding-top: 80px;
@@ -310,6 +311,10 @@ const Team = () => {
           font-size: 14px;
           font-weight: 500;
           transition: color 0.2s ease;
+          display: flex;
+          align-items: center;
+          flex-direction: row;
+          gap: 5px;
         }
         
         .social-link:hover {

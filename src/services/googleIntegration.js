@@ -13,8 +13,42 @@
  * - Retrieving meeting recordings
  */
 
-// Import the real Google API client library
-import { google } from 'googleapis';
+// Replace the Node.js-specific googleapis library with gapi for browser compatibility
+// Removed: import { google } from 'googleapis';
+
+// Load the gapi library dynamically
+const loadGapi = async () => {
+  return new Promise((resolve, reject) => {
+    if (window.gapi) {
+      resolve(window.gapi);
+    } else {
+      const script = document.createElement('script');
+      script.src = 'https://apis.google.com/js/api.js';
+      script.onload = () => {
+        window.gapi.load('client:auth2', () => {
+          resolve(window.gapi);
+        });
+      };
+      script.onerror = reject;
+      document.body.appendChild(script);
+    }
+  });
+};
+
+// Initialize the gapi client
+const initializeGapiClient = async () => {
+  console.log(process.env.REACT_APP_GOOGLE_API_KEY, 'process.env.REACT_APP_GOOGLE_API_KEY')
+  const gapi = await loadGapi();
+  await gapi.client.init({
+    apiKey: process.env.REACT_APP_GOOGLE_API_KEY,
+    clientId: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+    discoveryDocs: [
+      'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest',
+    ],
+    scope: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events',
+  });
+  return gapi;
+};
 
 // Create OAuth2 client
 const createOAuth2Client = () => {
@@ -45,8 +79,61 @@ const createOAuth2Client = () => {
  * @param {Array} scopes - Array of OAuth scopes to request
  * @returns {String} - Authorization URL
  */
-export const getAuthUrl = (scopes = [], options = {}) => {
-  const oauth2Client = createOAuth2Client();
+let tokenClient;
+let gapiInited = false;
+let gisInited = false;
+
+export const initializeGoogleClient = () => {
+  return new Promise((resolve, reject) => {
+    // Load gapi client
+    window.gapi.load('client', async () => {
+      try {
+        await window.gapi.client.init({
+          apiKey: process.env.REACT_APP_GOOGLE_API_KEY,
+          discoveryDocs: [
+            'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest',
+          ],
+        });
+        gapiInited = true;
+        maybeRequestToken(resolve, reject);
+      } catch (err) {
+        reject(err);
+      }
+    });
+
+    // Initialize GIS
+    tokenClient = window.google.accounts.oauth2.initTokenClient({
+      client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+      scope: [
+        'https://www.googleapis.com/auth/calendar',
+        'https://www.googleapis.com/auth/calendar.events',
+        'https://www.googleapis.com/auth/calendar.readonly',
+      ].join(' '),
+      callback: (tokenResponse) => {
+        if (tokenResponse && tokenResponse.access_token) {
+          resolve();
+        } else {
+          reject(new Error('Token request failed'));
+        }
+      },
+    });
+
+    gisInited = true;
+    maybeRequestToken(resolve, reject);
+  });
+};
+function maybeRequestToken(resolve, reject) {
+  if (gapiInited && gisInited) {
+    try {
+      tokenClient.requestAccessToken();
+    } catch (err) {
+      reject(err);
+    }
+  }
+}
+export const getAuthUrl = async (scopes = [], options = {}) => {
+  const gapi = await initializeGapiClient();
+  const authInstance = gapi.auth2.getAuthInstance();
 
   // Default scopes if none provided - using the most common scopes needed
   const defaultScopes = [
@@ -151,170 +238,158 @@ export const getAuthUrl = (scopes = [], options = {}) => {
  * @param {String} code - Authorization code from OAuth callback
  * @returns {Object} - Tokens object with access_token, refresh_token, etc.
  */
-export const exchangeCodeForTokens = async (code) => {
-  const oauth2Client = createOAuth2Client();
+export const exchangeCodeForTokens = async () => {
+  const gapi = await initializeGapiClient();
+  const authInstance = gapi.auth2.getAuthInstance();
+  const user = authInstance.currentUser.get();
+  const tokens = user.getAuthResponse();
 
-  try {
-    console.log('GoogleIntegration: Exchanging code for tokens');
-    const { tokens } = await oauth2Client.getToken(code);
-    console.log('GoogleIntegration: Received tokens successfully');
-
-    // Check if we received all expected tokens
-    if (!tokens.access_token) {
-      console.error('GoogleIntegration: No access token received');
-      throw new Error('No access token received from Google');
-    }
-
-    // Log token information (without exposing the actual tokens)
-    console.log('GoogleIntegration: Token information:', {
-      access_token: tokens.access_token ? 'Present' : 'Missing',
-      refresh_token: tokens.refresh_token ? 'Present' : 'Missing',
-      id_token: tokens.id_token ? 'Present' : 'Missing',
-      expiry_date: tokens.expiry_date ? new Date(tokens.expiry_date).toISOString() : 'Missing'
-    });
-
-    // Check if we got a refresh token - this is critical for long-term access
-    if (!tokens.refresh_token) {
-      console.warn('GoogleIntegration: No refresh token received. This may cause issues with long-term access.');
-      // We'll continue anyway, as we might have a refresh token stored from a previous authentication
-    }
-
-    // Get the requested features from localStorage
-    const calendarRequested = localStorage.getItem('googleAuthCalendarRequested') === 'true';
-    const driveRequested = localStorage.getItem('googleAuthDriveRequested') === 'true';
-
-    // Get the requested scopes from localStorage
-    const requestedScopesJson = localStorage.getItem('googleApiRequestedScopes');
-    let requestedScopes = [];
-    if (requestedScopesJson) {
-      try {
-        requestedScopes = JSON.parse(requestedScopesJson);
-      } catch (e) {
-        console.error('GoogleIntegration: Error parsing requested scopes:', e);
-      }
-    }
-
-    // Check if we got all the scopes we requested
-    if (tokens.scope) {
-      const grantedScopes = tokens.scope.split(' ');
-      console.log('GoogleIntegration: Granted scopes:', grantedScopes);
-
-      // Check for calendar scopes
-      const hasCalendarScope = grantedScopes.some(scope =>
-        scope.includes('calendar') || scope.includes('https://www.googleapis.com/auth/calendar'));
-
-      // Check for drive scopes
-      const hasDriveScope = grantedScopes.some(scope =>
-        scope.includes('drive') || scope.includes('https://www.googleapis.com/auth/drive'));
-
-      // Set connection flags based on granted scopes and what was requested
-      if (calendarRequested) {
-        if (hasCalendarScope) {
-          localStorage.setItem('googleCalendarConnected', 'true');
-          sessionStorage.setItem('googleCalendarConnected', 'true');
-          console.log('GoogleIntegration: Calendar connection enabled - scope granted');
-        } else {
-          console.warn('GoogleIntegration: Calendar was requested but scope not granted');
-          // Set the flag anyway if we specifically requested calendar access
-          // This is a fallback for cases where the scope might be named differently
-          localStorage.setItem('googleCalendarConnected', 'true');
-          sessionStorage.setItem('googleCalendarConnected', 'true');
-          console.log('GoogleIntegration: Calendar connection enabled - fallback');
-        }
-      } else if (hasCalendarScope) {
-        // Calendar wasn't specifically requested but we got the scope
-        localStorage.setItem('googleCalendarConnected', 'true');
-        sessionStorage.setItem('googleCalendarConnected', 'true');
-        console.log('GoogleIntegration: Calendar connection enabled - scope detected');
-      }
-
-      if (driveRequested) {
-        if (hasDriveScope) {
-          localStorage.setItem('googleDriveConnected', 'true');
-          sessionStorage.setItem('googleDriveConnected', 'true');
-          console.log('GoogleIntegration: Drive connection enabled - scope granted');
-        } else {
-          console.warn('GoogleIntegration: Drive was requested but scope not granted');
-          // Set the flag anyway if we specifically requested drive access
-          // This is a fallback for cases where the scope might be named differently
-          localStorage.setItem('googleDriveConnected', 'true');
-          sessionStorage.setItem('googleDriveConnected', 'true');
-          console.log('GoogleIntegration: Drive connection enabled - fallback');
-        }
-      } else if (hasDriveScope) {
-        // Drive wasn't specifically requested but we got the scope
-        localStorage.setItem('googleDriveConnected', 'true');
-        sessionStorage.setItem('googleDriveConnected', 'true');
-        console.log('GoogleIntegration: Drive connection enabled - scope detected');
-      }
-    } else {
-      // If we don't have scope information, set flags based on what was requested
-      console.warn('GoogleIntegration: No scope information in token response');
-
-      if (calendarRequested) {
-        localStorage.setItem('googleCalendarConnected', 'true');
-        sessionStorage.setItem('googleCalendarConnected', 'true');
-        console.log('GoogleIntegration: Calendar connection enabled - no scope info');
-      }
-
-      if (driveRequested) {
-        localStorage.setItem('googleDriveConnected', 'true');
-        sessionStorage.setItem('googleDriveConnected', 'true');
-        console.log('GoogleIntegration: Drive connection enabled - no scope info');
-      }
-    }
-
-    // Store tokens in localStorage with expiration information
-    const tokenData = {
-      ...tokens,
-      // Add a timestamp for when we received the tokens
-      timestamp: Date.now(),
-      // Make sure we have an expiry_date
-      expiry_date: tokens.expiry_date || (Date.now() + 3600 * 1000) // Default to 1 hour if not provided
-    };
-
-    // Store tokens in both localStorage and sessionStorage for redundancy
-    localStorage.setItem('googleTokens', JSON.stringify(tokenData));
-    localStorage.setItem('googleDriveTokens', JSON.stringify(tokenData)); // For Drive-specific functions
-
-    // Store user email if available in the ID token
-    if (tokens.id_token) {
-      try {
-        // Parse the ID token to get user info
-        const base64Url = tokens.id_token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-
-        const payload = JSON.parse(jsonPayload);
-        if (payload.email) {
-          localStorage.setItem('userEmail', payload.email);
-          console.log('GoogleIntegration: Stored user email:', payload.email);
-        }
-      } catch (tokenError) {
-        console.error('GoogleIntegration: Error parsing ID token:', tokenError);
-      }
-    }
-
-    // Clear the state parameters
-    localStorage.removeItem('googleApiAuthState');
-    localStorage.removeItem('googleApiAuthTimestamp');
-    localStorage.removeItem('googleApiRequestedScopes');
-    localStorage.removeItem('googleAuthCalendarRequested');
-    localStorage.removeItem('googleAuthDriveRequested');
-
-    return tokens;
-  } catch (error) {
-    console.error('Error getting tokens:', error);
-    // Clean up in case of error
-    localStorage.removeItem('googleApiAuthState');
-    localStorage.removeItem('googleApiAuthTimestamp');
-    localStorage.removeItem('googleApiRequestedScopes');
-    localStorage.removeItem('googleAuthCalendarRequested');
-    localStorage.removeItem('googleAuthDriveRequested');
-    throw error;
+  // Check if we received all expected tokens
+  if (!tokens.access_token) {
+    console.error('GoogleIntegration: No access token received');
+    throw new Error('No access token received from Google');
   }
+
+  // Log token information (without exposing the actual tokens)
+  console.log('GoogleIntegration: Token information:', {
+    access_token: tokens.access_token ? 'Present' : 'Missing',
+    refresh_token: tokens.refresh_token ? 'Present' : 'Missing',
+    id_token: tokens.id_token ? 'Present' : 'Missing',
+    expiry_date: tokens.expiry_date ? new Date(tokens.expiry_date).toISOString() : 'Missing'
+  });
+
+  // Check if we got a refresh token - this is critical for long-term access
+  if (!tokens.refresh_token) {
+    console.warn('GoogleIntegration: No refresh token received. This may cause issues with long-term access.');
+    // We'll continue anyway, as we might have a refresh token stored from a previous authentication
+  }
+
+  // Get the requested features from localStorage
+  const calendarRequested = localStorage.getItem('googleAuthCalendarRequested') === 'true';
+  const driveRequested = localStorage.getItem('googleAuthDriveRequested') === 'true';
+
+  // Get the requested scopes from localStorage
+  const requestedScopesJson = localStorage.getItem('googleApiRequestedScopes');
+  let requestedScopes = [];
+  if (requestedScopesJson) {
+    try {
+      requestedScopes = JSON.parse(requestedScopesJson);
+    } catch (e) {
+      console.error('GoogleIntegration: Error parsing requested scopes:', e);
+    }
+  }
+
+  // Check if we got all the scopes we requested
+  if (tokens.scope) {
+    const grantedScopes = tokens.scope.split(' ');
+    console.log('GoogleIntegration: Granted scopes:', grantedScopes);
+
+    // Check for calendar scopes
+    const hasCalendarScope = grantedScopes.some(scope =>
+      scope.includes('calendar') || scope.includes('https://www.googleapis.com/auth/calendar'));
+
+    // Check for drive scopes
+    const hasDriveScope = grantedScopes.some(scope =>
+      scope.includes('drive') || scope.includes('https://www.googleapis.com/auth/drive'));
+
+    // Set connection flags based on granted scopes and what was requested
+    if (calendarRequested) {
+      if (hasCalendarScope) {
+        localStorage.setItem('googleCalendarConnected', 'true');
+        sessionStorage.setItem('googleCalendarConnected', 'true');
+        console.log('GoogleIntegration: Calendar connection enabled - scope granted');
+      } else {
+        console.warn('GoogleIntegration: Calendar was requested but scope not granted');
+        // Set the flag anyway if we specifically requested calendar access
+        // This is a fallback for cases where the scope might be named differently
+        localStorage.setItem('googleCalendarConnected', 'true');
+        sessionStorage.setItem('googleCalendarConnected', 'true');
+        console.log('GoogleIntegration: Calendar connection enabled - fallback');
+      }
+    } else if (hasCalendarScope) {
+      // Calendar wasn't specifically requested but we got the scope
+      localStorage.setItem('googleCalendarConnected', 'true');
+      sessionStorage.setItem('googleCalendarConnected', 'true');
+      console.log('GoogleIntegration: Calendar connection enabled - scope detected');
+    }
+
+    if (driveRequested) {
+      if (hasDriveScope) {
+        localStorage.setItem('googleDriveConnected', 'true');
+        sessionStorage.setItem('googleDriveConnected', 'true');
+        console.log('GoogleIntegration: Drive connection enabled - scope granted');
+      } else {
+        console.warn('GoogleIntegration: Drive was requested but scope not granted');
+        // Set the flag anyway if we specifically requested drive access
+        // This is a fallback for cases where the scope might be named differently
+        localStorage.setItem('googleDriveConnected', 'true');
+        sessionStorage.setItem('googleDriveConnected', 'true');
+        console.log('GoogleIntegration: Drive connection enabled - fallback');
+      }
+    } else if (hasDriveScope) {
+      // Drive wasn't specifically requested but we got the scope
+      localStorage.setItem('googleDriveConnected', 'true');
+      sessionStorage.setItem('googleDriveConnected', 'true');
+      console.log('GoogleIntegration: Drive connection enabled - scope detected');
+    }
+  } else {
+    // If we don't have scope information, set flags based on what was requested
+    console.warn('GoogleIntegration: No scope information in token response');
+
+    if (calendarRequested) {
+      localStorage.setItem('googleCalendarConnected', 'true');
+      sessionStorage.setItem('googleCalendarConnected', 'true');
+      console.log('GoogleIntegration: Calendar connection enabled - no scope info');
+    }
+
+    if (driveRequested) {
+      localStorage.setItem('googleDriveConnected', 'true');
+      sessionStorage.setItem('googleDriveConnected', 'true');
+      console.log('GoogleIntegration: Drive connection enabled - no scope info');
+    }
+  }
+
+  // Store tokens in localStorage with expiration information
+  const tokenData = {
+    ...tokens,
+    // Add a timestamp for when we received the tokens
+    timestamp: Date.now(),
+    // Make sure we have an expiry_date
+    expiry_date: tokens.expiry_date || (Date.now() + 3600 * 1000) // Default to 1 hour if not provided
+  };
+
+  // Store tokens in both localStorage and sessionStorage for redundancy
+  localStorage.setItem('googleTokens', JSON.stringify(tokenData));
+  localStorage.setItem('googleDriveTokens', JSON.stringify(tokenData)); // For Drive-specific functions
+
+  // Store user email if available in the ID token
+  if (tokens.id_token) {
+    try {
+      // Parse the ID token to get user info
+      const base64Url = tokens.id_token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+
+      const payload = JSON.parse(jsonPayload);
+      if (payload.email) {
+        localStorage.setItem('userEmail', payload.email);
+        console.log('GoogleIntegration: Stored user email:', payload.email);
+      }
+    } catch (tokenError) {
+      console.error('GoogleIntegration: Error parsing ID token:', tokenError);
+    }
+  }
+
+  // Clear the state parameters
+  localStorage.removeItem('googleApiAuthState');
+  localStorage.removeItem('googleApiAuthTimestamp');
+  localStorage.removeItem('googleApiRequestedScopes');
+  localStorage.removeItem('googleAuthCalendarRequested');
+  localStorage.removeItem('googleAuthDriveRequested');
+
+  return tokens;
 };
 
 /**
@@ -609,8 +684,8 @@ export const getMeetingTranscripts = async (tokens, meetingId) => {
           docContent.data.body.content.forEach(element => {
             // Check for headings to identify sections
             if (element.paragraph && element.paragraph.paragraphStyle &&
-                element.paragraph.paragraphStyle.namedStyleType &&
-                element.paragraph.paragraphStyle.namedStyleType.includes('HEADING')) {
+              element.paragraph.paragraphStyle.namedStyleType &&
+              element.paragraph.paragraphStyle.namedStyleType.includes('HEADING')) {
 
               // Extract heading text
               let headingText = '';
@@ -626,13 +701,13 @@ export const getMeetingTranscripts = async (tokens, meetingId) => {
               if (headingText.toLowerCase().includes('summary')) {
                 currentSection = 'summary';
               } else if (headingText.toLowerCase().includes('key point') ||
-                         headingText.toLowerCase().includes('main point')) {
+                headingText.toLowerCase().includes('main point')) {
                 currentSection = 'keyPoints';
               } else if (headingText.toLowerCase().includes('action item') ||
-                         headingText.toLowerCase().includes('next step')) {
+                headingText.toLowerCase().includes('next step')) {
                 currentSection = 'actionItems';
               } else if (headingText.toLowerCase().includes('participant') ||
-                         headingText.toLowerCase().includes('attendee')) {
+                headingText.toLowerCase().includes('attendee')) {
                 currentSection = 'participants';
               } else if (headingText.toLowerCase().includes('transcript')) {
                 currentSection = 'transcript';
@@ -928,3 +1003,5 @@ export const ensureValidTokens = async (tokens) => {
   // If we get here, the token is still valid
   return tokens;
 };
+
+const regex = /[-_.]/g; // Simplified regex to remove unnecessary escape characters

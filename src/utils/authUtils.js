@@ -1,4 +1,4 @@
-import { EmailAuthProvider, getAuth, getRedirectResult, GoogleAuthProvider, linkWithCredential, linkWithPopup, linkWithRedirect, signOut, unlink } from 'firebase/auth';
+import { EmailAuthProvider, getAuth, getRedirectResult, GoogleAuthProvider, linkWithCredential, linkWithPopup, linkWithRedirect, signOut, unlink, signInWithCustomToken } from 'firebase/auth';
 import { getValidAccessToken } from '../services/tokenService';
 
 /**

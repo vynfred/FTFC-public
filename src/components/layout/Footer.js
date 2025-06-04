@@ -1,6 +1,5 @@
 import React from 'react';
-import { FaEnvelope, FaFacebook, FaInstagram, FaLinkedin, FaPhone } from 'react-icons/fa';
-import { FaXTwitter } from 'react-icons/fa6';
+import { FaEnvelope, FaInstagram, FaLinkedin, FaPhone } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import styles from './Footer.module.css';
 
@@ -13,19 +12,19 @@ const Footer = () => {
         {/* Company Info Section */}
         <div className={styles.companyInfo}>
           <h2 className={styles.companyName}>FTFC</h2>
-          <p className={styles.companyTagline}>Funding The Future Capital</p>
-          
+          <p className={styles.companyTagline}>Bridging together founder and funder.</p>
+
           <div className={styles.socialIcons}>
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className={styles.socialIcon}>
+            {/* <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className={styles.socialIcon}>
               <FaFacebook />
             </a>
             <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className={styles.socialIcon}>
               <FaXTwitter />
-            </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className={styles.socialIcon}>
+            </a> */}
+            <a href="https://www.instagram.com/firsttimefoundercapital/" target="_blank" rel="noopener noreferrer" className={styles.socialIcon}>
               <FaInstagram />
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className={styles.socialIcon}>
+            <a href="https://www.linkedin.com/company/first-time-founder-capital/" target="_blank" rel="noopener noreferrer" className={styles.socialIcon}>
               <FaLinkedin />
             </a>
           </div>
@@ -52,7 +51,7 @@ const Footer = () => {
             </li>
             <li className={styles.contactItem}>
               <FaPhone className={styles.contactIcon} />
-              <a href="tel:+1234567890">(123) 456-7890</a>
+              <a href="tel:+1234567890">(617) 475-0705</a>
             </li>
           </ul>
         </div>
@@ -71,7 +70,7 @@ const Footer = () => {
 
       {/* Footer Bottom */}
       <div className={styles.footerBottom}>
-        <p className={styles.copyright}>&copy; {currentYear} Funding The Future Capital. All rights reserved.</p>
+        <p className={styles.copyright}>&copy; {currentYear} Bridging together founder and funder. All rights reserved.</p>
         <div className={styles.legalLinks}>
           <Link to="/privacy">Privacy Policy</Link>
           <span className={styles.divider}>•</span>

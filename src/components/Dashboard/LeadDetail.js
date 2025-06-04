@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { FaArrowLeft, FaCalendarPlus, FaEdit, FaExchangeAlt, FaFileUpload, FaSave } from 'react-icons/fa';
+import { FaArrowLeft, FaCalendarPlus, FaEdit, FaExchangeAlt, FaFileUpload, FaSave, FaTimes, FaCheck, FaTrash, FaPlus } from 'react-icons/fa';
 import { useNavigate, useParams } from 'react-router-dom';
 import DashboardSection from '../shared/DashboardSection';
+import { convertLeadToClient } from '../../services/ClientService';
 import styles from './DetailPages.module.css';
 
 const LeadDetail = () => {

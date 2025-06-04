@@ -10,6 +10,7 @@ import styles from './GoogleIntegrations.module.css';
  * and displays the connection status.
  */
 const GoogleCalendarConnect = ({ onConnect, onDisconnect }) => {
+  const auth = useAuth(); // Correct placement of useAuth
   const [isConnected, setIsConnected] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -129,8 +130,7 @@ const GoogleCalendarConnect = ({ onConnect, onDisconnect }) => {
 
   // Handle connect button click
   const handleConnect = () => {
-    // Store the current user's email in localStorage to help with the OAuth flow
-    const { user } = useAuth();
+    const { user } = auth;
     if (user && user.email) {
       localStorage.setItem('userEmail', user.email);
       console.log('GoogleCalendarConnect: Stored user email in localStorage:', user.email);

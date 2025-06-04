@@ -2,6 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+import { AuthProvider } from './context/AuthContext';
+import { StatsViewProvider } from './context/StatsViewContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 // Import our consolidated CSS
 import './styles/index.css';
@@ -29,9 +32,15 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 // Render app with BrowserRouter
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <AuthProvider>
+      <StatsViewProvider>
+        <ThemeProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </ThemeProvider>
+      </StatsViewProvider>
+    </AuthProvider>
   </React.StrictMode>
 );
 

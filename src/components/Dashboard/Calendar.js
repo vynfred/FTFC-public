@@ -8,7 +8,7 @@ import styles from './Calendar.module.css';
 import DashboardSection from './DashboardSection';
 
 const Calendar = () => {
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,7 +32,7 @@ const Calendar = () => {
   useEffect(() => {
     const fetchUserTokens = async () => {
       try {
-        if (!currentUser) return;
+        if (!user) return;
 
         // First check localStorage for tokens (from GoogleCalendarConnect)
         console.log('Calendar: Checking localStorage for tokens and connection flags');
@@ -94,7 +94,7 @@ const Calendar = () => {
 
         // If no tokens in localStorage, check Firestore
         const userRef = collection(db, 'users');
-        const q = query(userRef, where('uid', '==', currentUser.uid));
+        const q = query(userRef, where('uid', '==', user.uid));
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
@@ -113,7 +113,7 @@ const Calendar = () => {
     };
 
     fetchUserTokens();
-  }, [currentUser]);
+  }, [user]);
 
   // Fetch calendar events
   useEffect(() => {

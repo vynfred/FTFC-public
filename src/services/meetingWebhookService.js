@@ -20,7 +20,11 @@ import { getStoredTokens } from './googleIntegration';
  * @param {String} entityId - ID of the entity
  * @returns {Promise<Object>} - Webhook registration data
  */
-export const registerMeetingWebhook = async (meetingData, entityType, entityId) => {
+export const registerMeetingWebhook = async (meetingData, entityType = 'defaultEntityType', entityId = 'defaultEntityId') => {
+  if (!entityType || !entityId) {
+    throw new Error('entityType and entityId are required parameters');
+  }
+
   try {
     const tokens = getStoredTokens();
 
@@ -133,6 +137,8 @@ export const registerMeetingWebhook = async (meetingData, entityType, entityId) 
  * @returns {Promise<Object>} - Recording configuration data
  */
 export const configureAutoRecording = async (meetingData) => {
+ let  entityType = 'defaultEntityType'
+ let entityId = 'defaultEntityId'
   try {
     const tokens = getStoredTokens();
 

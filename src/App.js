@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { ModalProvider } from './context/ModalContext';
 import { ToastProvider } from './context/ToastContext';
+import { DateRangeProvider } from './context/DateRangeContext';
 
 // Common components (not lazy loaded)
 import ProtectedRoute from './components/auth/SimpleProtectedRoute';
@@ -101,141 +102,143 @@ const SimpleDebug = lazy(() => import('./components/Debug/SimpleDebug'));
 
 function App() {
   return (
-    <ModalProvider>
-      <ToastProvider position="bottomRight">
-        {/* ScrollToTop component to handle scrolling on route changes */}
-        <ScrollToTop />
+    <DateRangeProvider>
+      <ModalProvider>
+        <ToastProvider position="bottomRight">
+          {/* ScrollToTop component to handle scrolling on route changes */}
+          <ScrollToTop />
 
-        {/* PWA Install Prompt */}
-        <PWAInstallPrompt />
+          {/* PWA Install Prompt */}
+          <PWAInstallPrompt />
 
-        {/* Session Timeout Warning - Temporarily disabled */}
-        {/* <SessionTimeoutWarning /> */}
+          {/* Session Timeout Warning - Temporarily disabled */}
+          {/* <SessionTimeoutWarning /> */}
 
-        <Suspense fallback={<LoadingScreen />}>
-        <Routes>
-          {/* Public Routes */}
-          <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/team" element={<Team />} />
-            <Route path="/blog" element={<BlogList />} />
-            <Route path="/blog/:slug" element={<BlogPost />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/consultation" element={<ConsultationPage />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/team-login" element={<TeamLogin />} />
-            <Route path="/client-login" element={<ClientLogin />} />
-            <Route path="/investor-login" element={<InvestorLogin />} />
-            <Route path="/partner-login" element={<PartnerLogin />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/verify-contact/:contactId/:token" element={<VerifyContact />} />
-            <Route path="/auth-test" element={<AuthTest />} />
+          <Suspense fallback={<LoadingScreen />}>
+            <Routes>
+              {/* Public Routes */}
+              <Route element={<Layout />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/services" element={<Services />} />
+                <Route path="/team" element={<Team />} />
+                <Route path="/blog" element={<BlogList />} />
+                <Route path="/blog/:slug" element={<BlogPost />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/consultation" element={<ConsultationPage />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/team-login" element={<TeamLogin />} />
+                <Route path="/client-login" element={<ClientLogin />} />
+                <Route path="/investor-login" element={<InvestorLogin />} />
+                <Route path="/partner-login" element={<PartnerLogin />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/verify-contact/:contactId/:token" element={<VerifyContact />} />
+                <Route path="/auth-test" element={<AuthTest />} />
 
-            {/* Referral Intake Form Routes */}
-            <Route path="/intake" element={<ReferralIntakeForm />} />
-            <Route path="/intake/:type" element={<ReferralIntakeForm />} />
-            <Route path="/intake/:type/:referrerId" element={<ReferralIntakeForm />} />
+                {/* Referral Intake Form Routes */}
+                <Route path="/intake" element={<ReferralIntakeForm />} />
+                <Route path="/intake/:type" element={<ReferralIntakeForm />} />
+                <Route path="/intake/:type/:referrerId" element={<ReferralIntakeForm />} />
 
-            {/* Lead Form Test Route */}
-            <Route path="/lead-form-test" element={<LeadFormTest />} />
-            <Route path="/debug/storage" element={<SimpleDebug />} />
+                {/* Lead Form Test Route */}
+                <Route path="/lead-form-test" element={<LeadFormTest />} />
+                <Route path="/debug/storage" element={<SimpleDebug />} />
 
-            {/* Google Drive OAuth Callback Route */}
-            <Route path="/api/google-drive/oauth-callback" element={<GoogleDriveCallback />} />
-          </Route>
+                {/* Google Drive OAuth Callback Route */}
+                <Route path="/api/google-drive/oauth-callback" element={<GoogleDriveCallback />} />
+              </Route>
 
-        {/* Client Portal Routes */}
-        <Route
-          path="/client-portal/*"
-          element={
-            <ProtectedRoute redirectPath="/client-login">
-              <ClientPortal />
-            </ProtectedRoute>
-          }
-        />
+              {/* Client Portal Routes */}
+              <Route
+                path="/client-portal/*"
+                element={
+                  // <ProtectedRoute redirectPath="/client-login">
+                    <ClientPortal />
+                  // </ProtectedRoute>
+                }
+              />
 
-        {/* Investor Portal Routes */}
-        <Route
-          path="/investor-portal/*"
-          element={
-            <ProtectedRoute redirectPath="/investor-login">
-              <InvestorPortal />
-            </ProtectedRoute>
-          }
-        />
+              {/* Investor Portal Routes */}
+              <Route
+                path="/investor-portal/*"
+                element={
+                  <ProtectedRoute redirectPath="/investor-login">
+                    <InvestorPortal />
+                  </ProtectedRoute>
+                }
+              />
 
-        {/* Partner Portal Routes */}
-        <Route
-          path="/partner-portal/*"
-          element={
-            <ProtectedRoute redirectPath="/partner-login">
-              <PartnerPortal />
-            </ProtectedRoute>
-          }
-        />
+              {/* Partner Portal Routes */}
+              <Route
+                path="/partner-portal/*"
+                element={
+                  <ProtectedRoute redirectPath="/partner-login">
+                    <PartnerPortal />
+                  </ProtectedRoute>
+                }
+              />
 
-        {/* Protected Dashboard Routes - Team Members Only */}
-        <Route
-          element={
-            <ProtectedRoute redirectPath="/team-login">
-              <DashboardWrapper />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="/dashboard" element={<DashboardWithModules />} />
-          <Route path="/dashboard-old" element={<Dashboard />} />
-          <Route path="/dashboard/analytics" element={<Analytics />} />
-          <Route path="/dashboard/leads" element={<LeadsDashboard />} />
-          <Route path="/dashboard/clients" element={<ClientsDashboard />} />
-          <Route path="/dashboard/clients/create" element={<ClientCreate />} />
-          <Route path="/dashboard/marketing" element={<MarketingDashboard />} />
-          <Route path="/dashboard/investors" element={<InvestorDashboard />} />
-          <Route path="/dashboard/investors-modules" element={<InvestorDashboardWithModules />} />
-          <Route path="/dashboard/partners" element={<PartnerDashboard />} />
-          <Route path="/dashboard/company-settings" element={<CompanySettings />} />
-          <Route path="/dashboard/profile" element={<UserProfile />} />
-          <Route path="/dashboard/css-examples" element={<CssExamples />} />
-          <Route path="/dashboard/form-examples" element={<FormExamples />} />
-          <Route path="/dashboard/components-examples" element={<ComponentsExamples />} />
-          <Route path="/dashboard/search-example" element={<SearchBarExample />} />
-          <Route path="/dashboard/email-example" element={<EmailExample />} />
-          <Route path="/dashboard/calendar" element={<CalendarView />} />
-          <Route path="/dashboard/marketing/content/:id" element={<BlogDetail />} />
-          <Route path="/dashboard/marketing/campaigns/:id" element={<CampaignDetail />} />
-          <Route path="/dashboard/marketing/create-blog" element={<BlogCreate />} />
-          <Route path="/dashboard/marketing/edit-content/:id" element={<BlogCreate />} />
-          <Route path="/dashboard/marketing/create-campaign" element={<CampaignDetail />} />
-          <Route path="/dashboard/leads/new" element={<LeadCreate />} />
-          <Route path="/dashboard/contacts/new" element={<ContactCreate />} />
-          <Route path="/dashboard/meetings/new" element={<MeetingCreate />} />
-          <Route path="/dashboard/proposals/new" element={<ProposalCreate />} />
-          <Route path="/dashboard/clients/:id" element={<ClientDetail />} />
-          <Route path="/dashboard/investors/:id" element={<InvestorDetail />} />
-          <Route path="/dashboard/partners/:id" element={<PartnerDetail />} />
-          <Route path="/dashboard/leads/:id" element={<LeadDetail />} />
-          <Route path="/dashboard/meetings/:id" element={<MeetingDetail />} />
+              {/* Protected Dashboard Routes - Team Members Only */}
+              <Route
+                element={
+                  <ProtectedRoute redirectPath="/team-login">
+                    <DashboardWrapper />
+                  </ProtectedRoute>
+                }
+              >
+                <Route path="/dashboard" element={<DashboardWithModules />} />
+                <Route path="/dashboard-old" element={<Dashboard />} />
+                <Route path="/dashboard/analytics" element={<Analytics />} />
+                <Route path="/dashboard/leads" element={<LeadsDashboard />} />
+                <Route path="/dashboard/clients" element={<ClientsDashboard />} />
+                <Route path="/dashboard/clients/create" element={<ClientCreate />} />
+                <Route path="/dashboard/marketing" element={<MarketingDashboard />} />
+                <Route path="/dashboard/investors" element={<InvestorDashboard />} />
+                <Route path="/dashboard/investors-modules" element={<InvestorDashboardWithModules />} />
+                <Route path="/dashboard/partners" element={<PartnerDashboard />} />
+                <Route path="/dashboard/company-settings" element={<CompanySettings />} />
+                <Route path="/dashboard/profile" element={<UserProfile />} />
+                <Route path="/dashboard/css-examples" element={<CssExamples />} />
+                <Route path="/dashboard/form-examples" element={<FormExamples />} />
+                <Route path="/dashboard/components-examples" element={<ComponentsExamples />} />
+                <Route path="/dashboard/search-example" element={<SearchBarExample />} />
+                <Route path="/dashboard/email-example" element={<EmailExample />} />
+                <Route path="/dashboard/calendar" element={<CalendarView />} />
+                <Route path="/dashboard/marketing/content/:id" element={<BlogDetail />} />
+                <Route path="/dashboard/marketing/campaigns/:id" element={<CampaignDetail />} />
+                <Route path="/dashboard/marketing/create-blog" element={<BlogCreate />} />
+                <Route path="/dashboard/marketing/edit-content/:id" element={<BlogCreate />} />
+                <Route path="/dashboard/marketing/create-campaign" element={<CampaignDetail />} />
+                <Route path="/dashboard/leads/new" element={<LeadCreate />} />
+                <Route path="/dashboard/contacts/new" element={<ContactCreate />} />
+                <Route path="/dashboard/meetings/new" element={<MeetingCreate />} />
+                <Route path="/dashboard/proposals/new" element={<ProposalCreate />} />
+                <Route path="/dashboard/clients/:id" element={<ClientDetail />} />
+                <Route path="/dashboard/investors/:id" element={<InvestorDetail />} />
+                <Route path="/dashboard/partners/:id" element={<PartnerDetail />} />
+                <Route path="/dashboard/leads/:id" element={<LeadDetail />} />
+                <Route path="/dashboard/meetings/:id" element={<MeetingDetail />} />
 
-          {/* Blog Management Routes */}
-          <Route path="/admin/blog" element={<BlogManage />} />
-          <Route path="/admin/blog/create" element={<BlogCreate />} />
-          <Route path="/admin/blog/edit/:id" element={<BlogEdit />} />
-        </Route>
+                {/* Blog Management Routes */}
+                <Route path="/admin/blog" element={<BlogManage />} />
+                <Route path="/admin/blog/create" element={<BlogCreate />} />
+                <Route path="/admin/blog/edit/:id" element={<BlogEdit />} />
+              </Route>
 
-        {/* 404 Route */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-      </Suspense>
+              {/* 404 Route */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
 
-        {/* Global Modals */}
-        <ScheduleMeetingModal />
-        <UploadDocumentModal />
-        <CreateLeadModal />
-        <AddAttendeeModal />
-      </ToastProvider>
-    </ModalProvider>
+          {/* Global Modals */}
+          <ScheduleMeetingModal />
+          <UploadDocumentModal />
+          <CreateLeadModal />
+          <AddAttendeeModal />
+        </ToastProvider>
+      </ModalProvider>
+    </DateRangeProvider>
   );
 }
 

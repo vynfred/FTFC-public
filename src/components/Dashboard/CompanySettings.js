@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaCog, FaEnvelope, FaFileAlt, FaGlobe, FaPhone, FaShieldAlt, FaSlack, FaUser, FaUsers } from 'react-icons/fa';
+import { FaCog, FaEnvelope, FaFileAlt, FaGlobe, FaPhone, FaShieldAlt, FaSlack, FaUser, FaUsers, FaPlug } from 'react-icons/fa';
 import { useStatsView } from '../../context/StatsViewContext';
 import SecuritySettings from '../settings/SecuritySettings';
 import SlackIntegrationSettings from '../settings/SlackIntegrationSettings';
@@ -226,7 +226,7 @@ const CompanySettings = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .company-settings {
           width: 100%;
         }

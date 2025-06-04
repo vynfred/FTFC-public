@@ -13,7 +13,7 @@ const SimpleSearch = ({
 }) => {
   return (
     <div className={`simple-search-container ${className}`}>
-      <div className="simple-search-icon-wrapper">
+      <div className="simple-search-icon-wrapper" style={{position: 'absolute', top: '12px', right: '10px'}}>
         <SearchIcon className="simple-search-icon" />
       </div>
       <input

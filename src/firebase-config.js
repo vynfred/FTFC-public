@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { createUserWithEmailAndPassword, getAuth, getRedirectResult, GoogleAuthProvider, onAuthStateChanged as firebaseAuthStateChanged, signInWithEmailAndPassword, signInWithRedirect, signOut as firebaseSignOut } from 'firebase/auth';
+import { createUserWithEmailAndPassword, onAuthStateChanged as firebaseAuthStateChanged, signOut as firebaseSignOut, getAuth, getRedirectResult, GoogleAuthProvider, signInWithEmailAndPassword, signInWithRedirect } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { getStorage } from 'firebase/storage';
@@ -37,7 +37,7 @@ const firebaseFunctions = getFunctions(app);
 
 // Development mode check
 const isDevelopment = process.env.NODE_ENV === 'development';
-
+console.log(isDevelopment, 'isDevelopmentisDevelopment')
 // Detect Safari browser
 const isSafari = () => {
   const userAgent = navigator.userAgent.toLowerCase();
@@ -313,7 +313,7 @@ const storage = isDevelopment ?
               getDownloadURL: () => Promise.resolve(`https://example.com/${path}`)
             }
           });
-          return { catch: () => {} };
+          return { catch: () => { } };
         }
       }),
       delete: () => Promise.resolve()
@@ -353,7 +353,7 @@ export const callFunction = (name, data) => {
 };
 
 // Export services
-export { auth, db, storage, handleFirebaseError, functions, app };
+export { app, auth, db, functions, handleFirebaseError, storage };
 // Export authentication methods
 export { signInWithGoogle };
 

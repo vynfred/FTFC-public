@@ -1,9 +1,10 @@
 const webpack = require('webpack');
 const path = require('path');
-const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const NodePolyfillWebpackPlugin = require('./node-polyfill-webpack-plugin');
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 module.exports = function override(config, env) {
   // Only apply optimizations in production
@@ -41,28 +42,18 @@ module.exports = function override(config, env) {
   };
   // We're not using aliases for now as they can cause circular dependencies
 
-  // Add fallbacks for Node.js core modules
+  // Ensure fallback includes all required Node.js modules
   config.resolve.fallback = {
     ...config.resolve.fallback,
-    "stream": require.resolve("stream-browserify"),
-    "buffer": require.resolve("buffer/"),
-    "util": require.resolve("util/"),
-    "assert": require.resolve("assert/"),
-    "http": require.resolve("stream-http"),
-    "https": require.resolve("https-browserify"),
-    "os": require.resolve("os-browserify/browser"),
-    "url": require.resolve("url/"),
-    "zlib": require.resolve("browserify-zlib"),
-    "path": require.resolve("path-browserify"),
-    "crypto": require.resolve("crypto-browserify"),
-    "querystring": require.resolve("querystring-es3"),
-    "events": require.resolve("events/"),
-    "process": require.resolve("process/browser.js"),
-    "fs": false,
-    "net": false,
-    "tls": false,
-    "child_process": false,
-    "http2": false
+    http: require.resolve('stream-http'),
+    https: require.resolve('https-browserify'),
+    crypto: require.resolve('crypto-browserify'),
+    os: require.resolve('os-browserify/browser'),
+    path: require.resolve('path-browserify'),
+    stream: require.resolve('stream-browserify'),
+    zlib: require.resolve('browserify-zlib'),
+    querystring: require.resolve('querystring-es3'),
+    util: require.resolve('util/')
   };
 
   // Configure Terser for better minification in production
@@ -105,10 +96,21 @@ module.exports = function override(config, env) {
   config.plugins.push(
     new NodePolyfillPlugin(),
     new webpack.ProvidePlugin({
-      process: 'process/browser.js',
+      process: 'process/browser.js', // Explicitly specify the extension
       Buffer: ['buffer', 'Buffer'],
-    })
+    }),
+    new NodePolyfillWebpackPlugin() // Add NodePolyfillWebpackPlugin to handle node: prefixed imports
   );
+
+  // Replace NodePolyfillPlugin with updated configuration
+  config.plugins = config.plugins.map(plugin => {
+    if (plugin instanceof NodePolyfillPlugin) {
+      return new NodePolyfillPlugin({
+        excludeAliases: ['console'] // Example of updated configuration
+      });
+    }
+    return plugin;
+  });
 
   // Add compression plugin for gzipped assets in production
   if (isProduction) {
@@ -133,12 +135,12 @@ module.exports = function override(config, env) {
     }
   }
 
-  // Add a rule to handle node: prefixed imports
+  // Update rule to handle node: prefixed imports for all JS files
   config.module.rules.push({
-    test: /\.js$/,
+    test: /\.(js|jsx|ts|tsx)$/,
     enforce: 'pre',
     use: {
-      loader: require.resolve('string-replace-loader'),
+      loader: 'string-replace-loader',
       options: {
         search: /require\(['"]node:([^'"]+)['"]\)/g,
         replace: 'require("$1")',
@@ -146,28 +148,19 @@ module.exports = function override(config, env) {
     },
   });
 
-  // Completely exclude problematic Node.js modules
-  config.resolve.alias = {
-    ...config.resolve.alias,
-    'googleapis': path.resolve(__dirname, 'src/mocks/googleapis-mock.js'),
-    'googleapis-common': path.resolve(__dirname, 'src/mocks/googleapis-common-mock.js'),
-    'google-logging-utils': path.resolve(__dirname, 'src/mocks/google-logging-utils-mock.js'),
-    'gcp-metadata': path.resolve(__dirname, 'src/mocks/empty-module.js'),
-    'gtoken': path.resolve(__dirname, 'src/mocks/empty-module.js'),
-    'https-proxy-agent': path.resolve(__dirname, 'src/mocks/empty-module.js'),
-    'agent-base': path.resolve(__dirname, 'src/mocks/empty-module.js')
-  };
+  // Suppress source map warnings more effectively
+  config.ignoreWarnings = [
+    /Failed to parse source map/, // Existing rule
+    /Cannot find source file/    // Additional rule for missing source maps
+  ];
 
-  // Add a comprehensive mock for the process object
-  config.plugins.push(
-    new webpack.DefinePlugin({
-      'process.stdout': JSON.stringify({}),
-      'process.stderr': JSON.stringify({}),
-      'process.version': JSON.stringify('v16.0.0'),
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
-      'process.env.NODE_DEBUG': JSON.stringify(false)
-    })
-  );
+  // Add logging to debug the Webpack configuration
+  console.log('Webpack configuration:', config);
+
+  // Temporarily comment out NodePolyfillPlugin to isolate the issue
+  // config.plugins = config.plugins.filter(
+  //   (plugin) => !(plugin instanceof NodePolyfillPlugin)
+  // );
 
   return config;
 };

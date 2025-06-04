@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { db } from '../firebase-config';
 import * as authService from '../services/authService';
@@ -23,6 +23,9 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Ensure auth is defined
+  const auth = getAuth();
 
   // Check for redirect result on mount
   useEffect(() => {
@@ -84,12 +87,11 @@ export const AuthProvider = ({ children }) => {
 
   // Check for existing session on mount using Firebase Auth
   useEffect(() => {
-    console.log('AuthContext: Setting up auth state listener');
-    const auth = getAuth();
+    console.log('AuthProvider: Initializing auth state listener');
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      console.log('AuthContext: Auth state changed:', firebaseUser ? 'User signed in' : 'No user');
+      console.log('AuthProvider: Auth state changed:', firebaseUser ? 'User signed in' : 'No user');
       if (firebaseUser) {
-        console.log('AuthContext: User details:', {
+        console.log('AuthProvider: User details:', {
           uid: firebaseUser.uid,
           email: firebaseUser.email,
           displayName: firebaseUser.displayName,
@@ -97,153 +99,27 @@ export const AuthProvider = ({ children }) => {
           providerData: firebaseUser.providerData.map(p => p.providerId)
         });
 
-        // Log authentication method
-        console.log('AuthContext: Authentication method:',
-          firebaseUser.providerData.some(p => p.providerId === 'google.com') ? 'Google' : 'Email/Password');
-
-        // Check if this is a Google sign-in
-        const isGoogleSignIn = firebaseUser.providerData.some(p => p.providerId === 'google.com');
-        if (isGoogleSignIn) {
-          console.log('AuthContext: This is a Google sign-in');
-          localStorage.setItem('googleSignInSuccess', 'true');
-          sessionStorage.setItem('googleSignInSuccess', 'true');
-        }
-
-        // Store auth state in localStorage for debugging
-        localStorage.setItem('authState', JSON.stringify({
-          uid: firebaseUser.uid,
+        // Update user state
+        setUser({
+          id: firebaseUser.uid,
           email: firebaseUser.email,
           displayName: firebaseUser.displayName,
-          timestamp: new Date().toISOString()
-        }));
-        try {
-          // Get user data from Firestore
-          const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-
-          if (userDoc.exists()) {
-            // User exists in Firestore, use that data
-            const userData = userDoc.data();
-            console.log('User found in Firestore:', userData);
-            setUser({
-              ...userData,
-              id: firebaseUser.uid,
-              email: firebaseUser.email,
-              displayName: firebaseUser.displayName || userData.name,
-              photoURL: firebaseUser.photoURL
-            });
-          } else {
-            // User doesn't exist in Firestore yet, create a new record
-            // Default to team role for new users
-            console.log('Creating new user in Firestore');
-            const newUserData = {
-              name: firebaseUser.displayName || 'User',
-              email: firebaseUser.email,
-              role: USER_ROLES.TEAM,
-              permissions: ['view_all', 'edit_all', 'admin'],
-              createdAt: new Date().toISOString(),
-              photoURL: firebaseUser.photoURL || ''
-            };
-
-            try {
-              // Save to Firestore
-              await setDoc(doc(db, 'users', firebaseUser.uid), newUserData);
-              console.log('User saved to Firestore');
-            } catch (firestoreError) {
-              // If Firestore save fails (e.g., due to ad blockers), still proceed with authentication
-              console.error('Error saving user to Firestore:', firestoreError);
-              console.log('Continuing with authentication despite Firestore error');
-            }
-
-            setUser({
-              ...newUserData,
-              id: firebaseUser.uid
-            });
-          }
-
-          setIsAuthenticated(true);
-
-          // Check if we need to redirect after successful authentication
-          const googleSignInSuccess = localStorage.getItem('googleSignInSuccess') || sessionStorage.getItem('googleSignInSuccess');
-          const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole') || 'team';
-          const intendedRole = localStorage.getItem('intendedUserRole') || userRole;
-
-          // Check if this is a Google sign-in based on provider data
-          const isGoogleSignIn = firebaseUser.providerData.some(p => p.providerId === 'google.com');
-
-          console.log('Auth state check:', {
-            googleSignInSuccess: googleSignInSuccess ? 'Found' : 'Not found',
-            userRole,
-            intendedRole,
-            isGoogleSignIn
-          });
-
-          // Clean up any legacy flags
-          localStorage.removeItem('googleRedirectInProgress'); // Legacy
-          localStorage.removeItem('googleRedirectTimestamp'); // Legacy
-
-          // If this is a successful sign-in, redirect to the appropriate portal
-          // We check both the flag and the provider data to be sure
-          if (googleSignInSuccess === 'true' || isGoogleSignIn) {
-            console.log('Successful authentication detected, redirecting to appropriate portal');
-
-            // Use the intended role from localStorage if available, otherwise use the stored role
-            const roleToUse = intendedRole || userRole;
-            console.log('Using role for redirect:', roleToUse);
-
-            // Redirect based on user role
-            switch (roleToUse) {
-              case 'client':
-                console.log('Redirecting to client portal');
-                window.location.href = '/client-portal';
-                break;
-              case 'investor':
-                console.log('Redirecting to investor portal');
-                window.location.href = '/investor-portal';
-                break;
-              case 'partner':
-                console.log('Redirecting to partner portal');
-                window.location.href = '/partner-portal';
-                break;
-              case 'team':
-              default:
-                console.log('Redirecting to dashboard');
-                window.location.href = '/dashboard';
-                break;
-            }
-
-            // Clear the flags
-            localStorage.removeItem('googleSignInSuccess');
-            sessionStorage.removeItem('googleSignInSuccess');
-            localStorage.removeItem('intendedUserRole');
-          } else {
-            console.log('No redirect needed or not a Google sign-in');
-          }
-        } catch (error) {
-          console.error('Error getting user data:', error);
-          // Even if there's an error with Firestore, we still want to authenticate the user
-          // since they've successfully signed in with Firebase Auth
-          setUser({
-            id: firebaseUser.uid,
-            name: firebaseUser.displayName || 'User',
-            email: firebaseUser.email,
-            role: USER_ROLES.TEAM,
-            permissions: ['view_all', 'edit_all', 'admin'],
-            photoURL: firebaseUser.photoURL || ''
-          });
-          setIsAuthenticated(true);
-        }
+          photoURL: firebaseUser.photoURL
+        });
+        setIsAuthenticated(true);
       } else {
-        // No user is signed in
-        console.log('No user signed in');
-        setIsAuthenticated(false);
+        console.log('AuthProvider: No user signed in');
         setUser(null);
+        setIsAuthenticated(false);
       }
 
       setLoading(false);
     });
 
-    // Cleanup subscription
-    return () => unsubscribe();
+    return () => {
+      console.log('AuthProvider: Cleaning up auth state listener');
+      unsubscribe();
+    };
   }, []);
 
   // Login function with Firebase Authentication

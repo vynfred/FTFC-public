@@ -7,8 +7,8 @@ const Services = () => {
     <div className={styles.servicesPage}>
       <section className={styles.pageHeader}>
         <div className={styles.container}>
-          <h1 className={styles.pageTitle}>Our Services</h1>
-          <p className={styles.pageSubtitle}>Comprehensive financial solutions for businesses at every stage.</p>
+          <h1 className={styles.pageTitle}>Services</h1>
+          <p className={styles.pageSubtitle}>We offer bespoke programs tailored to your needs, focusing on maximizing fundraising impact. Whether you require short-term guidance or long-term support, we'll create a package that ensures your great ideas and passionate team aren't limited by financial constraints.</p>
         </div>
       </section>
 
@@ -16,87 +16,158 @@ const Services = () => {
         <div className={styles.container}>
           <div className={styles.servicesGrid}>
             <div className={styles.serviceCard} id="startup-funding">
-              <h2 className={styles.serviceTitle}>Startup Funding</h2>
+              <h2 className={styles.serviceTitle}>Fundraising Strategy</h2>
               <p className={styles.serviceDescription}>
-                We help early-stage startups secure the capital they need to launch and grow. Our extensive network of angel investors, venture capitalists, and private equity firms allows us to match startups with the right funding partners.
+                We craft a customized approach tailored to your specific business, stage, and target investors, then develop an organized roadmap that guides you through every step of your fundraising journey with clarity and confidence.
               </p>
-              <ul className={styles.serviceFeatures}>
-                <li>Seed funding for early-stage startups</li>
-                <li>Series A, B, and C funding connections</li>
-                <li>Pitch deck preparation and investor readiness</li>
-                <li>Valuation assistance and term sheet negotiation</li>
-              </ul>
-
             </div>
 
             <div className={styles.serviceCard} id="growth-capital">
-              <h2 className={styles.serviceTitle}>Growth Capital</h2>
+              <h2 className={styles.serviceTitle}>Pitch Deck Creation & Optimization</h2>
               <p className={styles.serviceDescription}>
-                Access the capital you need to scale your business through equity investments, revenue-based financing, and strategic partnerships tailored to your growth stage.
+                We enhance both your pitch deck and presentation delivery to maximize investor appeal, refining your narrative structure, visual design, and storytelling.
               </p>
-              <ul className={styles.serviceFeatures}>
-                <li>Series A, B, and C funding rounds</li>
-                <li>Revenue-based financing options</li>
-                <li>Strategic partnership opportunities</li>
-                <li>Flexible capital solutions for scaling</li>
-              </ul>
             </div>
 
             <div className={styles.serviceCard} id="venture-capital">
-              <h2 className={styles.serviceTitle}>Venture Capital</h2>
+              <h2 className={styles.serviceTitle}>Access to FTFC’s Curated Investor Network</h2>
               <p className={styles.serviceDescription}>
-                For high-growth startups with innovative business models, we provide access to venture capital firms looking for the next big opportunity. Our VC connections span various industries and investment stages.
+                FTFC has meticulously curated a network of over 600 active investors, from angels to VCS, Family Offices and Corporate Venture Capital funds. We work with you to identify highly strategic value-add investors for your startup, then make warm introductions.
               </p>
-              <ul className={styles.serviceFeatures}>
-                <li>Connections to industry-specific VC firms</li>
-                <li>Strategic guidance for scaling rapidly</li>
-                <li>Due diligence preparation</li>
-                <li>Post-funding growth strategy</li>
-              </ul>
             </div>
 
             <div className={styles.serviceCard} id="financial-consulting">
-              <h2 className={styles.serviceTitle}>Financial Consulting</h2>
+              <h2 className={styles.serviceTitle}>Streamlined Fundraising Systems and Proven Resources</h2>
               <p className={styles.serviceDescription}>
-                Our team of financial experts provides strategic advice to optimize your business finances, improve cash flow, and prepare for future growth or funding rounds.
+                We equip you with the infrastructure to fundraise efficiently and effectively. From battle-tested templates to proven preparation processes and pitch materials, everything you need is organized, accessible, and ready to deploy.
               </p>
-              <ul className={styles.serviceFeatures}>
-                <li>Financial modeling and projections</li>
-                <li>Cash flow optimization strategies</li>
-                <li>Expense reduction analysis</li>
-                <li>Financial health assessment</li>
-              </ul>
             </div>
 
             <div className={styles.serviceCard} id="investment-strategies">
-              <h2 className={styles.serviceTitle}>Investment Strategies</h2>
+              <h2 className={styles.serviceTitle}>Advising and Coaching</h2>
               <p className={styles.serviceDescription}>
-                For businesses looking to invest their capital wisely, we develop customized investment strategies that balance growth, risk, and liquidity needs.
+                We offer direct, no-fluff guidance from seasoned operators who’ve raised, built, and scaled. Whether you're navigating strategy, storytelling, or tough decisions, we’re in it with you.
               </p>
-              <ul className={styles.serviceFeatures}>
-                <li>Short and long-term investment planning</li>
-                <li>Risk assessment and management</li>
-                <li>Diversification strategies</li>
-                <li>Regular portfolio review and optimization</li>
-              </ul>
             </div>
 
             <div className={styles.serviceCard} id="merger-acquisition">
-              <h2 className={styles.serviceTitle}>Merger & Acquisition</h2>
+              <h2 className={styles.serviceTitle}>Partnerships</h2>
               <p className={styles.serviceDescription}>
-                Whether you're looking to acquire another business or prepare for an exit, our M&A services guide you through the complex process from valuation to closing.
+                Access a vetted network of partners across tech, AI, legal, hiring, finance, and more. We connect you with the right experts at the right time—so you can move faster and smarter.
               </p>
-              <ul className={styles.serviceFeatures}>
-                <li>Business valuation and deal structuring</li>
-                <li>Target identification and screening</li>
-                <li>Due diligence coordination</li>
-                <li>Post-merger integration planning</li>
-              </ul>
             </div>
           </div>
         </div>
       </section>
+      <section className="transform-startup-section">
+        <div className="container">
+          <h2 className="section-title-transform-startup">Transform Your Startup Into an Investment-Ready Company</h2>
+          <p className={styles.serviceDescription}>At First Time Founder Capital, we specialize in preparing startups for Pre-seed, Seed, and Series A funding rounds. We bridge the gap between having a great idea and securing institutional investment. We're not investors ourselves—we're your strategic partners who prepare you for the investors you'll meet.</p>
+        </div>
+      </section>
+      <section className="what-we-do-section">
+        <div className="container">
+          <h2 className="section-title-what-we-do">What We Do</h2>
+          <section className={styles.whatWeDoOverview}>
+            <div className={styles.container}>
+              <div className={styles.servicesGrid}>
+                <div className={styles.serviceCard} id="startup-funding">
+                  <h2 className={styles.serviceTitle}>Investment Readiness Assessment</h2>
+                  <p className={styles.serviceDescription}>
+                    We conduct comprehensive evaluations of your business model, financials, market positioning, and growth strategy. Our assessment identifies exactly what investors will be looking for and highlights areas that need strengthening before you start fundraising.
+                  </p>
+                </div>
 
+                <div className={styles.serviceCard} id="growth-capital">
+                  <h2 className={styles.serviceTitle}>Pitch Deck Development</h2>
+                  <p className={styles.serviceDescription}>
+                    Your pitch deck is often your first impression with investors. We help craft compelling narratives that clearly communicate your value proposition, market opportunity, and growth potential while addressing the key questions investors always ask.
+                  </p>
+                </div>
+
+                <div className={styles.serviceCard} id="venture-capital">
+                  <h2 className={styles.serviceTitle}>Go-to-Market Strategy Refinement</h2>
+                  <p className={styles.serviceDescription}>
+                    Investors want to see a clear path to customer acquisition and revenue growth. We work with you to develop and refine your go-to-market strategy, ensuring it's both executable and scalable.
+                  </p>
+                </div>
+
+                <div className={styles.serviceCard} id="financial-consulting">
+                  <h2 className={styles.serviceTitle}>Founder & Team Positioning</h2>
+                  <p className={styles.serviceDescription}>
+                    We help position you and your team as the right founders to execute on this opportunity. This includes refining your story, highlighting relevant experience, and identifying any key hires needed to strengthen investor confidence.
+                  </p>
+                </div>
+
+                <div className={styles.serviceCard} id="investment-strategies">
+                  <h2 className={styles.serviceTitle}>Stage-Specific Fundraising Strategy</h2>
+                  <p className={styles.serviceDescription}>
+                    We tailor our approach based on your funding stage. Pre-seed companies need different preparation than Series A companies. We understand the unique metrics, milestones, and investor expectations for each stage and help you meet them.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="mt-5">
+              <p className={styles.serviceDescription}> <strong>Pre-seed Focus:</strong>Product-market fit validation, early traction metrics, founding team story</p>
+              <p className={styles.serviceDescription}><strong>Seed Focus:</strong>Revenue growth, customer acquisition, market expansion strategy</p>
+              <p className={styles.serviceDescription}><strong>A Focus:</strong>Scalable business model, clear unit economics, path to profitability</p>
+            </div>
+          </section>
+        </div>
+      </section>
+      <section className="who-we-work-with-section">
+        <div className="container">
+          <h2 className="section-title-what-we-do">Who We Work With</h2>
+          <p className={styles.serviceDescription}>
+            We specialize in working with first-time founders preparing for Pre-seed, Seed, or Series A rounds who have:
+          </p>
+          <ul className={styles.serviceDescription}>
+            <li>A validated business model or strong product-market fit signals</li>
+            <li>Early revenue or clear path to monetization (varies by stage)</li>
+            <li>Ambition to scale and build a venture-backable business</li>
+            <li>Commitment to the institutional fundraising process</li>
+            <li>Businesses in any vertical except pharmaceuticals/drug development</li>
+          </ul>
+        </div>
+      </section>
+      <section className="what-we-do-section">
+        <div className="container">
+          <h2 className="section-title-what-we-do">Our Approach</h2>
+
+          <ul className={styles.serviceDescription}>
+            <li><strong>Discovery & Assessment: </strong>Deep dive into your business, team, and current state of investment readiness</li>
+            <li><strong>Strategy Development: </strong>Create customized roadmap addressing gaps and building on strengths</li>
+            <li><strong>Implementation Support: </strong>Hands-on guidance as you execute improvements and prepare materials</li>
+            <li><strong>Pre-Launch Review: </strong>Final preparation and practice before you begin investor outreach</li>
+          </ul>
+        </div>
+      </section>
+      <section className="who-we-work-with-section">
+        <div className="container">
+          <h2 className="section-title-what-we-do">Why Choose FTFC</h2>
+
+          <ul className={styles.serviceDescription}>
+            <li><strong>Founder-Focused Perspective: </strong>We understand the unique challenges first-time founders face because we've been there ourselves.</li>
+            <li><strong>Stage-Specific Expertise: </strong>We understand the nuanced differences between Pre-seed, Seed, and Series A requirements and tailor our approach accordingly.</li>
+            <li><strong>Cross-Industry Experience: </strong>From SaaS to consumer products to deep tech, we've helped startups across every major vertical (except pharma) prepare for institutional funding.</li>
+            <li><strong>Investor-Informed Approach: </strong>Our strategies are based on real investor feedback and what actually works in today's funding environment across different stages and sectors.</li>
+            <li><strong>No Conflicts of Interest: </strong>Since we're not investors, our only goal is your success—not protecting our own investment thesis.</li>
+            <li><strong>Proven Process: </strong>Our systematic approach has helped dozens of startups successfully raise their first institutional rounds.</li>
+          </ul>
+        </div>
+      </section>
+      <section className="what-we-do-section">
+        <div className="container">
+          <h2 className="section-title-what-we-do">Ready to Become Investment-Ready?</h2>
+          <p className={styles.serviceDescription}>
+            The difference between fundable and unfundable companies often comes down to preparation and presentation. Let us help you position your startup for fundraising success.
+          </p>
+          <p className={styles.serviceDescription}>
+            Contact us to schedule a consultation and learn how we can help transform your startup into an investment-ready company.
+          </p>
+
+        </div>
+      </section>
       <section className="process-section">
         <div className="container">
           <h2 className="section-title">Our Process</h2>
@@ -320,6 +391,16 @@ const Services = () => {
           text-align: center;
           margin-bottom: 60px;
         }
+        .section-title-transform-startup {
+          font-size: 36px;
+          font-weight: 700;
+          color: #0f172a;
+          text-align: center;
+          margin-bottom: 30px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
 
         .process-section {
           padding: 80px 0;
@@ -516,6 +597,40 @@ const Services = () => {
             font-size: 30px;
           }
         }
+        .transform-startup-section {
+          padding: 40px 0;
+          background-color: #f8fafc;
+        }
+        .what-we-do-section {
+          padding: 40px 0;
+          background-color: #ffffff;
+        }
+        .who-we-work-with-section {
+          padding: 40px 0;
+          background-color: #f8fafc;
+        }
+        strong{
+          font-weight: 900
+        }
+        .mt-5 {
+          margin-top:15px
+        }
+        .section-title-what-we-do{
+          font-size: 36px;
+          font-weight: 700;
+          color: #0f172a;
+          text-align: center;
+          margin-bottom: 30px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        ul {
+          list-style-type: disc; 
+          padding-left: 1.5rem; 
+          margin: 1rem 0;
+        }
+        
       `}</style>
     </div>
   );

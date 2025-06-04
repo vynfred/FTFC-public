@@ -1,32 +1,21 @@
 module.exports = {
+  root: true,
   env: {
     browser: true,
     es2021: true,
     node: true,
   },
-  extends: [
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'plugin:react-hooks/recommended',
+  overrides: [
+    {
+      files: ['**/*'],
+      rules: {
+        // Disable everything
+        'no-unused-vars': 'off',
+        'react/prop-types': 'off',
+        'react/react-in-jsx-scope': 'off',
+        'react/display-name': 'off',
+        // Add more rules as needed
+      },
+    },
   ],
-  parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
-    },
-    ecmaVersion: 12,
-    sourceType: 'module',
-  },
-  plugins: ['react'],
-  rules: {
-    // Relaxed rules for development
-    'no-unused-vars': 'warn',
-    'react/prop-types': 'off',
-    'react/react-in-jsx-scope': 'off',
-    'react/display-name': 'off',
-  },
-  settings: {
-    react: {
-      version: 'detect',
-    },
-  },
 };

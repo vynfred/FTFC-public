@@ -10,29 +10,32 @@ const About = () => {
           <p className="page-subtitle">Learn about our mission, vision, and the team behind FTFC.</p>
         </div>
       </section>
-      
+
       <section className="about-section">
         <div className="container">
           <div className="about-grid">
             <div className="about-content">
               <h2 className="section-title">Our Story</h2>
               <p className="about-text">
-                Financial Technology Funding Corporation (FTFC) was founded in 2015 with a simple mission: to bridge the gap between innovative businesses and the capital they need to grow.
+                At FTFC, we specialize in helping startups close their funding rounds by building a strong foundation and crafting clear, compelling messaging. Our approach is rooted in a proven process that has consistently delivered results for both our clients and previous ventures.
               </p>
               <p className="about-text">
-                Our founders, having experienced firsthand the challenges of securing funding for their own ventures, recognized the need for a more accessible, transparent, and efficient funding process for startups and small businesses.
+                FTFC was founded by a serial entrepreneur with a track record of raising capital across multiple startups and mentoring with top-tier accelerators. Since then, we’ve grown into a team with deep, hands-on expertise across the startup ecosystem.
               </p>
               <p className="about-text">
-                Today, FTFC has helped over 500 businesses secure more than $100 million in funding, and we continue to expand our services to meet the evolving needs of entrepreneurs and business owners.
+                To further our mission, we recently welcomed three exceptional Senior Venture Advisors. Each is venture-backed and brings extensive experience in healthcare, robotics, CPG, marketing, company building, and fundraising. Their strategic insight and industry knowledge enhance our ability to support founders at every stage of their fundraising journey.
+              </p>
+              <p className="about-text">
+                We’ve worked with hundreds of startups and understand what it takes to succeed in today’s dynamic venture landscape. At FTFC, we’re more than advisors. We’re committed partners helping founders raise smarter, faster, and with confidence.
               </p>
             </div>
             <div className="about-image">
-              <img src="/images/about-image.jpg" alt="FTFC Team" />
+              <img src="/assets/images/about.png" alt="FTFC Team" />
             </div>
           </div>
         </div>
       </section>
-      
+
       <section className="mission-section">
         <div className="container">
           <div className="mission-grid">
@@ -61,7 +64,7 @@ const About = () => {
           </div>
         </div>
       </section>
-      
+
       <section className="team-section">
         <div className="container">
           <h2 className="section-title">Our Leadership Team</h2>
@@ -76,7 +79,7 @@ const About = () => {
                 John has over 15 years of experience in finance and venture capital. He previously worked at Goldman Sachs and founded two successful startups.
               </p>
             </div>
-            
+
             <div className="team-member">
               <div className="member-image">
                 <img src="/images/team-member-2.jpg" alt="Sarah Johnson" />
@@ -87,7 +90,7 @@ const About = () => {
                 Sarah brings 12 years of operational experience from her time at McKinsey and as COO of a fintech startup that was acquired in 2018.
               </p>
             </div>
-            
+
             <div className="team-member">
               <div className="member-image">
                 <img src="/images/team-member-3.jpg" alt="Michael Chen" />
@@ -98,7 +101,7 @@ const About = () => {
                 Michael is a technology leader with experience at Google and several fintech startups. He specializes in building secure and scalable financial platforms.
               </p>
             </div>
-            
+
             <div className="team-member">
               <div className="member-image">
                 <img src="/images/team-member-4.jpg" alt="Emily Rodriguez" />
@@ -110,13 +113,13 @@ const About = () => {
               </p>
             </div>
           </div>
-          
+
           <div className="team-cta">
             <Link to="/team" className="team-button">Meet the Full Team</Link>
           </div>
         </div>
       </section>
-      
+
       <section className="cta-section">
         <div className="container">
           <div className="cta-content">
@@ -128,7 +131,7 @@ const About = () => {
           </div>
         </div>
       </section>
-      
+
       <style jsx>{`
         .about-page {
           padding-top: 80px;

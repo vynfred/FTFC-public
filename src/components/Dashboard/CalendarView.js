@@ -4,7 +4,7 @@ import { FaChevronLeft, FaChevronRight, FaGoogle } from 'react-icons/fa';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { db } from '../../firebase-config';
-import { exchangeCodeForTokens, getAuthUrl, listCalendarEvents } from '../../services/googleIntegration';
+import { exchangeCodeForTokens, initializeGoogleClient, listCalendarEvents } from '../../services/googleIntegration';
 import LoadingSpinner from '../common/LoadingSpinner';
 import styles from './CalendarView.module.css';
 import DashboardSection from './DashboardSection';
@@ -13,7 +13,8 @@ import DashboardSection from './DashboardSection';
  * CalendarView component for displaying a full calendar with Google Calendar events
  */
 const CalendarView = () => {
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
+  const currentUser = user;
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -56,51 +57,51 @@ const CalendarView = () => {
   // Check for OAuth callback code in URL
   useEffect(() => {
     const handleOAuthCallback = async () => {
-      const urlParams = new URLSearchParams(location.search);
-      const code = urlParams.get('code');
+      // const urlParams = new URLSearchParams(location.search);
+      // const code = urlParams.get('code');
 
-      if (code) {
-        setLoading(true);
-        setError(null);
+      // if (code) {
+      setLoading(true);
+      setError(null);
 
-        try {
-          console.log('Received OAuth callback code, exchanging for tokens...');
+      try {
+        console.log('Received OAuth callback code, exchanging for tokens...');
 
-          // Exchange code for tokens
-          const tokens = await exchangeCodeForTokens(code);
+        // Exchange code for tokens
+        const tokens = await exchangeCodeForTokens();
 
-          if (tokens && currentUser) {
-            // Save tokens to user document in Firestore
-            await setDoc(doc(db, 'users', currentUser.uid), {
-              tokens,
-              lastUpdated: new Date().toISOString()
-            }, { merge: true });
+        if (tokens && currentUser) {
+          // Save tokens to user document in Firestore
+          await setDoc(doc(db, 'users', currentUser.uid), {
+            tokens,
+            lastUpdated: new Date().toISOString()
+          }, { merge: true });
 
-            // Also store tokens in localStorage for consistency with GoogleCalendarConnect
-            localStorage.setItem('googleTokens', JSON.stringify(tokens));
-            localStorage.setItem('googleCalendarConnected', 'true');
+          // Also store tokens in localStorage for consistency with GoogleCalendarConnect
+          localStorage.setItem('googleTokens', JSON.stringify(tokens));
+          localStorage.setItem('googleCalendarConnected', 'true');
 
-            setUserTokens(tokens);
-            setGoogleConnected(true);
+          setUserTokens(tokens);
+          setGoogleConnected(true);
 
-            // Get the return path from localStorage or use default
-            const returnPath = localStorage.getItem('googleAuthReturnPath') || '/dashboard/calendar';
-            console.log('CalendarView: Return path:', returnPath);
+          // Get the return path from localStorage or use default
+          const returnPath = localStorage.getItem('googleAuthReturnPath') || '/dashboard/calendar';
+          console.log('CalendarView: Return path:', returnPath);
 
-            // Remove code from URL and navigate to return path
-            navigate(returnPath, { replace: true });
+          // Remove code from URL and navigate to return path
+          navigate(returnPath, { replace: true });
 
-            // Clear the return path
-            localStorage.removeItem('googleAuthReturnPath');
-          }
-        } catch (err) {
-          console.error('Error exchanging code for tokens:', err);
-          setError('Failed to connect to Google Calendar. Please try again.');
-        } finally {
-          setLoading(false);
-          setIsConnecting(false);
+          // Clear the return path
+          localStorage.removeItem('googleAuthReturnPath');
         }
+      } catch (err) {
+        console.error('Error exchanging code for tokens:', err);
+        setError('Failed to connect to Google Calendar. Please try again.');
+      } finally {
+        setLoading(false);
+        setIsConnecting(false);
       }
+      // }
     };
 
     handleOAuthCallback();
@@ -109,8 +110,13 @@ const CalendarView = () => {
   // Fetch user's Google tokens
   useEffect(() => {
     const fetchUserTokens = async () => {
+      console.log('Fetching user...', currentUser);
       try {
-        if (!currentUser) return;
+        if (!currentUser) {
+          console.log('No current user logged in.');
+          setError('User not logged in.');
+          return;
+        }
 
         console.log('Checking for Google tokens...');
 
@@ -122,7 +128,7 @@ const CalendarView = () => {
 
         if (localTokens && calendarConnected === 'true') {
           const parsedTokens = JSON.parse(localTokens);
-          console.log('Parsed tokens:', parsedTokens);
+          console.log('Parsed tokens from localStorage:', parsedTokens);
           setUserTokens(parsedTokens);
           setGoogleConnected(true);
           console.log('Set googleConnected to TRUE from localStorage tokens');
@@ -131,34 +137,45 @@ const CalendarView = () => {
 
         // If no tokens in localStorage, check Firestore
         console.log('Checking Firestore for tokens...');
-        const userRef = collection(db, 'users');
+        // const userRef = collection(db, 'users');
+        // const q = query(userRef, where('uid', '==', currentUser.uid));
+        // const querySnapshot = await getDocs(q);
+
+
+        const userRef = collection(db, 'users'); // ✅ db must be initialized from getFirestore(app)
         const q = query(userRef, where('uid', '==', currentUser.uid));
         const querySnapshot = await getDocs(q);
+        console.log(querySnapshot, 'querySnapshot')
+
+
+
 
         if (!querySnapshot.empty) {
           const userData = querySnapshot.docs[0].data();
           console.log('Firestore user data:', userData);
           if (userData.tokens) {
-            console.log('Found tokens in Firestore');
+            console.log('Found tokens in Firestore:', userData.tokens);
             setUserTokens(userData.tokens);
             setGoogleConnected(true);
             console.log('Set googleConnected to TRUE from Firestore tokens');
             // Also store in localStorage for consistency
             localStorage.setItem('googleTokens', JSON.stringify(userData.tokens));
           } else {
-            console.log('No tokens found in Firestore');
+            console.log('No tokens found in Firestore.');
+            setError('No tokens found. Please reconnect to Google Calendar.');
           }
         } else {
-          console.log('No user document found in Firestore');
+          console.log('No user document found in Firestore.');
+          setError('No user document found. Please reconnect to Google Calendar.');
         }
       } catch (err) {
         console.error('Error fetching user tokens:', err);
-        setError('Failed to fetch Google connection status');
+        setError('Failed to fetch Google connection status. Please try again.');
       }
     };
 
     fetchUserTokens();
-  }, [currentUser]);
+  }, [currentUser, googleConnected]);
 
   // Fetch calendar events
   useEffect(() => {
@@ -204,34 +221,58 @@ const CalendarView = () => {
     }
   }, [googleConnected, userTokens, getDateRange, showAllEvents]);
 
+  // New effect to fetch events directly when accessing the calendar URL
+  useEffect(() => {
+    const fetchEventsDirectly = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        console.log('Fetching events directly without OAuth code...');
+
+        if (googleConnected && userTokens) {
+          // Get date range for current view
+          const { startDate, endDate } = getDateRange();
+
+          // Fetch events from Google Calendar
+          const eventsList = await listCalendarEvents(
+            userTokens,
+            startDate,
+            endDate,
+            showAllEvents
+          );
+
+          console.log('Fetched events:', eventsList);
+          setEvents(eventsList || []);
+        } else {
+          console.log('User is not connected to Google Calendar.');
+          setError('Please connect to Google Calendar to view events.');
+        }
+      } catch (err) {
+        console.error('Error fetching events directly:', err);
+        setError('Failed to fetch calendar events. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEventsDirectly();
+  }, [googleConnected, userTokens, getDateRange, showAllEvents]);
+
   // Connect to Google Calendar
-  const connectToGoogle = async () => {
+  const connectToGoogle = async (setIsConnecting, setError) => {
     setIsConnecting(true);
-
     try {
-      // Get auth URL with appropriate scopes
-      const scopes = [
-        'https://www.googleapis.com/auth/calendar',
-        'https://www.googleapis.com/auth/calendar.events',
-        'https://www.googleapis.com/auth/calendar.readonly'
-      ];
-
-      // Store the current path to return to after authentication
-      const currentPath = window.location.pathname;
-      localStorage.setItem('googleAuthReturnPath', currentPath);
-      console.log('CalendarView: Stored return path:', currentPath);
-
-      const authUrl = await getAuthUrl(scopes);
-
-      // Redirect to Google OAuth
-      window.location.href = authUrl;
+      const data = await initializeGoogleClient();
+      console.log(data, 'Connected to Google Calendar');
+      setGoogleConnected(true); // Update state to render the calendar
     } catch (err) {
-      console.error('Error starting Google OAuth flow:', err);
+      console.error('Google Calendar auth failed:', err);
       setError('Failed to connect to Google Calendar');
+    } finally {
       setIsConnecting(false);
     }
   };
-
   // Navigate to previous period
   const goToPrevious = () => {
     const newDate = new Date(currentDate);
@@ -579,12 +620,13 @@ const CalendarView = () => {
           <p>To view your calendar events, please connect your Google Calendar account.</p>
           <button
             className={styles.connectButton}
-            onClick={connectToGoogle}
+            onClick={() => connectToGoogle(setIsConnecting, setError)}
             disabled={isConnecting}
           >
             <FaGoogle style={{ marginRight: '8px' }} />
             {isConnecting ? 'Connecting...' : 'Connect Google Calendar'}
           </button>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
         </div>
       </DashboardSection>
     );

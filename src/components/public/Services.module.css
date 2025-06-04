@@ -1,10 +1,8 @@
 /* Services.module.css */
 /* CSS Module for the Services component */
 
-.servicesPage {
-  padding-top: 60px; /* Match the header height */
-  background-color: var(--color-background-dark);
-  color: var(--color-text-primary);
+.servicesPage {;
+  padding-top: 80px;
 }
 
 .container {
@@ -14,14 +12,14 @@
 }
 
 .pageHeader {
-  background-color: var(--color-background-dark);
-  padding: var(--spacing-xxl) 0;
+  background-color: #0f172a;
+  padding: 80px 0;
   text-align: center;
-  border-bottom: 1px solid var(--color-border);
+  color: #ffffff;
 }
 
 .pageTitle {
-  font-size: 2.5rem;
+  font-size: 48px;
   font-weight: var(--font-weight-bold);
   margin-bottom: var(--spacing-sm);
   color: var(--color-text-primary);
@@ -36,8 +34,8 @@
 }
 
 .servicesOverview {
-  padding: var(--spacing-xxl) 0;
-  background-color: var(--color-background-dark);
+  padding: 80px 0;
+  background-color: #ffffff;
 }
 
 .servicesGrid {
@@ -47,12 +45,17 @@
 }
 
 .serviceCard {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: var(--border-radius-md);
-  padding: var(--spacing-lg);
-  border: 1px solid var(--color-border);
+  padding:20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
+.serviceCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
 .serviceIcon {
   font-size: 2rem;
   margin-bottom: var(--spacing-md);
@@ -62,12 +65,12 @@
 .serviceTitle {
   font-size: 1.5rem;
   font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
+  color: #0f172a;
   margin-bottom: var(--spacing-sm);
 }
 
 .serviceDescription {
-  color: var(--color-text-secondary);
+  color: #64748b;
   margin-bottom: var(--spacing-md);
   line-height: 1.6;
 }
@@ -309,4 +312,8 @@
   .ctaTitle {
     font-size: 1.875rem;
   }
+}
+.whatWeDoOverview {
+  padding: 20px 0;
+  background-color: #ffffff;
 }

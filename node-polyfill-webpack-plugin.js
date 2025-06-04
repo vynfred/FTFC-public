@@ -16,8 +16,6 @@ class NodePolyfillWebpackPlugin {
         if (result.request.startsWith('node:')) {
           result.request = result.request.substring(5);
         }
-
-        return result;
       });
     });
   }
