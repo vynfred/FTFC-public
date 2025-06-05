@@ -1,4 +1,4 @@
-# First Time Founder Capital (FTFC) Platform
+# First Time Founder Capital (FTFC) Platform - Live
 
 Lead generation and client management platform for startup advising firm. This is the public repository of the FTFC application, designed to help startup founders manage their fundraising process, connect with investors, and track client relationships.
 
